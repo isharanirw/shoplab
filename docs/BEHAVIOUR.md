@@ -30,7 +30,7 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 - A logged-in user who opens `/login` or `/register` is sent on to `next` or `/account`.
 - Wrong credentials, the locked account and the rate limit each show a message in an alert region above the login form.
 - Register validates each field when it loses focus, validates everything again on submit, and shows server-side `fieldErrors` under the matching fields.
-- The terms checkbox on the register form is plain text for now; the `/terms` page arrives with checkout.
+- The terms checkbox on the register form is plain text; the static `/terms` page now exists (Phase 3) and checkout links to it.
 
 ### Error shape and status codes
 - All API errors are `{ "error": { "code", "message", "fieldErrors"? } }`.
@@ -46,10 +46,10 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 - Product 18 has variants that are all out of stock, so it counts as sold out.
 - Seeded reviews have no linked user (`user_id` is null) and a display name only.
 - Customer1 has 3 orders (Delivered, Shipped with SAVE10, Processing with express shipping), 2 wishlist items (products 36 and 21, in that order) and 2 addresses (Home in Sweden is the default, Work in the US).
-- Order number format is `SL-YYYYMMDD-NNNN`, where `NNNN` is the order's numeric ID padded to 4 digits and the date is the order date in UTC.
+- Order number format is `SL-YYYYMMDD-NNNN` with the date in UTC. The seeded orders use their ID as `NNNN` (0001 to 0003, or up to 0050 in `many-orders`); orders placed through checkout use a per-day sequence (see Phase 3).
 - Seeded order totals follow the section 5.3 pricing rules, in integer cents with half-up rounding.
 - Postal code rules are stored per country: 5 digits for Sweden and the US, 6 digits for India. Each country has 4 regions.
-- Cart tables are not created yet; they arrive with the cart phase. Customer2's "empty cart" is therefore implicit for now.
+- Carts live in the `carts` and `cart_items` tables (Phase 3). Every user, including customer1, starts with an empty cart; reset empties all carts.
 
 ### Reset and scenarios
 - `POST /api/test/reset` deletes every row (including all sessions, so every logged-in user is logged out) and reloads the seed. It also clears the login attempt counters. It returns 204. The body is optional.
@@ -121,7 +121,7 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 - A card shows a generated SVG placeholder (no external images; colour from the product ID), name, category, price (sale price in red with the regular price struck through), rating, stock badge, Quick view, Add to cart and a wishlist heart.
 - Stock badge: "Out of stock" at 0, "Only N left" at 1 to 3, otherwise "In stock".
 - Rating on a card: five stars rounded to the nearest whole star, the one-decimal average and the review count; "No reviews yet" when there are none.
-- **Add to cart is a stub.** The cart is built in Phase 3, so the client calls `addToCart()` in `client/src/lib/cart.ts`, which does nothing, and the page shows "The cart is not available yet, so nothing was added." The enabled and disabled rules are real: out-of-stock products are disabled, and the button is disabled on the detail page and quick view until every required option is chosen.
+- **Add to cart** is real as of Phase 3 (see Phase 3 below). After a successful add the card, detail page or quick view says "Added N × name to your cart." with a View cart link; a refused add (for example over the stock) shows the reason. The enabled and disabled rules are unchanged: out-of-stock products are disabled, and the button is disabled on the detail page and quick view until every required option is chosen.
 - On a card, Add to cart for a product with sizes or colours opens the quick view (there is nothing to choose on the card). Out-of-stock cards have it disabled.
 - Wishlist heart: logged-in users add or remove the product (the label switches between "Add to wishlist: <name>" and "Remove from wishlist: <name>"). Logged-out users are sent to `/login?next=<current page and query>` and return there after logging in.
 - Quick view is a dialog loaded from `/api/products/{id}` with the image, price, rating, description, the same option and quantity controls as the detail page, and a link to the full page. It closes with the X button, Escape or a click on the dark backdrop. Focus moves into the dialog, Tab and Shift+Tab stay inside it, the page behind is inert, and focus returns to the button that opened it.
@@ -138,3 +138,77 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 
 ### Wishlist page `/wishlist`
 - Login required (redirects to `/login?next=/wishlist`). Lists the user's products as cards in wishlist order, each with a Remove button (the heart is hidden here). Removing takes the item out at once, announces it and moves focus to the heading. An empty list shows a message and a Browse products link.
+
+## Phase 3: cart, coupons, checkout, orders
+
+### Pricing (integer cents)
+- Subtotal = sum of unit price x quantity, where the unit price is the sale price when the product is on sale.
+- Discount = at most one coupon, applied to the subtotal. Percent discounts are rounded half up to a whole cent (10% of $10.05 is 100.5 cents, so 101). A fixed discount is never more than the subtotal.
+- Shipping: Standard $5.00, free when the subtotal after discount is $100.00 or more. Express $15.00, never free (not even with FREESHIP). An empty cart has no shipping.
+- Tax = 10% of (subtotal - discount), rounded half up (a taxable amount of $94.95 gives $9.50). Shipping is not taxed.
+- Total = subtotal - discount + shipping + tax. Worked example: 2 x $30.00 + 1 x $45.50 = $105.50, SAVE10 takes $10.55 off, shipping $5.00, tax $9.50, total $109.45. In the seed catalogue the same numbers come from 2 x product 15 (sale price $12.25) and 3 x product 23 ($27.00).
+- The cart page shows totals with **Standard** shipping because the method is chosen at checkout. `POST /api/checkout/quote` and the checkout summary use the chosen method. The country does not change any price (tax is a flat 10%, shipping is the same everywhere), but it must be Sweden, the US or India (`SE`, `US`, `IN`).
+
+### Coupons
+- Codes are matched ignoring case and surrounding spaces. `SAVE10`: 10% off the subtotal. `FREESHIP`: free Standard shipping when the subtotal is $30.00 or more. `MIN100`: $20.00 off when the subtotal is $100.00 or more. `ONCE5`: $5.00 off, once per account. `EXPIRED20`: always rejected as expired.
+- Minimums are checked on the subtotal before the discount. `ONCE5` has no minimum.
+- Only one coupon can be attached to a cart. Applying a second one returns 409 and asks you to remove the first. Applying the same code again is also a 409.
+- Applying a coupon is rejected with 400 (`fieldErrors.code` and the message say why) when the code is unknown, the cart is empty, or the coupon is expired, already used by this account, or below its minimum subtotal (checked in that order).
+- **FREESHIP in the totals**: it has no money discount, so the Discount line stays $0.00 (labelled with the code) and the Shipping line shows $0.00 and says "free". It only affects Standard shipping; with Express the coupon stays attached and changes nothing.
+- **When the cart drops below a coupon's minimum** (or the coupon stops qualifying for any other reason) the coupon stays attached but contributes nothing. The cart response sets `coupon.applied: false` with a `reason` and `message`, and the cart page shows "Not applied right now". If the cart grows again the coupon applies again. Nothing is removed automatically; the shopper can remove it. The same rule is used by the quote and by order placement, so an order never carries a discount the cart does not show.
+- `ONCE5` is consumed when an order is placed with it, not when it is applied. "Used" means the account has any order carrying that code, including one cancelled later (cancelling does not give the coupon back). Applying it, removing it and applying it again before ordering is fine. Another account can still use it.
+
+### Cart API (login required, 401 otherwise)
+- `GET /api/cart` returns `{ items, itemCount, coupon, totals }`. Each item has `id, productId, variantId, name, category, imageCount, variantLabel, unitPriceCents, regularPriceCents, onSale, quantity, lineTotalCents, stock, maxQuantity, inStock`. `itemCount` is the sum of the quantities (the header badge). `coupon` is null or `{ code, description, applied, reason, message }`. `totals` has `subtotalCents, discountCents, shippingMethod, shippingCents, taxCents, totalCents`. Every cart endpoint below returns this same cart.
+- `POST /api/cart/items` takes `productId`, `variantId` (required for products that have variants, not allowed for products that do not) and `quantity`. It returns 201 for a new line and 200 when it merged into the existing line for the same product and variant.
+- **Quantity rules**: a whole number from 1 to 10, otherwise 400. A line can never hold more than the stock of the product (or of the variant when there are variants) or more than 10: when adding would take a line past either limit the answer is 409 with the reason ("Only 3 in stock. You already have 3 in your cart."), not a silent cap. An unknown or inactive product is 404, a wrong variant is 400.
+- `PATCH /api/cart/items/{itemId}` takes `{ quantity }` with the same rules (400 outside 1 to 10, 409 over the stock). `DELETE /api/cart/items/{itemId}` removes a line. A line that belongs to someone else, or does not exist, is 404.
+- `DELETE /api/cart` clears the lines and the coupon. `POST /api/cart/coupon` takes `{ code }`; `DELETE /api/cart/coupon` removes it (200 even when there was none).
+- `POST /api/cart/merge` takes `{ items: [{ productId, variantId?, quantity }] }` (up to 100 lines, each quantity 1 to 10) and is what the client calls right after login (see below). It returns `{ cart, adjustments }`.
+- A cart is stored on the server and survives logging out and in. A user's cart is only visible to that user. Reset clears every cart.
+- The cart does not hold stock: a line can be above the current stock if someone else bought items meanwhile. The cart then shows "Only N in stock" or "out of stock" on that line, disables Proceed to checkout, and the order endpoint answers 409.
+
+### Guest cart and merge on login
+- A guest's cart is stored in `localStorage` under `shoplab.guestCart` as a list of `{ productId, variantId, quantity }`. Guests can browse, add, change quantities, remove and clear. The same quantity rules apply (adding past the stock or 10 shows the same message as the API). The guest cart page shows each line and the subtotal only; coupons, shipping, tax and the total need an account. Proceed to checkout sends guests to `/login?next=/checkout`.
+- After a successful login (or registration) the client sends the guest lines to `POST /api/cart/merge` and clears `localStorage`. Merge rules: lines for the same product and variant add their quantities together; the result is capped at min(10, stock); a product that no longer exists, or a variant with no stock, is skipped. Existing server lines keep their position and new guest lines follow. Only lines the guest cart touched are changed. The response lists each cap or skip (`reason` is `capped`, `out_of_stock` or `unavailable`) and the cart page shows them in a dismissible notice. If the merge request fails the guest cart is kept in `localStorage`.
+- Example: the server cart holds 5 of a product, the guest cart holds 10: the merged line is 10 (capped) and the notice says so.
+
+### Cart page `/cart`
+- Open to everyone. Loading shows a spinner, a failed load shows an error with Retry, an empty cart shows "Your cart is empty." with a Browse products link.
+- Quantity can be typed (committed on Enter or when the box loses focus) or changed with the minus and plus buttons. A typed value above the limit is set to the limit (10 or the stock) and a note says so; a value below 1 becomes 1; text that is not a number is ignored.
+- **Remove** asks with the browser's native `window.confirm()` ("Remove <name> from your cart?"). **Clear cart** opens a custom modal ("Clear your cart?", with Cancel and Clear cart buttons; Escape and Cancel close it and focus returns to the Clear cart button). The difference is deliberate.
+- The coupon form shows a success message ("Coupon SAVE10 applied: 10% off the subtotal.") or the API's error text, announced politely. The message disappears when the cart's subtotal changes.
+- The header shows "Cart" with a badge holding the item count; it updates as soon as a change succeeds and shows 0 for an empty cart.
+
+### Delivery dates
+- The preferred delivery date runs from tomorrow to 14 days ahead, counted from today's UTC date (so on Friday 2 Oct 2026 the range is 3 Oct to 16 Oct). Standard delivery cannot be on a Saturday or Sunday (UTC); Express can. The server checks the same rule (400 `fieldErrors.deliveryDate`).
+- The calendar is a grid with Monday first. Days that cannot be chosen stay in the grid, are marked `aria-disabled` and are announced with the reason ("unavailable, Standard delivery is not available on weekends"); clicking or selecting one does nothing. Keys: arrows move by day and week, Home and End go to Monday and Sunday of that week, PageUp and PageDown change the month (with Shift, the year, within the two months shown), Enter and Space select. Switching from Express to Standard clears a weekend date and says why.
+
+### Countries and addresses
+- `GET /api/countries` (public) returns `{ data, page, pageSize, total }` with Sweden, the US and India (sorted by name), each with `code, name, postalPattern, postalHint` and 4 `regions`. The postal rule is 5 digits for Sweden and the US and 6 digits for India (spaces are not allowed inside).
+- `GET /api/addresses` (login required) lists the user's saved addresses, default first, in the list shape. It is read only; the address book (add, edit, delete) arrives in Phase 4.
+- A new address at checkout has first name, last name, street, country, region, postal code and phone; there is no city field (it is stored as empty). The region must belong to the chosen country. Phone: digits, spaces, `+`, `-` and parentheses, 7 to 15 digits. A new checkout address is stored on the order only, not in the address book.
+
+### Payment frame and test cards
+- Step 3 embeds `/payment-frame` (a same-origin page without the site header) in an `<iframe title="Card payment details">`. The frame validates the form (name, card number, expiry MM/YY not in the past, 3 digit CVC) and posts a message to the parent with `postMessage`, targeted at the page's own origin. The parent accepts a message only if it came from that iframe and that origin.
+- Cards: `4242 4242 4242 4242` is accepted and succeeds. `4000 0000 0000 0002` is accepted by the frame but **declined** when the order is placed (402). Any other number is invalid inside the frame ("This card number is invalid.") and no token is sent.
+- The message is `{ source: "shoplab-payment-frame", type: "card-accepted", token, last4 }`, or `{ source, type: "card-cleared" }` when the card is edited or invalid. The token is `tok_ok_4242` or `tok_declined_0002`. The full card number and CVC never leave the frame and are never sent to the server. `POST /api/orders` takes the token as `paymentToken`; any other value is a 400.
+
+### Checkout `/checkout`
+- Login required (`/login?next=/checkout`). Four steps with Back and Next; each step validates before moving on: 1 Shipping address (a saved address or a new one, per-field validation on blur and on Next), 2 Delivery (method and date), 3 Payment (a card must have been accepted by the frame), 4 Review (the terms must be ticked). The progress list marks the current step with `aria-current="step"` and focus moves to the step heading when the step changes. The payment frame stays mounted while you move back and forth so the card form keeps its content.
+- The default choice is the user's default saved address; a user with none starts on the new-address form. The summary beside the steps comes from `POST /api/checkout/quote` and updates when the shipping method changes.
+- "Terms and conditions" on the review step is a link with `target="_blank"` and `rel="noopener noreferrer"` to the static `/terms` page.
+- **Place order** shows a spinner ("Placing your order") for a fixed **1.5 seconds** (`PLACE_ORDER_SPINNER_MS` in `client/src/pages/CheckoutPage.tsx`) whether the request succeeds or fails.
+- Success goes to `/orders/:id/confirmation` (replacing the checkout page in history). A declined card (402) keeps the cart and shows "Your card was declined" with a Use a different card button that returns to step 3 with an empty frame. A stock problem (409) keeps the cart, shows the message and marks each problem line in the summary ("Only 1 of Mechanical Keyboard left, but you have 2 in your cart.") with a link back to the cart. A 400 from the server jumps back to the step it belongs to.
+
+### Orders
+- `POST /api/orders` body: `shippingMethod` (`standard` or `express`), `deliveryDate` (YYYY-MM-DD), either `addressId` (one of the user's saved addresses) or `address` (`firstName, lastName, street, city?, countryCode, regionCode, postalCode, phone`), `paymentToken` and `acceptTerms: true`. Problems are reported together in `fieldErrors` (address problems are keyed `address.<field>`). An empty cart is a 400.
+- Order of checks inside one transaction: request validation (400), stock for every cart line (409), then the payment token (402 when declined). Any failure changes nothing: the cart, coupon and stock are untouched and no order exists.
+- **409 shape**: `error.code` is `CONFLICT` and `fieldErrors` has one entry per problem line keyed `items.<cartItemId>`, for example `{"items.1": "Only 1 of Mechanical Keyboard left, but you have 2 in your cart."}`.
+- On success (201) the order has status `Processing`; stock is reduced by the quantities (for a product with variants both the variant and the product total go down); the cart and its coupon are cleared; the coupon (when it applied) is recorded on the order, which is what consumes `ONCE5`. The totals on the order are the ones the cart showed for the chosen method.
+- **Order numbers** are `SL-YYYYMMDD-NNNN`: the UTC date of the order and a per-day sequence that starts at 0001 and is one more than the highest number already used for that day. The seed's own orders are in the past, so the first order of a day is 0001 after a reset, and reset deletes every order so the sequence starts again. Order IDs continue after the seed (the first order after a default reset has ID 4).
+- `GET /api/orders/{id}` returns the order with its items, address (with `regionName` and `countryName`), totals and `paymentLast4`. **Someone else's order is a 404** (the same answer as a missing order, so IDs cannot be probed). A non-numeric ID is 400.
+- The confirmation page `/orders/:id/confirmation` (login required) shows the order number, status, dates, items, shipping address and totals; an unknown or foreign order shows "Order not found". The order list and detail pages arrive in Phase 4.
+
+### Other pages
+- `/terms` is a static page with an `h1` and six short sections. `/payment-frame` is outside the normal page layout (no header or footer) and has a visually hidden `h1`.

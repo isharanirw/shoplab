@@ -8,7 +8,7 @@ Live site: https://shoplab-ffm2.onrender.com
 
 ## Status
 
-Phase 1 (foundation) and Phase 2 (catalogue) are complete. Phase 1 covers the scaffold, database and seed data, authentication, health check, reset endpoint and CI. Phase 2 adds the product listing with search, filters, sorting and pagination, the product detail page, quick view, and a basic wishlist. The cart is not built yet: "Add to cart" buttons follow the real enabled/disabled rules but do nothing. Later phases add the cart and checkout, account features, admin, and the testability layer.
+Phases 1 to 3 are complete: foundation (scaffold, database and seed data, authentication, health check, reset endpoint, CI), the catalogue (listing, search, filters, detail page, quick view, wishlist basics) and cart and checkout (cart, coupons, pricing, four-step checkout with a payment iframe, orders and confirmation). Later phases add account features (address book, order history, reviews), admin, and the testability layer.
 
 ## Routes
 
@@ -19,6 +19,11 @@ Phase 1 (foundation) and Phase 2 (catalogue) are complete. Phase 1 covers the sc
 | `/products/:id` | Product detail with gallery, options, quantity, and Description / Specs / Reviews tabs |
 | `/wishlist` | The logged-in user's wishlist (login required) |
 | `/login`, `/register`, `/account` | Accounts (Phase 1) |
+| `/cart` | Cart (guests use localStorage and it merges into the server cart on login) |
+| `/checkout` | Four-step checkout: address, delivery, payment, review (login required) |
+| `/orders/:id/confirmation` | Confirmation page after placing an order (login required, own orders only) |
+| `/payment-frame` | The card form that checkout embeds in an `<iframe>` (same origin) |
+| `/terms` | Static terms and conditions (checkout links to it in a new tab) |
 
 ## API endpoints
 
@@ -35,6 +40,38 @@ Lists return `{ data, page, pageSize, total }`; errors use the shape described b
 | `GET /api/wishlist` | User | The user's wishlist |
 | `POST /api/wishlist` | User | Add `{"productId": 5}` (201, or 200 if already there) |
 | `DELETE /api/wishlist/{productId}` | User | Remove an item (204, or 404 if it was not there) |
+| `GET /api/cart` | User | The cart: items, coupon status, `itemCount` and totals (Standard shipping) |
+| `POST /api/cart/items` | User | Add `{productId, variantId?, quantity}` (201 new line, 200 merged; 400 bad quantity or variant, 409 over stock) |
+| `PATCH /api/cart/items/{itemId}` | User | Set `{quantity}` (1 to 10, within stock) |
+| `DELETE /api/cart/items/{itemId}` | User | Remove a line |
+| `DELETE /api/cart` | User | Clear the cart and its coupon |
+| `POST /api/cart/coupon`, `DELETE /api/cart/coupon` | User | Apply `{code}` or remove the coupon (one at a time) |
+| `POST /api/cart/merge` | User | Merge guest lines into the cart (used after login) |
+| `POST /api/checkout/quote` | User | Totals preview for `{shippingMethod, country}` |
+| `POST /api/orders` | User | Place an order (201; 400 validation; 402 declined card; 409 not enough stock) |
+| `GET /api/orders/{id}` | User | One of your own orders (404 for anyone else's) |
+| `GET /api/countries` | Public | Sweden, United States, India with regions and postal rules |
+| `GET /api/addresses` | User | Saved addresses (read only for now) |
+
+## Cart, coupons and test cards
+
+Prices are integer cents: subtotal, minus at most one coupon, plus shipping (Standard $5.00, free from $100.00 after discount; Express $15.00, never free), plus 10% tax on subtotal minus discount (shipping is not taxed). Rounding is half up at the discount and tax steps. Example: 2 x $30.00 + 1 x $45.50 = $105.50, SAVE10 -$10.55, shipping $5.00, tax $9.50, total $109.45 (in the seed data: 2 x product 15 and 3 x product 23).
+
+| Coupon | Rule |
+| --- | --- |
+| `SAVE10` | 10% off the subtotal |
+| `FREESHIP` | Free Standard shipping when the subtotal is $30.00 or more |
+| `MIN100` | $20.00 off when the subtotal is $100.00 or more |
+| `ONCE5` | $5.00 off, once per account (used up when an order is placed) |
+| `EXPIRED20` | Always rejected as expired |
+
+| Test card | Result |
+| --- | --- |
+| `4242 4242 4242 4242` | Payment succeeds |
+| `4000 0000 0000 0002` | Payment is declined (402) when the order is placed |
+| anything else | Rejected as invalid inside the payment frame |
+
+Use any future expiry (MM/YY) and any 3 digit code. No real payment is processed, and the card number never reaches the server (only a token such as `tok_ok_4242`). Postal codes are 5 digits for Sweden and the US and 6 digits for India. Order numbers look like `SL-YYYYMMDD-NNNN`. Rules for merging the guest cart, delivery dates and every error case are in [docs/BEHAVIOUR.md](docs/BEHAVIOUR.md).
 
 ## Run it locally
 
