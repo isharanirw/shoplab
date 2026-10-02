@@ -10,7 +10,10 @@ import { authenticate } from './middleware/auth';
 import { apiNotFound, errorHandler } from './middleware/errorHandler';
 import { requestLog } from './middleware/requestLog';
 import { authRouter } from './routes/auth';
+import { categoriesRouter, promotionsRouter } from './routes/catalogue';
 import { healthRouter } from './routes/health';
+import { productsRouter } from './routes/products';
+import { wishlistRouter } from './routes/wishlist';
 import { testRouter } from './testability/routes';
 
 export const LOGIN_MAX_FAILURES = 5;
@@ -61,6 +64,10 @@ export function createApp(ctx: AppContext): Express {
   api.use(authenticate(ctx));
   api.use('/health', healthRouter(ctx));
   api.use('/auth', authRouter(ctx));
+  api.use('/products', productsRouter(ctx));
+  api.use('/categories', categoriesRouter(ctx));
+  api.use('/promotions', promotionsRouter());
+  api.use('/wishlist', wishlistRouter(ctx));
   api.use('/test', testRouter(ctx));
   api.use(apiNotFound);
   app.use('/api', api);
