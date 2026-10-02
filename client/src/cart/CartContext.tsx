@@ -91,7 +91,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
           const cart = await api<Cart>('/api/cart/items', { method: 'POST', body: line });
           setServerCount(cart.itemCount);
         } catch (err) {
-          throw new Error(err instanceof ApiRequestError ? err.message : 'Could not add that to your cart. Please try again.');
+          if (err instanceof ApiRequestError) throw err;
+          throw new Error('Could not add that to your cart. Please try again.');
         }
         return;
       }

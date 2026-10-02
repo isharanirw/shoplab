@@ -15,6 +15,10 @@ import { moveAnnouncement, moveItem } from '../lib/reorder';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import { useWishlist } from '../wishlist/WishlistContext';
 import styles from './WishlistPage.module.css';
+import { ActionError } from '../components/ActionError';
+import { useToast } from '../components/Toasts';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 interface WishlistEntry extends ProductSummary {
   position: number;
@@ -38,7 +42,8 @@ export function WishlistPage() {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [items, setItems] = useState<WishlistEntry[]>([]);
   const [notice, setNotice] = useState<Notice | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Failure | null>(null);
+  const toast = useToast();
   const [busyId, setBusyId] = useState<number | null>(null);
   const [dragId, setDragId] = useState<number | null>(null);
   const [overId, setOverId] = useState<number | null>(null);
@@ -66,7 +71,7 @@ export function WishlistPage() {
     saveChain.current = saveChain.current
       .then(() => api<ListResponse<WishlistEntry>>('/api/wishlist/order', { method: 'PUT', body: { productIds: ids } }))
       .catch((err: unknown) => {
-        setError(err instanceof ApiRequestError ? err.message : 'Could not save the new order. Please try again.');
+        setError({ message: err instanceof ApiRequestError ? err.message : 'Could not save the new order. Please try again.' });
         result.retry();
       });
   }
@@ -120,9 +125,11 @@ export function WishlistPage() {
       await wishlist.remove(product.id);
       setItems((list) => list.filter((p) => p.id !== product.id));
       setNotice({ text: `Removed ${product.name} from your wishlist.` });
+      toast.success('Removed from wishlist');
       headingRef.current?.focus();
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Could not remove that item. Please try again.');
+      setError(failureOf(err, 'Could not remove that item. Please try again.', () => void handleRemove(product)));
+      toast.error('Could not update wishlist');
     } finally {
       setBusyId(null);
     }
@@ -135,7 +142,8 @@ export function WishlistPage() {
     try {
       await cart.addItem({ productId: product.id, variantId: null, quantity: 1 }, product.stock);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not add that to your cart.');
+      setError(failureOf(err, 'Could not add that to your cart.', () => void handleMoveToCart(product)));
+      toast.error('Could not move to cart');
       setBusyId(null);
       return;
     }
@@ -143,6 +151,7 @@ export function WishlistPage() {
       await wishlist.remove(product.id);
       setItems((list) => list.filter((p) => p.id !== product.id));
       setNotice({ text: `Moved ${product.name} to your cart.`, cartLink: true });
+      toast.success('Moved to cart');
       headingRef.current?.focus();
     } catch {
       setNotice({ text: `Added ${product.name} to your cart, but it could not be removed from your wishlist.`, cartLink: true });
@@ -169,11 +178,7 @@ export function WishlistPage() {
           </>
         )}
       </div>
-      {error && (
-        <p role="alert" className={styles.error}>
-          {error}
-        </p>
-      )}
+      {error && <ActionError failure={error} className={styles.error} />}
 
       {result.status === 'loading' && (
         <>

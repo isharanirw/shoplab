@@ -1,4 +1,5 @@
 // Mirrors the server rules in server/src/lib so inline messages match what the API returns.
+import { f03, f14 } from '../testability/variants';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -13,12 +14,12 @@ export function validateName(name: string): string | null {
 export function validateEmail(email: string): string | null {
   const e = email.trim();
   if (e.length === 0) return 'Email is required.';
-  if (e.length > 254 || !EMAIL_RE.test(e)) return 'Enter a valid email address.';
+  if (e.length > 254 || !f14(EMAIL_RE).test(e)) return 'Enter a valid email address.';
   return null;
 }
 
 export function validatePassword(password: string): string | null {
-  if (password.length < 8) return 'Password must be at least 8 characters.';
+  if (password.length < f03(8)) return 'Password must be at least 8 characters.';
   if (!/\p{Lu}/u.test(password)) return 'Password must contain at least one uppercase letter.';
   if (!/\d/.test(password)) return 'Password must contain at least one digit.';
   if (!/[^\p{L}\d]/u.test(password)) return 'Password must contain at least one symbol.';

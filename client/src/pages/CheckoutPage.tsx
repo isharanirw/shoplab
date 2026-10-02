@@ -18,6 +18,7 @@ import type { CardToken } from '../lib/card';
 import { deliveryWindow, disabledReason } from '../lib/delivery';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import styles from '../checkout/Checkout.module.css';
+import { isTransientError } from '../lib/failure';
 
 /** How long the spinner shows after "Place order", in milliseconds (the requirement is 1 to 2 seconds). */
 export const PLACE_ORDER_SPINNER_MS = 1500;
@@ -102,6 +103,7 @@ function CheckoutFlow({ cart, countries, saved }: FlowProps) {
   const [termsError, setTermsError] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
   const [placeError, setPlaceError] = useState<string | null>(null);
+  const [placeRetryable, setPlaceRetryable] = useState(false);
   const [declined, setDeclined] = useState(false);
   const [problems, setProblems] = useState<Record<number, string>>({});
   const [visitedPayment, setVisitedPayment] = useState(false);
@@ -206,6 +208,7 @@ function CheckoutFlow({ cart, countries, saved }: FlowProps) {
     if (!payment || !date) return;
     setTermsError(null);
     setPlaceError(null);
+    setPlaceRetryable(false);
     setDeclined(false);
     setProblems({});
     setPlacing(true);
@@ -233,6 +236,7 @@ function CheckoutFlow({ cart, countries, saved }: FlowProps) {
   function handleFailure(err: unknown) {
     if (!(err instanceof ApiRequestError)) {
       setPlaceError('Something went wrong while placing your order. Please try again.');
+      setPlaceRetryable(true);
       return;
     }
     if (err.status === 402) {
@@ -273,6 +277,7 @@ function CheckoutFlow({ cart, countries, saved }: FlowProps) {
       return;
     }
     setPlaceError(err.message);
+    setPlaceRetryable(isTransientError(err));
   }
 
   function useDifferentCard() {
@@ -373,6 +378,11 @@ function CheckoutFlow({ cart, countries, saved }: FlowProps) {
                   {placeError && (
                     <div role="alert" className={styles.placeError} data-testid="place-order-error">
                       <p>{placeError}</p>
+                      {placeRetryable && (
+                        <button type="button" className="btn btn-small" onClick={() => void placeOrder()} data-testid="place-order-retry">
+                          Retry
+                        </button>
+                      )}
                       {declined && (
                         <button type="button" className="btn btn-small" onClick={useDifferentCard} data-testid="use-different-card">
                           Use a different card

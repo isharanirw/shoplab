@@ -8,6 +8,10 @@ import { ProductImage } from './ProductImage';
 import { StarRating } from './StarRating';
 import { StockBadge } from './StockBadge';
 import styles from './ProductCard.module.css';
+import { ActionError } from './ActionError';
+import { useToast } from './Toasts';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 interface ProductCardProps {
   product: ProductSummary;
@@ -19,7 +23,8 @@ interface ProductCardProps {
 export function ProductCard({ product, onQuickView, showWishlistButton = true }: ProductCardProps) {
   const cart = useCart();
   const [notice, setNotice] = useState<string | null>(null);
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Failure | null>(null);
+  const toast = useToast();
   const nameId = `product-name-${product.id}`;
 
   async function handleAdd() {
@@ -33,8 +38,10 @@ export function ProductCard({ product, onQuickView, showWishlistButton = true }:
     try {
       await cart.addItem({ productId: product.id, variantId: null, quantity: 1 }, product.stock);
       setNotice(`Added 1 × ${product.name} to your cart.`);
+      toast.success('Added to cart');
     } catch (err) {
-      setProblem(err instanceof Error ? err.message : 'Could not add that to your cart.');
+      setProblem(failureOf(err, 'Could not add that to your cart.', () => void handleAdd()));
+      toast.error('Could not add to cart');
     }
   }
 
@@ -80,11 +87,7 @@ export function ProductCard({ product, onQuickView, showWishlistButton = true }:
           </p>
         )}
       </div>
-      {problem && (
-        <p role="alert" className={styles.problem}>
-          {problem}
-        </p>
-      )}
+      {problem && <ActionError failure={problem} className={styles.problem} />}
     </article>
   );
 }

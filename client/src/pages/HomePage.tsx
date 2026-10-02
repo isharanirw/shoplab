@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { ListResponse, ProductSummary, Promotions } from '../api/types';
 import { useCategories } from '../components/CategoriesContext';
 import { categoryHref } from '../components/CategoryNav';
@@ -33,6 +33,7 @@ function Countdown() {
 
 export function HomePage() {
   useDocumentTitle('');
+  const navigate = useNavigate();
   const promotions = useFetch<Promotions>('/api/promotions');
   const categories = useCategories();
   const featured = useFetch<ListResponse<ProductSummary>>('/api/products?featured=true&pageSize=8');
@@ -44,9 +45,11 @@ export function HomePage() {
         {promotions.status === 'loading' && <Spinner label="Loading offers" />}
         {promotions.status === 'error' && <ErrorState message={promotions.error.message} onRetry={promotions.retry} />}
         {promotions.status === 'success' && (
-          <p className={styles.banner} data-testid="hero-banner-text">
-            {promotions.data.bannerText}
-          </p>
+          <div className={styles.bannerClick} onClick={() => navigate('/products')}>
+            <p className={styles.banner} data-testid="hero-banner-text">
+              {promotions.data.bannerText}
+            </p>
+          </div>
         )}
         <Link to="/products" className="btn btn-primary">
           Shop all products

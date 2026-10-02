@@ -1,4 +1,5 @@
 import type { ShippingMethod } from '../api/types';
+import { f22 } from '../testability/variants';
 
 /** Mirrors the server rule: tomorrow up to 14 days ahead, from today's UTC date. */
 export const DELIVERY_WINDOW_DAYS = 14;
@@ -58,7 +59,7 @@ export type DisabledReason = 'before-window' | 'after-window' | 'weekend';
 export function disabledReason(isoDate: string, window: DeliveryWindow, method: ShippingMethod): DisabledReason | null {
   if (isoDate < window.earliest) return 'before-window';
   if (isoDate > window.latest) return 'after-window';
-  if (method === 'standard' && isWeekend(isoDate)) return 'weekend';
+  if (method === 'standard' && f22(isWeekend(isoDate))) return 'weekend';
   return null;
 }
 

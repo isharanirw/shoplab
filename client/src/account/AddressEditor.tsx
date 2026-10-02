@@ -9,6 +9,9 @@ import type { AddressForm } from '../lib/address';
 import { bookPayload, EMPTY_BOOK_FORM, formFromAddress, validateBookForm, validateCity, validateLabel } from '../lib/addressBook';
 import type { BookErrors, BookForm } from '../lib/addressBook';
 import styles from './Account.module.css';
+import { ActionError } from '../components/ActionError';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 interface AddressEditorProps {
   /** The address being edited, or null to add a new one. */
@@ -24,7 +27,7 @@ interface AddressEditorProps {
 export function AddressEditor({ address, countries, isFirst, onSaved, onCancel }: AddressEditorProps) {
   const [form, setForm] = useState<BookForm>(address ? formFromAddress(address) : EMPTY_BOOK_FORM);
   const [errors, setErrors] = useState<BookErrors>({});
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Failure | null>(null);
   const [saving, setSaving] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const country = countries.find((c) => c.code === form.countryCode);
@@ -54,8 +57,8 @@ export function AddressEditor({ address, countries, isFirst, onSaved, onCancel }
     setErrors((prev) => ({ ...prev, [field]: message ?? undefined }));
   }
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+  async function handleSubmit(event?: FormEvent) {
+    event?.preventDefault();
     setProblem(null);
     const found = validateBookForm(form, countries);
     setErrors(found);
@@ -74,9 +77,9 @@ export function AddressEditor({ address, countries, isFirst, onSaved, onCancel }
     } catch (err) {
       if (err instanceof ApiRequestError && Object.keys(err.fieldErrors).length > 0) {
         setErrors(err.fieldErrors as BookErrors);
-        setProblem(err.message);
+        setProblem({ message: err.message });
       } else {
-        setProblem(err instanceof ApiRequestError ? err.message : 'Could not save the address. Please try again.');
+        setProblem(failureOf(err, 'Could not save the address. Please try again.', () => void handleSubmit()));
       }
       setSaving(false);
     }
@@ -190,11 +193,7 @@ export function AddressEditor({ address, countries, isFirst, onSaved, onCancel }
         />
       )}
       {!editing && isFirst && <p className={styles.hintText}>This is your first address, so it will be your default.</p>}
-      {problem && (
-        <p role="alert" className={styles.problem}>
-          {problem}
-        </p>
-      )}
+      {problem && <ActionError failure={problem} className={styles.problem} />}
       <div className={styles.editorActions}>
         <button type="button" className="btn" onClick={onCancel} data-testid="address-cancel">
           Cancel

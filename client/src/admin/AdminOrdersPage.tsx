@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { api, ApiRequestError } from '../api/client';
+import { api } from '../api/client';
 import type { AdminOrder, ListResponse } from '../api/types';
 import { ErrorState, Spinner } from '../components/Feedback';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
@@ -13,6 +13,10 @@ import { ORDER_STATUSES } from '../lib/orders';
 import { totalPagesOf } from '../lib/pagination';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import styles from './Admin.module.css';
+import { ActionError } from '../components/ActionError';
+import { useToast } from '../components/Toasts';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 /** /admin/orders: every customer order, newest first, with a status filter and a status dropdown per order. */
 export function AdminOrdersPage() {
@@ -23,7 +27,8 @@ export function AdminOrdersPage() {
   // A change made here replaces the row from the list until the list is loaded again.
   const [updated, setUpdated] = useState<Record<number, AdminOrder>>({});
   const [busyId, setBusyId] = useState<number | null>(null);
-  const [rowError, setRowError] = useState<{ id: number; message: string } | null>(null);
+  const [rowError, setRowError] = useState<({ id: number } & Failure) | null>(null);
+  const toast = useToast();
   const [notice, setNotice] = useState<string | null>(null);
 
   function change(patch: Partial<AdminListState>) {
@@ -42,8 +47,10 @@ export function AdminOrdersPage() {
       const saved = await api<AdminOrder>(`/api/admin/orders/${order.id}/status`, { method: 'PATCH', body: { status } });
       setUpdated((prev) => ({ ...prev, [saved.id]: saved }));
       setNotice(`Order ${saved.number} is now ${saved.status}.${saved.status === 'Cancelled' ? ' Its stock was returned.' : ''}`);
+      toast.success('Order status updated');
     } catch (err) {
-      setRowError({ id: order.id, message: err instanceof ApiRequestError ? err.message : 'Could not change the status. Please try again.' });
+      setRowError({ id: order.id, ...failureOf(err, 'Could not change the status. Please try again.', () => void changeStatus(order, status)) });
+      toast.error('Could not update order');
     } finally {
       setBusyId(null);
     }
@@ -161,11 +168,7 @@ export function AdminOrdersPage() {
                               ))}
                             </select>
                           </div>
-                          {rowError?.id === o.id && (
-                            <p role="alert" className={styles.problem} data-testid={`admin-order-error-${o.id}`}>
-                              {rowError.message}
-                            </p>
-                          )}
+                          {rowError?.id === o.id && <ActionError failure={rowError} className={styles.problem} testId={`admin-order-error-${o.id}`} />}
                         </td>
                       </tr>
                     );

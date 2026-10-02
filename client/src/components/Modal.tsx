@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
+import { f06 } from '../testability/variants';
 
 interface ModalProps {
   /** ID of the element inside the dialog that names it. */
@@ -41,7 +42,7 @@ export function Modal({ labelledBy, onClose, children }: ModalProps) {
 
     function onKeyDown(event: KeyboardEvent) {
       if (!dialog) return;
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && f06(event.key)) {
         event.preventDefault();
         onCloseRef.current();
         return;

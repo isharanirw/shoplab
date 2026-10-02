@@ -5,6 +5,9 @@ import { useAuth } from '../auth/AuthContext';
 import { FormField } from '../components/FormField';
 import { validateName } from '../lib/validation';
 import styles from './Account.module.css';
+import { ActionError } from '../components/ActionError';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 /** Name editing (PATCH /api/auth/me). The email is shown but cannot be changed. */
 export function ProfileSection() {
@@ -12,12 +15,12 @@ export function ProfileSection() {
   const [name, setName] = useState(user?.name ?? '');
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Failure | null>(null);
   const [saving, setSaving] = useState(false);
   if (!user) return null;
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+  async function handleSubmit(event?: FormEvent) {
+    event?.preventDefault();
     setSaved(null);
     setProblem(null);
     const message = validateName(name);
@@ -30,7 +33,7 @@ export function ProfileSection() {
       setSaved('Your name was updated.');
     } catch (err) {
       if (err instanceof ApiRequestError && err.fieldErrors.name) setError(err.fieldErrors.name);
-      else setProblem(err instanceof ApiRequestError ? err.message : 'Could not save your name. Please try again.');
+      else setProblem(failureOf(err, 'Could not save your name. Please try again.', () => void handleSubmit()));
     } finally {
       setSaving(false);
     }
@@ -73,11 +76,7 @@ export function ProfileSection() {
           </p>
         )}
       </div>
-      {problem && (
-        <p role="alert" className={styles.problem}>
-          {problem}
-        </p>
-      )}
+      {problem && <ActionError failure={problem} className={styles.problem} />}
     </section>
   );
 }

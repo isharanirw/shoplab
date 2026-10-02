@@ -6,6 +6,10 @@ import { CONTACT_MESSAGE_MIN, CONTACT_TOPICS, validateContactField, validateCont
 import type { ContactField, ContactValues } from '../lib/contact';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import styles from './ContactPage.module.css';
+import { ActionError } from '../components/ActionError';
+import { useToast } from '../components/Toasts';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 const EMPTY: ContactValues = { topic: '', message: '', consent: false };
 
@@ -14,7 +18,8 @@ export function ContactPage() {
   useDocumentTitle('Contact us');
   const [values, setValues] = useState<ContactValues>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<ContactField, string>>>({});
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Failure | null>(null);
+  const toast = useToast();
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState<string | null>(null);
   const successRef = useRef<HTMLDivElement>(null);
@@ -33,8 +38,8 @@ export function ContactPage() {
     setErrors((prev) => ({ ...prev, [field]: validateContactField(field, values) ?? undefined }));
   }
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+  async function handleSubmit(event?: FormEvent) {
+    event?.preventDefault();
     setProblem(null);
     const found = validateContactValues(values);
     setErrors(found);
@@ -51,9 +56,11 @@ export function ContactPage() {
       });
       setSent(res.message);
       setValues(EMPTY);
+      toast.success('Message sent');
     } catch (err) {
       if (err instanceof ApiRequestError && Object.keys(err.fieldErrors).length > 0) setErrors(err.fieldErrors as typeof errors);
-      setProblem(err instanceof ApiRequestError ? err.message : 'Could not send your message. Please try again.');
+      setProblem(failureOf(err, 'Could not send your message. Please try again.', () => void handleSubmit()));
+      toast.error('Could not send message');
     } finally {
       setSending(false);
     }
@@ -100,11 +107,7 @@ export function ContactPage() {
             error={errors.consent}
             onChange={(e) => setValue('consent', e.target.checked)}
           />
-          {problem && (
-            <p role="alert" className={styles.problem}>
-              {problem}
-            </p>
-          )}
+          {problem && <ActionError failure={problem} className={styles.problem} />}
           <button type="submit" className="btn btn-primary" disabled={sending} data-testid="contact-submit">
             Send message
           </button>

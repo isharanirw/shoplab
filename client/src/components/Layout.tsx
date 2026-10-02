@@ -4,11 +4,14 @@ import { useAuth } from '../auth/AuthContext';
 import { useCart } from '../cart/CartContext';
 import { CategoriesProvider } from './CategoriesContext';
 import { CategoryNav } from './CategoryNav';
+import { CookieBanner } from './CookieBanner';
+import { ErrorBoundary } from './ErrorBoundary';
 import { SearchBox } from './SearchBox';
+import { ShippingTo } from './ShippingTo';
 import styles from './Layout.module.css';
 
 export function Layout() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, checkError, retryCheck } = useAuth();
   const cart = useCart();
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,6 +34,9 @@ export function Layout() {
           Skip to main content
         </a>
         <header className={styles.header}>
+          <div className={styles.topBar}>
+            <ShippingTo />
+          </div>
           <div className={styles.headerInner}>
             <button
               type="button"
@@ -73,7 +79,15 @@ export function Layout() {
                   </button>
                 </>
               )}
-              {!loading && !user && (
+              {!loading && !user && checkError && (
+                <>
+                  <span>Could not check your login.</span>
+                  <button type="button" className={styles.linkButton} onClick={retryCheck}>
+                    Retry
+                  </button>
+                </>
+              )}
+              {!loading && !user && !checkError && (
                 <>
                   <NavLink to="/login" className={styles.navLink}>
                     Log in
@@ -96,16 +110,28 @@ export function Layout() {
           </div>
         </header>
         <main id="main" className={styles.main} tabIndex={-1}>
-          <Outlet />
+          <ErrorBoundary key={`${location.pathname}${location.search}`}>
+            <Outlet />
+          </ErrorBoundary>
         </main>
         <footer className={styles.footer}>
           <nav aria-label="Footer" className={styles.footerNav}>
+            <Link to="/about">About</Link>
+            {' · '}
+            <Link to="/terms">Terms</Link>
+            {' · '}
             <Link to="/contact" data-testid="footer-contact-link">
               Contact us
             </Link>
           </nav>
           <p data-testid="demo-notice">Demo site. No real payments or personal data.</p>
+          <button type="button" className={styles.backToTop} onClick={() => window.scrollTo({ top: 0 })}>
+            <svg viewBox="0 0 24 24" width="18" height="18" focusable="false">
+              <path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </footer>
+        <CookieBanner />
       </div>
     </CategoriesProvider>
   );

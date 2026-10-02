@@ -12,12 +12,14 @@ interface ConfirmModalProps {
   busy?: boolean;
   /** An error from the last attempt, shown inside the dialog. */
   error?: string | null;
+  /** True when the error is one that trying again could fix; shows a Retry button that repeats the action. */
+  errorRetryable?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
 /** A custom confirmation dialog for destructive actions (delete an address, cancel an order). */
-export function ConfirmModal({ idPrefix, title, children, confirmLabel, cancelLabel = 'Keep it', busy = false, error, onConfirm, onCancel }: ConfirmModalProps) {
+export function ConfirmModal({ idPrefix, title, children, confirmLabel, cancelLabel = 'Keep it', busy = false, error, errorRetryable = false, onConfirm, onCancel }: ConfirmModalProps) {
   return (
     <Modal labelledBy={`${idPrefix}-title`} onClose={onCancel}>
       <div className={styles.body} data-testid={`${idPrefix}-modal`}>
@@ -28,6 +30,14 @@ export function ConfirmModal({ idPrefix, title, children, confirmLabel, cancelLa
         {error && (
           <p role="alert" className={styles.error}>
             {error}
+            {errorRetryable && (
+              <>
+                {' '}
+                <button type="button" className="btn btn-small" disabled={busy} onClick={onConfirm}>
+                  Retry
+                </button>
+              </>
+            )}
           </p>
         )}
         <div className={styles.actions}>

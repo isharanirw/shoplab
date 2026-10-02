@@ -27,6 +27,7 @@ export function RegisterPage() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [retryable, setRetryable] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   if (user) return <Navigate to="/account" replace />;
@@ -53,9 +54,10 @@ export function RegisterPage() {
     return found;
   }
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+  async function handleSubmit(event?: FormEvent) {
+    event?.preventDefault();
     setFormError(null);
+    setRetryable(false);
     const found = validateAll();
     setErrors(found);
     if (Object.keys(found).length > 0) return;
@@ -69,6 +71,7 @@ export function RegisterPage() {
         if (err.code === 'CONFLICT') setFormError(err.message);
       } else {
         setFormError(err instanceof ApiRequestError ? err.message : 'Something went wrong. Please try again.');
+        setRetryable(err instanceof ApiRequestError ? err.status === 0 || err.status >= 500 : true);
       }
       setSubmitting(false);
     }
@@ -81,6 +84,14 @@ export function RegisterPage() {
         {formError && (
           <div role="alert" className={styles.formError} data-testid="register-error">
             {formError}
+            {retryable && (
+              <>
+                {' '}
+                <button type="button" className="btn btn-small" onClick={() => void handleSubmit()}>
+                  Retry
+                </button>
+              </>
+            )}
           </div>
         )}
         <FormField
