@@ -30,21 +30,13 @@
   max-width: 72rem;
   margin: 0 auto;
   padding: 0.75rem 1rem 0.5rem;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-areas:
-    'menu brand account'
-    'search search search';
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.6rem 0.75rem;
 }
 
-.menuButton {
-  grid-area: menu;
-}
-
 .brand {
-  grid-area: brand;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--color-text);
@@ -56,7 +48,8 @@
 }
 
 .search {
-  grid-area: search;
+  order: 3;
+  flex: 1 0 100%;
   display: flex;
   min-width: 0;
 }
@@ -67,7 +60,8 @@
 }
 
 .account {
-  grid-area: account;
+  order: 2;
+  margin-left: auto;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -120,12 +114,18 @@
 
 @media (min-width: 48rem) {
   .headerInner {
+    display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas: 'brand search account';
     gap: 0.5rem 1.5rem;
   }
 
-  .menuButton {
+  .search,
+  .account {
+    order: 0;
+    margin-left: 0;
+  }
+
+  .headerInner .menuButton {
     display: none;
   }
 

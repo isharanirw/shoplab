@@ -21,7 +21,10 @@ interface CategoryNavProps {
  */
 export function CategoryNav({ onNavigate }: CategoryNavProps) {
   const categories = useCategories();
+  /** Category whose panel is open from hover or keyboard focus (desktop). */
   const [openName, setOpenName] = useState<string | null>(null);
+  /** Category expanded with its + button (the mobile drawer). */
+  const [expandedName, setExpandedName] = useState<string | null>(null);
 
   if (categories.status === 'loading') {
     return (
@@ -49,14 +52,20 @@ export function CategoryNav({ onNavigate }: CategoryNavProps) {
         </NavLink>
       </li>
       {categories.data.data.map((category) => {
-        const isOpen = openName === category.name;
+        const isHovered = openName === category.name;
+        const isExpanded = expandedName === category.name;
+        const classes = [styles.item, isHovered ? styles.itemOpen : '', isExpanded ? styles.itemExpanded : ''].join(' ');
+        const follow = () => {
+          setOpenName(null);
+          setExpandedName(null);
+          onNavigate();
+        };
         return (
           <li
             key={category.name}
-            className={isOpen ? `${styles.item} ${styles.itemOpen}` : styles.item}
+            className={classes}
             onMouseEnter={() => setOpenName(category.name)}
             onMouseLeave={() => setOpenName(null)}
-            onFocus={() => setOpenName(category.name)}
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpenName(null);
             }}
@@ -64,28 +73,30 @@ export function CategoryNav({ onNavigate }: CategoryNavProps) {
               if (event.key === 'Escape') setOpenName(null);
             }}
           >
-            <Link
-              to={categoryHref(category.name)}
-              className={styles.link}
-              onClick={() => {
-                setOpenName(null);
-                onNavigate();
-              }}
-            >
-              {category.name}
-            </Link>
+            <div className={styles.row}>
+              <Link
+                to={categoryHref(category.name)}
+                className={styles.link}
+                onFocus={() => setOpenName(category.name)}
+                onClick={follow}
+              >
+                {category.name}
+              </Link>
+              <button
+                type="button"
+                className={`btn btn-small ${styles.toggle}`}
+                aria-expanded={isExpanded}
+                aria-label={`${category.name} subcategories`}
+                onClick={() => setExpandedName(isExpanded ? null : category.name)}
+              >
+                <span aria-hidden="true">{isExpanded ? '−' : '+'}</span>
+              </button>
+            </div>
             <div className={styles.panel} role="group" aria-label={`${category.name} subcategories`}>
               <ul className={styles.subList}>
                 {category.subcategories.map((sub) => (
                   <li key={sub.name}>
-                    <Link
-                      to={categoryHref(category.name, sub.name)}
-                      className={styles.subLink}
-                      onClick={() => {
-                        setOpenName(null);
-                        onNavigate();
-                      }}
-                    >
+                    <Link to={categoryHref(category.name, sub.name)} className={styles.subLink} onClick={follow}>
                       {sub.name}
                     </Link>
                   </li>

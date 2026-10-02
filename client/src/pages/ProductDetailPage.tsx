@@ -201,11 +201,11 @@ function ReviewsTab({ product }: { product: ProductDetail }) {
       <h2>Customer reviews</h2>
       <div className={styles.summary} data-testid="rating-summary">
         <StarRating rating={product.rating} showCount={false} />{' '}
-        <span>
-          {product.rating.average === null
-            ? 'No reviews yet.'
-            : `${product.rating.average.toFixed(1)} out of 5, ${pluralise(product.rating.count, 'review')}`}
-        </span>
+        {product.rating.average !== null && (
+          <span>
+            out of 5, {pluralise(product.rating.count, 'review')}
+          </span>
+        )}
       </div>
       {product.rating.count > 0 && (
         <ul className={styles.distribution} aria-label="Reviews by rating">

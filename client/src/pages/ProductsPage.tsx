@@ -217,7 +217,7 @@ export function ProductsPage() {
                     checked={filters.rating === r}
                     onChange={() => update({ rating: r })}
                   />
-                  <label htmlFor={`filter-rating-${r}`}>{r} stars &amp; up</label>
+                  <label htmlFor={`filter-rating-${r}`}>{pluralise(r, 'star')} &amp; up</label>
                 </div>
               ))}
             </fieldset>
@@ -318,5 +318,6 @@ function resultCountText(data: ListResponse<ProductSummary>, filters: ListFilter
   const from = (data.page - 1) * data.pageSize + 1;
   const to = from + data.data.length - 1;
   const scope = filters.q ? ` for “${filters.q}”` : '';
-  return `Showing ${from}–${to} of ${pluralise(data.total, 'product')}${scope}`;
+  const range = from === to ? String(from) : `${from}–${to}`;
+  return `Showing ${range} of ${pluralise(data.total, 'product')}${scope}`;
 }

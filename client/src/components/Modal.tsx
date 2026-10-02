@@ -24,6 +24,7 @@ function focusableIn(root: HTMLElement): HTMLElement[] {
  */
 export function Modal({ labelledBy, onClose, children }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const pressStartedOnBackdrop = useRef(false);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
 
@@ -82,7 +83,13 @@ export function Modal({ labelledBy, onClose, children }: ModalProps) {
       className={styles.backdrop}
       data-testid="modal-backdrop"
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onCloseRef.current();
+        pressStartedOnBackdrop.current = event.target === event.currentTarget;
+      }}
+      onClick={(event) => {
+        // Closing on click (not on mouse down) lets focus return to the trigger after the browser
+        // has finished moving it, and a drag that starts inside the dialog does not count.
+        if (event.target === event.currentTarget && pressStartedOnBackdrop.current) onCloseRef.current();
+        pressStartedOnBackdrop.current = false;
       }}
     >
       <div ref={dialogRef} className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby={labelledBy} tabIndex={-1}>
