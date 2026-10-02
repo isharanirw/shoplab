@@ -12,3 +12,5 @@ data/
 coverage/
 .DS_Store
 Thumbs.db
+# Review images uploaded while the app runs (removed by the reset endpoint).
+uploads/

@@ -1,7 +1,9 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AddressBook } from '../account/AddressBook';
+import { ProfileSection } from '../account/ProfileSection';
+import accountStyles from '../account/Account.module.css';
 import { useAuth } from '../auth/AuthContext';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
-import styles from './AuthPages.module.css';
 
 export function AccountPage() {
   useDocumentTitle('My account');
@@ -15,22 +17,23 @@ export function AccountPage() {
   }
 
   return (
-    <section className={styles.card} aria-labelledby="account-heading">
-      <h1 id="account-heading">My account</h1>
-      <p>
-        Signed in as <strong data-testid="account-name">{user.name}</strong>
-      </p>
-      <dl className={styles.details}>
-        <dt>Name</dt>
-        <dd>{user.name}</dd>
-        <dt>Email</dt>
-        <dd data-testid="account-email">{user.email}</dd>
-        <dt>Account type</dt>
-        <dd>{user.role === 'admin' ? 'Administrator' : 'Customer'}</dd>
-      </dl>
-      <button type="button" className={styles.secondary} onClick={handleLogout}>
+    <div>
+      <h1>My account</h1>
+      <ul className={accountStyles.links}>
+        <li>
+          <Link to="/account/orders" data-testid="orders-link">
+            Order history
+          </Link>
+        </li>
+        <li>
+          <Link to="/wishlist">Wishlist</Link>
+        </li>
+      </ul>
+      <ProfileSection />
+      <AddressBook />
+      <button type="button" className="btn" onClick={handleLogout}>
         Log out
       </button>
-    </section>
+    </div>
   );
 }

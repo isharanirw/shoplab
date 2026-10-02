@@ -1,0 +1,128 @@
+.breadcrumb {
+  margin-bottom: 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.toolbar label {
+  font-weight: 600;
+}
+
+.count {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.tableWrap {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child th,
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table thead th {
+  background: #f3f4f6;
+  white-space: nowrap;
+}
+
+.table tbody th {
+  font-weight: 600;
+}
+
+.right {
+  text-align: right !important;
+}
+
+.sortButton {
+  font: inherit;
+  font-weight: 700;
+  background: none;
+  border: 0;
+  padding: 0.15rem 0.25rem;
+  margin: -0.15rem -0.25rem;
+  color: var(--color-primary);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.sortButton:hover {
+  text-decoration: underline;
+}
+
+.arrow {
+  display: inline-block;
+  min-width: 1em;
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.empty {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.success {
+  color: #166534;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.problem {
+  color: var(--color-danger);
+}
+
+.hint {
+  color: var(--color-muted);
+}
+
+.reviewLink {
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.hideNarrow {
+  display: none;
+}
+
+@media (min-width: 40rem) {
+  .hideNarrow {
+    display: table-cell;
+  }
+}
+
+@media (max-width: 40rem) {
+  .table th,
+  .table td {
+    padding: 0.55rem 0.5rem;
+    font-size: 0.9rem;
+  }
+}

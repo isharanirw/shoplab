@@ -46,3 +46,8 @@
   width: 1.1rem;
   height: 1.1rem;
 }
+
+.textarea {
+  min-height: 7rem;
+  resize: vertical;
+}

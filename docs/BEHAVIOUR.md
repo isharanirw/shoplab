@@ -95,7 +95,7 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 ### Wishlist API (login required, 401 otherwise)
 - `GET /api/wishlist` returns the user's items in wishlist order, in the list shape with the product fields plus `position` and `addedAt`. The list is not paged, so `pageSize` equals the item count.
 - `POST /api/wishlist` with `{ "productId": 5 }` appends the product and returns 201 `{ productId }`. Adding a product that is already there changes nothing and returns 200. A non-integer `productId` is a 400; an unknown product is a 404.
-- `DELETE /api/wishlist/{productId}` returns 204 and renumbers the remaining items 1 to n. A product that is not on the wishlist is a 404. Each user sees only their own list. Reordering comes with the drag-and-drop work in a later phase.
+- `DELETE /api/wishlist/{productId}` returns 204 and renumbers the remaining items 1 to n. A product that is not on the wishlist is a 404. Each user sees only their own list. Reordering is `PUT /api/wishlist/order` (see Phase 4).
 
 ### Header, search and navigation
 - The search box suggests after 2 characters and a 300 ms pause in typing, showing up to 5 suggestions in a list. ArrowDown/ArrowUp move through them (wrapping), Enter on a highlighted one opens that product, Enter with none highlighted (or the Search button) goes to `/products?q=<text>`, Escape closes the list. A failed suggestion request shows a message with a Retry button inside the list.
@@ -137,7 +137,7 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 - An unknown or non-numeric ID shows a "Product not found" page (the API answers 404 or 400) with a link to the catalogue. Other failures show an error with Retry.
 
 ### Wishlist page `/wishlist`
-- Login required (redirects to `/login?next=/wishlist`). Lists the user's products as cards in wishlist order, each with a Remove button (the heart is hidden here). Removing takes the item out at once, announces it and moves focus to the heading. An empty list shows a message and a Browse products link.
+- Login required (redirects to `/login?next=/wishlist`). Lists the user's products in wishlist order. Reorder, Move to cart and Remove are described under Phase 4. An empty list shows a message and a Browse products link.
 
 ## Phase 3: cart, coupons, checkout, orders
 
@@ -186,7 +186,7 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 
 ### Countries and addresses
 - `GET /api/countries` (public) returns `{ data, page, pageSize, total }` with Sweden, the US and India (sorted by name), each with `code, name, postalPattern, postalHint` and 4 `regions`. The postal rule is 5 digits for Sweden and the US and 6 digits for India (spaces are not allowed inside).
-- `GET /api/addresses` (login required) lists the user's saved addresses, default first, in the list shape. It is read only; the address book (add, edit, delete) arrives in Phase 4.
+- `GET /api/addresses` (login required) lists the user's saved addresses, default first, in the list shape. The address book (add, edit, delete, default) is described under Phase 4; checkout reads the same data.
 - A new address at checkout has first name, last name, street, country, region, postal code and phone; there is no city field (it is stored as empty). The region must belong to the chosen country. Phone: digits, spaces, `+`, `-` and parentheses, 7 to 15 digits. A new checkout address is stored on the order only, not in the address book.
 
 ### Payment frame and test cards
@@ -208,7 +208,65 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 - On success (201) the order has status `Processing`; stock is reduced by the quantities (for a product with variants both the variant and the product total go down); the cart and its coupon are cleared; the coupon (when it applied) is recorded on the order, which is what consumes `ONCE5`. The totals on the order are the ones the cart showed for the chosen method.
 - **Order numbers** are `SL-YYYYMMDD-NNNN`: the UTC date of the order and a per-day sequence that starts at 0001 and is one more than the highest number already used for that day. The seed's own orders are in the past, so the first order of a day is 0001 after a reset, and reset deletes every order so the sequence starts again. Order IDs continue after the seed (the first order after a default reset has ID 4).
 - `GET /api/orders/{id}` returns the order with its items, address (with `regionName` and `countryName`), totals and `paymentLast4`. **Someone else's order is a 404** (the same answer as a missing order, so IDs cannot be probed). A non-numeric ID is 400.
-- The confirmation page `/orders/:id/confirmation` (login required) shows the order number, status, dates, items, shipping address and totals; an unknown or foreign order shows "Order not found". The order list and detail pages arrive in Phase 4.
+- The confirmation page `/orders/:id/confirmation` (login required) shows the order number, status, dates, items, shipping address and totals; an unknown or foreign order shows "Order not found". The order list and detail pages are described under Phase 4.
 
 ### Other pages
 - `/terms` is a static page with an `h1` and six short sections. `/payment-frame` is outside the normal page layout (no header or footer) and has a visually hidden `h1`.
+
+## Phase 4: account and engagement
+
+### Profile name
+- `PATCH /api/auth/me` (login required) with `{ "name": "..." }` changes the display name and returns `{ user }`. Same rule as registration: 2 to 60 characters after trimming (400 with `fieldErrors.name`). Only the name can be changed; email, password and role are not accepted here and other fields are ignored.
+
+### Address book: `/api/addresses` (login required, 401 otherwise)
+- `GET /api/addresses` lists the user's addresses, default first. `GET /api/addresses/{id}` returns one.
+- `POST /api/addresses` (201) body: `label?`, `firstName`, `lastName`, `street`, `city?`, `countryCode`, `regionCode`, `postalCode`, `phone`, `isDefault?`. The rules are the checkout rules: names 1 to 60 characters, street 3 to 100, the region must belong to the country, the postal code must match the country (5 digits for Sweden and the US, 6 for India), phone 7 to 15 digits. Label is optional, at most 30 characters, and a blank label is stored as "Address". City is optional, at most 60. All problems come back together in `fieldErrors`.
+- `PATCH /api/addresses/{id}` changes any of the same fields. The merged address is validated as a whole, so changing the country also needs a region and postal code that fit it. An empty body is a 400 (`fieldErrors.body`).
+- `DELETE /api/addresses/{id}` returns 204. A user can save at most 10 addresses (the 11th is a 409).
+- **Exactly one default**: a user with at least one address always has exactly one default. The first address a user adds becomes the default automatically (whatever `isDefault` says). Adding or patching with `isDefault: true` moves the default to that address and clears the old one. `isDefault: false` on the current default is a 400 (`fieldErrors.isDefault`: make another address the default instead); on a non-default address it changes nothing. **When the default is deleted** and other addresses remain, the one added earliest (lowest ID) becomes the default. When the last address is deleted there is no default, and the next one added becomes it.
+- Another user's address is a 404 for GET, PATCH and DELETE. Orders store their own copy of the address, so editing or deleting an address never changes an old order.
+- The list shape is `{ data, page: 1, pageSize: n, total: n }` (not paged).
+
+### Account page `/account`
+- Profile section: edit name (validated on blur and on submit, server message shown under the field) and a read-only email. Address book section: one card per address with a "Default address" radio (choosing it saves at once), Edit and Delete. Add and Edit open the form below the list; field rules and messages match checkout, and the region list follows the country. Delete opens a confirm modal (Keep it is focused first, Escape cancels) and says when the default will move. A status line announces each result and focus returns to the Add address button. Links to Order history and Wishlist sit under the heading.
+
+### Order history: `GET /api/orders` (login required)
+- Own orders only, in the list shape. Query: `status` (`Processing`, `Shipped`, `Delivered`, `Cancelled`, exact spelling), `sort` (`date_desc` default, `date_asc`, `total_desc`, `total_asc`), `page` (default 1), `pageSize` (default 5, max 50). Bad values are a 400 with a message per parameter. Ties fall back to newest first, then highest ID, so paging is stable. A page past the end is 200 with an empty `data` list and the requested `page`.
+- Each row is `{ id, number, status, createdAt, deliveryDate, itemCount, totalCents }`; `GET /api/orders/{id}` still returns the full order.
+- The default seed gives customer1 three orders (Delivered, Shipped, Processing). Use `POST /api/test/reset` with scenario `many-orders` for 50 orders (several pages, every status).
+
+### Cancel: `POST /api/orders/{id}/cancel` (login required)
+- Only a **Processing** order can be cancelled: 200 with the updated order (status `Cancelled`). Shipped, Delivered or already Cancelled is a 409 `CONFLICT` and nothing changes. Someone else's order, or an unknown one, is a 404 (as for `GET /api/orders/{id}`); a non-numeric ID is a 400.
+- Cancelling gives the stock back in one transaction: product stock goes up by the quantities, and for a line with a variant the variant stock goes up too (mirroring what placing the order took). A cancelled order still counts as having used its coupon (`ONCE5` is not given back).
+- Nothing else is refunded or notified (there is no real payment).
+
+### Order pages
+- `/account/orders` (login required): a table with columns Order (link to the detail page), Date, Items, Status and Total. The Date and Total column headers are buttons that sort (the first click on a column sorts descending, the next click flips it; `aria-sort` follows). A Status dropdown filters ("All statuses" by default). Five rows per page with Previous, Next and page numbers. Sort, filter and page live in the URL (`?status=Shipped&sort=total_asc&page=2`), defaults are left out, changing sort or filter goes back to page 1, and a pasted URL restores the view (after login too). A page number past the end shows "There are no orders on page N" with a link to page 1. No orders at all shows a message with a Browse products link; a filter with no match says so and offers "Show all orders". Loading shows a spinner and a failure shows an error with Retry. On narrow screens the Items column is hidden.
+- `/account/orders/:id` (the detail route): number, status, dates, payment, items (each with a link to the product and a "Write a review" link that opens its Reviews tab), shipping address and totals. A **Cancel order** button appears only while the status is Processing; it opens a confirm modal ("Keep order" is focused first). After cancelling the page shows the new status and a confirmation message. Other statuses show a short note instead of the button. An unknown or foreign ID shows "Order not found".
+
+### Reviews: `POST /api/products/{id}/reviews` (login required)
+- **Who can post**: a customer who has an order containing the product that is **not Cancelled** (Processing, Shipped and Delivered all count). Not a buyer is a 403 `FORBIDDEN`. A cancelled order stops counting.
+- **One review per user per product**: a second review is a 409 `CONFLICT`.
+- The body is `multipart/form-data` with text fields `rating` (1 to 5), `title` (3 to 100 characters), `body` (20 to 2000 characters) and an optional file field `image`. Any other content type is a 400. Problems are reported together in `fieldErrors` (`rating`, `title`, `body`, `image`). Success is 201 with the review (`id, authorName, rating, title, body, imagePath, createdAt`); the author name is the user's name at the time.
+- **Order of checks**: login (401), unknown product (404), body size (413), not a buyer (403), already reviewed (409), image too large (413), then field and image content problems (400).
+- **Image**: PNG or JPEG only, at most 2 MB (2 097 152 bytes; exactly 2 MB is accepted). The file type is decided by its **first bytes** (the PNG signature or the JPEG start marker); the file name and the declared MIME type are ignored, so a text file named `.png` is a 400 on `fieldErrors.image`. An empty file is a 400. **Too large is a 413** `PAYLOAD_TOO_LARGE` (with `fieldErrors.image`), whether it is caught by the whole body exceeding 2 MB plus 64 KB of form overhead or by the image part itself. More than one `image` part is a 400. An empty file part (an untouched file input) counts as no image.
+- **Storage**: valid images are written under the uploads directory (`uploads/reviews/<uuid>.png|jpg`, git-ignored, `UPLOADS_DIR` overrides it) and served at `/uploads/reviews/<name>` (with `X-Content-Type-Options: nosniff`). `imagePath` in the review list is that URL path. Nothing is written when validation fails.
+- **Reset**: `POST /api/test/reset` deletes every uploaded file and (as part of the normal reseed) every user-written review, so the data matches the seed again. Uploads are also cleared at server start, because the database is recreated then.
+- `GET /api/products/{id}/review-eligibility` returns `{ eligible, reason }` and is always 200 for a real product (404 otherwise): `reason` is `login_required` (logged out), `not_purchased`, `already_reviewed` or `null`.
+- A new review is the newest, so it is first under the default "Newest first" sort, and the product's average, count and star distribution include it at once (they are computed from the reviews table).
+
+### Reviews tab
+- Under the "Customer reviews" heading, above the summary: logged-out visitors see "Log in to write a review. Only customers who have bought this product can review it." with a link to `/login?next=/products/{id}#reviews`; a logged-in non-buyer sees "Only customers who have bought this product can review it..." (no form); someone who already reviewed sees "You have already reviewed this product." Buyers see the form: rating radios 1 to 5, Title, Review (with a live character count), and an optional Photo file input (`.png`, `.jpg`, `.jpeg`).
+- Client checks (shown inline, per field, on blur and on submit) use the same messages as the API. A chosen photo shows a preview and its file name and size; "Remove photo" clears it. A file over 2 MB or with a non-PNG/JPG name or type is refused in the browser, but a file that only claims to be a PNG is sent and the server's answer is shown under the Photo field.
+- After a successful post the form is replaced by a thank-you message, the list switches to "Newest first" page 1 (the new review is first, with its photo) and the rating summary refreshes. A link ending in `#reviews` opens the Reviews tab.
+
+### Wishlist: reorder and Move to cart
+- `PUT /api/wishlist/order` (login required) body `{ "productIds": [21, 36] }` saves the order and returns the updated list (positions 1 to n). The array must contain **exactly** the products on the user's wishlist, each once: a missing product, a product that is not theirs, a duplicate, a non-integer or a non-array is a 400 with `fieldErrors.productIds` naming the offenders. Nothing changes on a 400. Products that were saved but are no longer sold are not shown and keep their place after the visible ones.
+- The page shows an ordered list. **Drag and drop** uses the native HTML5 events (`dragstart`, `dragover`, `drop`, `dragend`) on each row: dropping a row onto another puts it at that row's position. Each row also has **Move up** and **Move down** buttons (disabled at the ends; focus stays on the same item's button, or the other one when it is disabled). Each move is announced in a live region ("Moved Football Size 5 to position 2 of 8.") and saved at once; saves are sent one after another so the last move wins, and a failure shows an error and reloads the saved order. Touch devices use the buttons.
+- **Move to cart** adds one unit through the normal cart API (`POST /api/cart/items`, or the guest cart logic) and then **removes the item from the wishlist** (it moves, it is not copied). It is for products without options that are in stock. A product with sizes or colours shows **Choose options**, a link to its page, because a variant must be chosen. An out-of-stock product shows a disabled Move to cart with "Out of stock". If adding fails (for example the cart already holds the maximum) the item stays on the wishlist and the error is shown; if the add worked but the removal failed the message says so. A success message links to the cart.
+- Remove still works as before. Heart buttons are hidden on this page.
+
+### Contact: `POST /api/contact`
+- Public (a logged-in user's ID is stored with the message). Body `{ topic, message, consent }`: `topic` is one of `order`, `returns`, `product`, `account`, `feedback`, `other`; `message` is 10 to 1000 characters after trimming; `consent` must be `true`. Problems are a 400 with `fieldErrors` for each field. Success is 201 `{ id, message }`.
+- The message is **stored** in the `contact_messages` table (visible only as a row count in `GET /api/test/state`) and is removed by reset. No email is sent and nothing is shown to admins in this phase.
+- `/contact` has a Topic dropdown, a Message textarea with a live count, and a consent checkbox. Fields are validated on blur and on submit. Success replaces the form with "Message sent" (focus moves to it) and a "Send another message" button. A "Contact us" link is in the footer of every page.

@@ -17,7 +17,16 @@ export class ApiRequestError extends Error {
   }
 }
 
-export async function api<T>(path: string, options: { method?: string; body?: unknown; signal?: AbortSignal } = {}): Promise<T> {
+export interface ApiOptions {
+  method?: string;
+  /** Sent as JSON. */
+  body?: unknown;
+  /** Sent as multipart/form-data (the browser adds the boundary header itself). */
+  formData?: FormData;
+  signal?: AbortSignal;
+}
+
+export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
   let response: Response;
   try {
     response = await fetch(path, {
@@ -25,7 +34,7 @@ export async function api<T>(path: string, options: { method?: string; body?: un
       credentials: 'same-origin',
       signal: options.signal,
       headers: options.body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
-      body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+      body: options.formData ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
     });
   } catch {
     throw new ApiRequestError(0, 'NETWORK_ERROR', 'Could not reach the server. Check your connection and try again.', {}, null);

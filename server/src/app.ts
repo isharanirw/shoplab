@@ -11,6 +11,7 @@ import { apiNotFound, errorHandler } from './middleware/errorHandler';
 import { requestLog } from './middleware/requestLog';
 import { authRouter } from './routes/auth';
 import { cartRouter } from './routes/cart';
+import { contactRouter } from './routes/contact';
 import { categoriesRouter, promotionsRouter } from './routes/catalogue';
 import { addressesRouter, checkoutRouter, countriesRouter, ordersRouter } from './routes/checkout';
 import { healthRouter } from './routes/health';
@@ -75,9 +76,19 @@ export function createApp(ctx: AppContext): Express {
   api.use('/orders', ordersRouter(ctx));
   api.use('/countries', countriesRouter(ctx));
   api.use('/addresses', addressesRouter(ctx));
+  api.use('/contact', contactRouter(ctx));
   api.use('/test', testRouter(ctx));
   api.use(apiNotFound);
   app.use('/api', api);
+
+  app.use(
+    '/uploads',
+    express.static(ctx.config.uploadsDir, {
+      index: false,
+      maxAge: '1h',
+      setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
+    }),
+  );
 
   app.use(...clientHandlers(ctx.config.clientDistDir));
   app.use((req, res, next) => {

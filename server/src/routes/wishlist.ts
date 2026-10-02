@@ -4,7 +4,7 @@ import type { AppContext } from '../context';
 import { parseIdParam } from '../lib/catalogueQuery';
 import { ApiError } from '../lib/errors';
 import { requireAuth } from '../middleware/auth';
-import { addToWishlist, listWishlist, removeFromWishlist } from '../services/wishlist';
+import { addToWishlist, listWishlist, removeFromWishlist, reorderWishlist } from '../services/wishlist';
 
 function bodyOf(req: Request): Record<string, unknown> {
   return req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? (req.body as Record<string, unknown>) : {};
@@ -32,6 +32,10 @@ export function wishlistRouter(ctx: AppContext): Router {
     const result = addToWishlist(ctx.db, req.user!.id, productId);
     if (result === 'no-product') throw new ApiError('NOT_FOUND', 'Product not found.');
     res.status(result === 'added' ? 201 : 200).json({ productId });
+  });
+
+  router.put('/order', (req, res) => {
+    res.json(reorderWishlist(ctx.db, req.user!.id, bodyOf(req).productIds));
   });
 
   router.delete('/:productId', (req, res) => {

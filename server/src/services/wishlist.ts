@@ -1,4 +1,6 @@
 import type { Db } from '../db/connection';
+import { ApiError } from '../lib/errors';
+import { checkWishlistOrder } from '../lib/wishlistOrder';
 import { SUMMARY_COLUMNS, SUMMARY_FROM, mapSummary } from './catalogue';
 import type { ListResult, ProductSummary, SummaryRow } from './catalogue';
 
@@ -53,4 +55,28 @@ export function removeFromWishlist(db: Db, userId: number, productId: number): b
   const update = db.prepare('UPDATE wishlist_items SET position = ? WHERE user_id = ? AND product_id = ?');
   rows.forEach((row, index) => update.run(index + 1, userId, row.product_id));
   return true;
+}
+
+/**
+ * Saves a new order for the wishlist. `submitted` must contain exactly the products the user can see on
+ * their wishlist (400 otherwise). Saved products that are no longer sold (inactive) are not shown, so they
+ * keep their place after the visible ones. Returns the updated list.
+ */
+export function reorderWishlist(db: Db, userId: number, submitted: unknown): ListResult<WishlistItem> {
+  const visible = listWishlist(db, userId).data.map((i) => i.id);
+  const check = checkWishlistOrder(visible, submitted);
+  if (!check.ok) throw new ApiError('VALIDATION_ERROR', check.message, { fieldErrors: { productIds: check.message } });
+  const hidden = (
+    db
+      .prepare(
+        `SELECT w.product_id FROM wishlist_items w JOIN products p ON p.id = w.product_id
+         WHERE w.user_id = ? AND p.active = 0 ORDER BY w.position, w.product_id`,
+      )
+      .all(userId) as { product_id: number }[]
+  ).map((r) => r.product_id);
+  const update = db.prepare('UPDATE wishlist_items SET position = ? WHERE user_id = ? AND product_id = ?');
+  db.transaction(() => {
+    [...check.productIds, ...hidden].forEach((productId, index) => update.run(index + 1, userId, productId));
+  })();
+  return listWishlist(db, userId);
 }

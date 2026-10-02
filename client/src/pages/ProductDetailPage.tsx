@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { KeyboardEvent } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import { api } from '../api/client';
 import type { ListResponse, ProductDetail, Review } from '../api/types';
+import { ReviewComposer } from '../reviews/ReviewComposer';
+import reviewStyles from '../reviews/Reviews.module.css';
 import { ErrorState, Spinner } from '../components/Feedback';
 import { Pagination } from '../components/Pagination';
 import { Price } from '../components/Price';
@@ -62,11 +65,27 @@ function ProductNotFound() {
   );
 }
 
-function ProductView({ product }: { product: ProductDetail }) {
+function ProductView({ product: initialProduct }: { product: ProductDetail }) {
+  const location = useLocation();
+  const [product, setProduct] = useState(initialProduct);
   useDocumentTitle(product.name);
   const [imageIndex, setImageIndex] = useState(0);
-  const [tab, setTab] = useState<TabId>('description');
+  // A link ending in #reviews (from an order) opens the Reviews tab directly.
+  const [tab, setTab] = useState<TabId>(location.hash === '#reviews' ? 'reviews' : 'description');
   const count = Math.max(product.imageCount, 1);
+
+  useEffect(() => {
+    if (location.hash === '#reviews') document.getElementById('tab-reviews')?.scrollIntoView({ block: 'start' });
+  }, [location.hash]);
+
+  /** After a review is posted the rating summary and distribution must change, so the product is fetched again. */
+  async function refreshProduct() {
+    try {
+      setProduct(await api<ProductDetail>(`/api/products/${product.id}`));
+    } catch {
+      // The old summary stays; the next visit shows the new numbers.
+    }
+  }
 
   function onTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     const current = TABS.findIndex((t) => t.id === tab);
@@ -178,7 +197,7 @@ function ProductView({ product }: { product: ProductDetail }) {
               )}
             </>
           )}
-          {tab === 'reviews' && <ReviewsTab product={product} />}
+          {tab === 'reviews' && <ReviewsTab product={product} onReviewPosted={() => void refreshProduct()} />}
         </div>
       </section>
     </article>
@@ -191,7 +210,7 @@ const REVIEW_SORTS = [
   { value: 'lowest', label: 'Lowest rated' },
 ] as const;
 
-function ReviewsTab({ product }: { product: ProductDetail }) {
+function ReviewsTab({ product, onReviewPosted }: { product: ProductDetail; onReviewPosted: () => void }) {
   const [sort, setSort] = useState<(typeof REVIEW_SORTS)[number]['value']>('newest');
   const [page, setPage] = useState(1);
   const result = useFetch<ListResponse<Review>>(`/api/products/${product.id}/reviews?sort=${sort}&page=${page}`);
@@ -199,6 +218,16 @@ function ReviewsTab({ product }: { product: ProductDetail }) {
   return (
     <>
       <h2>Customer reviews</h2>
+      <ReviewComposer
+        productId={product.id}
+        onPosted={() => {
+          // The new review is the newest, so show the newest-first list from page 1.
+          setSort('newest');
+          setPage(1);
+          result.retry();
+          onReviewPosted();
+        }}
+      />
       <div className={styles.summary} data-testid="rating-summary">
         <StarRating rating={product.rating} showCount={false} />{' '}
         {product.rating.average !== null && (
@@ -258,6 +287,15 @@ function ReviewsTab({ product }: { product: ProductDetail }) {
                     {r.authorName} on {formatDate(r.createdAt)}
                   </p>
                   <p>{r.body}</p>
+                  {r.imagePath && (
+                    <img
+                      src={r.imagePath}
+                      alt={`Photo from ${r.authorName}'s review`}
+                      className={reviewStyles.reviewImage}
+                      loading="lazy"
+                      data-testid="review-image"
+                    />
+                  )}
                 </article>
               </li>
             ))}

@@ -8,7 +8,7 @@ Live site: https://shoplab-ffm2.onrender.com
 
 ## Status
 
-Phases 1 to 3 are complete: foundation (scaffold, database and seed data, authentication, health check, reset endpoint, CI), the catalogue (listing, search, filters, detail page, quick view, wishlist basics) and cart and checkout (cart, coupons, pricing, four-step checkout with a payment iframe, orders and confirmation). Later phases add account features (address book, order history, reviews), admin, and the testability layer.
+Phases 1 to 4 are complete: foundation (scaffold, database and seed data, authentication, health check, reset endpoint, CI), the catalogue (listing, search, filters, detail page, quick view, wishlist basics), cart and checkout (cart, coupons, pricing, four-step checkout with a payment iframe, orders and confirmation) and account and engagement (address book, order history with cancel, reviews with image upload, wishlist drag and drop, contact form). Later phases add admin and the testability layer.
 
 ## Routes
 
@@ -17,8 +17,12 @@ Phases 1 to 3 are complete: foundation (scaffold, database and seed data, authen
 | `/` | Home: hero banner, flash-sale countdown, category links, featured products |
 | `/products` | Listing: search (`q`), `category`, `subcategory`, `minPrice`, `maxPrice`, `inStock=true`, `rating`, `sort`, `page` all live in the query string |
 | `/products/:id` | Product detail with gallery, options, quantity, and Description / Specs / Reviews tabs |
-| `/wishlist` | The logged-in user's wishlist (login required) |
-| `/login`, `/register`, `/account` | Accounts (Phase 1) |
+| `/wishlist` | The logged-in user's wishlist: reorder by drag and drop or Move up / Move down, Move to cart, Remove (login required) |
+| `/login`, `/register` | Accounts (Phase 1) |
+| `/account` | Profile (edit name) and address book (add, edit, delete, default) (login required) |
+| `/account/orders` | Order history: sort by date or total, status filter, 5 per page, all in the query string (login required) |
+| `/account/orders/:id` | One order, with Cancel order while it is Processing (login required, own orders only) |
+| `/contact` | Contact form (topic, message, consent); linked from the footer |
 | `/cart` | Cart (guests use localStorage and it merges into the server cart on login) |
 | `/checkout` | Four-step checkout: address, delivery, payment, review (login required) |
 | `/orders/:id/confirmation` | Confirmation page after placing an order (login required, own orders only) |
@@ -35,11 +39,14 @@ Lists return `{ data, page, pageSize, total }`; errors use the shape described b
 | `GET /api/products/suggest?q=` | Public | Up to 5 name suggestions; empty list for fewer than 2 characters |
 | `GET /api/products/{id}` | Public | Detail with variants, stock per variant and a rating summary |
 | `GET /api/products/{id}/reviews` | Public | Reviews, 5 per page, `sort` = `newest`, `highest` or `lowest` |
+| `GET /api/products/{id}/review-eligibility` | Public | `{ eligible, reason }` for the caller (`login_required`, `not_purchased`, `already_reviewed`) |
+| `POST /api/products/{id}/reviews` | User | Multipart: `rating`, `title`, `body` (20+ characters), optional `image` (PNG or JPEG, 2 MB). 201; 400 validation or bad image; 403 not a buyer; 409 already reviewed; 413 image too large |
 | `GET /api/categories` | Public | Categories with subcategories and product counts |
 | `GET /api/promotions` | Public | Home banner text (fixed value) |
 | `GET /api/wishlist` | User | The user's wishlist |
 | `POST /api/wishlist` | User | Add `{"productId": 5}` (201, or 200 if already there) |
 | `DELETE /api/wishlist/{productId}` | User | Remove an item (204, or 404 if it was not there) |
+| `PUT /api/wishlist/order` | User | Save the order: `{"productIds": [..]}` must list exactly the wishlist items (400 otherwise); returns the list |
 | `GET /api/cart` | User | The cart: items, coupon status, `itemCount` and totals (Standard shipping) |
 | `POST /api/cart/items` | User | Add `{productId, variantId?, quantity}` (201 new line, 200 merged; 400 bad quantity or variant, 409 over stock) |
 | `PATCH /api/cart/items/{itemId}` | User | Set `{quantity}` (1 to 10, within stock) |
@@ -49,9 +56,16 @@ Lists return `{ data, page, pageSize, total }`; errors use the shape described b
 | `POST /api/cart/merge` | User | Merge guest lines into the cart (used after login) |
 | `POST /api/checkout/quote` | User | Totals preview for `{shippingMethod, country}` |
 | `POST /api/orders` | User | Place an order (201; 400 validation; 402 declined card; 409 not enough stock) |
+| `GET /api/orders` | User | Own orders: `status`, `sort` (`date_desc`, `date_asc`, `total_desc`, `total_asc`), `page`, `pageSize` (default 5); rows are summaries |
 | `GET /api/orders/{id}` | User | One of your own orders (404 for anyone else's) |
+| `POST /api/orders/{id}/cancel` | User | Cancel while Processing and restore stock (200; 409 in any other status; 404 for anyone else's) |
 | `GET /api/countries` | Public | Sweden, United States, India with regions and postal rules |
-| `GET /api/addresses` | User | Saved addresses (read only for now) |
+| `GET /api/addresses`, `GET /api/addresses/{id}` | User | Saved addresses, default first / one address |
+| `POST /api/addresses` | User | Add an address (201). The first one becomes the default; `isDefault: true` moves the default |
+| `PATCH /api/addresses/{id}` | User | Change fields (validated as a whole); 400 when unsetting the only default |
+| `DELETE /api/addresses/{id}` | User | Delete (204); deleting the default promotes the earliest remaining address |
+| `PATCH /api/auth/me` | User | Change the display name `{"name"}` |
+| `POST /api/contact` | Public | `{topic, message, consent}`; stored in the database, no email is sent (201) |
 
 ## Cart, coupons and test cards
 
@@ -85,7 +99,9 @@ npm start
 
 Then open http://localhost:3000. For development with hot reload, run `npm run dev` (API on port 3000, Vite on http://localhost:5173).
 
-Other scripts: `npm run seed`, `npm run lint`, `npm run typecheck`, `npm test`. Copy `.env.example` to `.env` to change the port, database path or test key.
+Other scripts: `npm run seed`, `npm run lint`, `npm run typecheck`, `npm test`. Copy `.env.example` to `.env` to change the port, database path, uploads directory or test key.
+
+Review images are saved in `uploads/` (git-ignored, served at `/uploads/reviews/...`). `POST /api/test/reset` deletes them together with the reviews people wrote, so the data matches the seed again. On the free Render tier the disk is ephemeral anyway.
 
 ## Demo accounts
 
@@ -93,7 +109,7 @@ All accounts and passwords are demo values, recreated identically on every boot 
 
 | Role | Email | Password | Notes |
 | --- | --- | --- | --- |
-| Customer | customer1@shoplab.test | Test@1234 | 3 past orders, 2 wishlist items, 2 saved addresses |
+| Customer | customer1@shoplab.test | Test@1234 | 3 past orders (Delivered, Shipped, Processing), 2 wishlist items, 2 saved addresses. Can review products 3, 6, 1, 11, 41, 40 and 56 |
 | Customer | customer2@shoplab.test | Test@1234 | No orders, empty cart, no addresses |
 | Customer (locked) | locked@shoplab.test | Test@1234 | Login is refused with an "account locked" message |
 | Admin | admin@shoplab.test | Admin@1234 | Full access to the admin panel |

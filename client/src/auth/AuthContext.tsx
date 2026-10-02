@@ -24,6 +24,8 @@ interface AuthState {
   login: (email: string, password: string, rememberMe: boolean) => Promise<User>;
   register: (input: RegisterInput) => Promise<User>;
   logout: () => Promise<void>;
+  /** Changes the display name (PATCH /api/auth/me) and updates the signed-in user. Throws ApiRequestError. */
+  updateName: (name: string) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -70,7 +72,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
-  const value = useMemo(() => ({ user, loading, login, register, logout }), [user, loading, login, register, logout]);
+  const updateName = useCallback(async (name: string) => {
+    const res = await api<{ user: User }>('/api/auth/me', { method: 'PATCH', body: { name } });
+    setUser(res.user);
+    return res.user;
+  }, []);
+
+  const value = useMemo(
+    () => ({ user, loading, login, register, logout, updateName }),
+    [user, loading, login, register, logout, updateName],
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

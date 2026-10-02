@@ -170,3 +170,16 @@
   line-height: 1.4rem;
   text-align: center;
 }
+
+.footerNav {
+  margin-bottom: 0.5rem;
+}
+
+.footerNav a {
+  color: var(--color-notice-text);
+  font-weight: 600;
+}
+
+.footerNav a:hover {
+  color: #ffffff;
+}

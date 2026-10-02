@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import type { AppContext, AuthUser } from '../context';
 import { ApiError } from '../lib/errors';
 import { hashPassword, verifyPassword } from '../lib/passwords';
-import { normaliseEmail, validateRegistration } from '../lib/validation';
+import { normaliseEmail, validateName, validateRegistration } from '../lib/validation';
 import { SESSION_COOKIE, requireAuth } from '../middleware/auth';
 import { createSession, deleteSession } from '../services/sessions';
 
@@ -93,6 +93,17 @@ export function authRouter(ctx: AppContext): Router {
 
   router.get('/me', requireAuth, (req, res) => {
     res.json({ user: req.user });
+  });
+
+  router.patch('/me', requireAuth, (req, res) => {
+    const body = bodyOf(req);
+    const nameErr = typeof body.name === 'string' ? validateName(body.name) : 'Name is required.';
+    if (nameErr) {
+      throw new ApiError('VALIDATION_ERROR', 'Please correct the highlighted fields.', { fieldErrors: { name: nameErr } });
+    }
+    const name = (body.name as string).trim();
+    ctx.db.prepare('UPDATE users SET name = ? WHERE id = ?').run(name, req.user!.id);
+    res.json({ user: { ...req.user!, name } });
   });
 
   return router;
