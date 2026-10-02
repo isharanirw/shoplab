@@ -148,7 +148,7 @@ function ServerCart() {
           const applied = next.coupon;
           return { kind: 'success', text: applied ? `Coupon ${applied.code} applied: ${applied.description}.` : 'Coupon applied.' };
         } catch (err) {
-          if (err instanceof ApiRequestError) return { kind: 'error', text: err.fieldErrors.code ?? err.message };
+          if (err instanceof ApiRequestError) return { kind: 'error', text: err.message };
           return { kind: 'error', text: messageOf(err) };
         }
       }}

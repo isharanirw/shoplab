@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import type { CartCoupon, CartItem, CartTotals } from '../api/types';
@@ -38,6 +38,11 @@ export function CartContent(props: CartContentProps) {
   const [code, setCode] = useState('');
   const [feedback, setFeedback] = useState<CouponFeedback | null>(null);
   const [couponBusy, setCouponBusy] = useState(false);
+
+  // A coupon message describes the cart as it was when it appeared, so drop it when the cart changes.
+  useEffect(() => {
+    setFeedback(null);
+  }, [props.subtotalCents]);
 
   const itemCount = items.reduce((n, i) => n + i.quantity, 0);
   const blocked = items.some((i) => !i.inStock || i.quantity > i.stock);
