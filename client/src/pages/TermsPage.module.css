@@ -1,0 +1,15 @@
+.page {
+  max-width: 44rem;
+}
+
+.page h2 {
+  font-size: 1.15rem;
+  margin-top: 1.5rem;
+}
+
+.notice {
+  padding: 0.75rem 1rem;
+  background: #fffbeb;
+  border: 1px solid #f59e0b;
+  border-radius: var(--radius);
+}

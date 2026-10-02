@@ -28,5 +28,17 @@ One line per notable technical decision.
 - The listing keeps all filter state in the URL (`useSearchParams`) with no duplicate component state except the two price text boxes, which commit on Enter or Apply.
 - `useFetch` is a small hook (loading, success, error, retry, abort on change); every data fetch uses it so each one has the same spinner and error-with-Retry behaviour.
 - The modal is a hand-written portal with a focus trap and `inert` on the app root instead of a dialog library, to keep the dependency list unchanged.
-- Add to cart calls a documented no-op in `client/src/lib/cart.ts` until the cart exists in Phase 3.
 - The flash-sale countdown is computed in the browser from the UTC clock (next 00:00:00 UTC) so it needs no server state and is covered by unit tests.
+- Pricing is one pure module (`server/src/lib/pricing.ts`) in integer cents with half-up rounding by integer arithmetic (`floor((2n + d) / 2d)`); cart, quote and order all call it, so they cannot disagree.
+- A coupon that stops qualifying stays attached but contributes nothing (it is evaluated on every read) instead of being removed, so totals are a pure function of items, coupon and shipping method.
+- `ONCE5` usage is derived from the orders table (an order carrying the code) rather than a separate table, so reset and the order flow need no extra bookkeeping.
+- Carts are two small tables (`carts` for the coupon, `cart_items`) with a unique index on user, product and variant; reset clears them with the rest.
+- Cart endpoints return the whole cart so the UI never has to refetch after a change; adding past the stock or 10 is a 409 rather than a silent cap, and only the guest merge (`POST /api/cart/merge`) caps silently, because it must not fail a login.
+- Guests keep a plain list in `localStorage` and see only a subtotal (looked up from the public product API), so the pricing rules exist once on the server and are not copied into the client.
+- The payment frame is a React route at `/payment-frame` outside the layout; it posts a token (`tok_ok_4242` or `tok_declined_0002`) with `postMessage` to its own origin and the parent checks origin and source window, so the server never sees card data.
+- The order endpoint does validation, stock and payment inside one SQLite transaction and throws to roll back, so a 402 or 409 leaves cart, stock and orders unchanged.
+- Order numbers use the highest sequence of the UTC day plus one, read from the orders table, which is deterministic and needs no counter that reset could forget to clear.
+- Another user's order returns 404 (not 403) so order IDs cannot be probed.
+- The delivery calendar is a hand-written `role="grid"` with a roving tabindex (disabled days stay focusable and announced) because the native date input cannot disable weekends; the date rules are small pure functions in both client and server, each unit tested.
+- The place-order spinner is a fixed 1.5 s client-side delay applied to success and failure alike, so the API stays fast for tests while the UI shows the wait.
+- Postal rules are served by `GET /api/countries` as a regex pattern and hint, and the checkout form builds its check from that response, so the rule lives in one place (the seed).

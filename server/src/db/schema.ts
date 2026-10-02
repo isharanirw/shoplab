@@ -12,6 +12,8 @@ export const TABLES_IN_CREATE_ORDER = [
   'reviews',
   'addresses',
   'wishlist_items',
+  'carts',
+  'cart_items',
   'orders',
   'order_items',
 ] as const;
@@ -117,6 +119,22 @@ CREATE TABLE IF NOT EXISTS wishlist_items (
   added_at   TEXT NOT NULL,
   PRIMARY KEY (user_id, product_id)
 );
+
+CREATE TABLE IF NOT EXISTS carts (
+  user_id     INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  coupon_code TEXT
+);
+
+CREATE TABLE IF NOT EXISTS cart_items (
+  id         INTEGER PRIMARY KEY,
+  user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  variant_id INTEGER REFERENCES product_variants(id) ON DELETE CASCADE,
+  quantity   INTEGER NOT NULL CHECK (quantity BETWEEN 1 AND 10),
+  created_at TEXT NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_cart_items_line ON cart_items(user_id, product_id, COALESCE(variant_id, 0));
 
 CREATE TABLE IF NOT EXISTS orders (
   id               INTEGER PRIMARY KEY,

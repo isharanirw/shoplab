@@ -79,7 +79,7 @@ export function loadSeedData(seedDir: string): SeedData {
 
 /** Child tables first so foreign keys never block the delete. */
 const CLEAR_ORDER = [
-  'order_items', 'orders', 'wishlist_items', 'addresses', 'reviews', 'product_variants',
+  'cart_items', 'carts', 'order_items', 'orders', 'wishlist_items', 'addresses', 'reviews', 'product_variants',
   'products', 'coupons', 'regions', 'countries', 'sessions', 'users',
 ];
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ProductSummary } from '../api/types';
-import { addToCart, CART_STUB_MESSAGE } from '../lib/cart';
+import { useCart } from '../cart/CartContext';
 import { WishlistButton } from '../wishlist/WishlistButton';
 import { Price } from './Price';
 import { ProductImage } from './ProductImage';
@@ -17,7 +17,9 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onQuickView, showWishlistButton = true }: ProductCardProps) {
+  const cart = useCart();
   const [notice, setNotice] = useState<string | null>(null);
+  const [problem, setProblem] = useState<string | null>(null);
   const nameId = `product-name-${product.id}`;
 
   async function handleAdd() {
@@ -26,8 +28,14 @@ export function ProductCard({ product, onQuickView, showWishlistButton = true }:
       onQuickView(product);
       return;
     }
-    await addToCart({ productId: product.id, variantId: null, quantity: 1 });
-    setNotice(CART_STUB_MESSAGE);
+    setNotice(null);
+    setProblem(null);
+    try {
+      await cart.addItem({ productId: product.id, variantId: null, quantity: 1 }, product.stock);
+      setNotice(`Added 1 × ${product.name} to your cart.`);
+    } catch (err) {
+      setProblem(err instanceof Error ? err.message : 'Could not add that to your cart.');
+    }
   }
 
   return (
@@ -65,9 +73,16 @@ export function ProductCard({ product, onQuickView, showWishlistButton = true }:
         </button>
         {showWishlistButton && <WishlistButton productId={product.id} productName={product.name} />}
       </div>
-      {notice && (
-        <p role="status" className={styles.notice}>
-          {notice}
+      <div role="status" aria-live="polite">
+        {notice && (
+          <p className={styles.notice}>
+            {notice} <Link to="/cart">View cart</Link>
+          </p>
+        )}
+      </div>
+      {problem && (
+        <p role="alert" className={styles.problem}>
+          {problem}
         </p>
       )}
     </article>

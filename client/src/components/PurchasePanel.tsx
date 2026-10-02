@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { ProductDetail } from '../api/types';
-import { addToCart, CART_STUB_MESSAGE } from '../lib/cart';
+import { useCart } from '../cart/CartContext';
 import { clampQuantity, maxQuantity, optionAvailable, purchaseState, variantAxes } from '../lib/variants';
 import type { Selection } from '../lib/variants';
 import { StockBadge } from './StockBadge';
@@ -32,13 +33,16 @@ interface PurchasePanelProps {
 
 /**
  * Size dropdown, colour swatches, quantity stepper and Add to cart for one product. Shared by the
- * detail page and the quick view. The cart itself arrives in Phase 3, so Add to cart calls a stub.
+ * detail page and the quick view. Add to cart goes through the cart context (server cart when logged in, localStorage otherwise).
  */
 export function PurchasePanel({ product, idPrefix }: PurchasePanelProps) {
   const axes = variantAxes(product.variants);
   const [selection, setSelection] = useState<Selection>({ size: null, colour: null });
   const [quantityText, setQuantityText] = useState('1');
+  const cart = useCart();
   const [notice, setNotice] = useState<string | null>(null);
+  const [problem, setProblem] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
 
   const state = purchaseState(product.stock, product.variants, selection);
   const max = maxQuantity(state.stock);
@@ -68,9 +72,18 @@ export function PurchasePanel({ product, idPrefix }: PurchasePanelProps) {
   }
 
   async function handleAdd() {
-    if (!state.canAdd) return;
-    await addToCart({ productId: product.id, variantId: state.variant?.id ?? null, quantity });
-    setNotice(CART_STUB_MESSAGE);
+    if (!state.canAdd || adding) return;
+    setAdding(true);
+    setNotice(null);
+    setProblem(null);
+    try {
+      await cart.addItem({ productId: product.id, variantId: state.variant?.id ?? null, quantity }, state.stock);
+      setNotice(`Added ${quantity} × ${product.name} to your cart.`);
+    } catch (err) {
+      setProblem(err instanceof Error ? err.message : 'Could not add that to your cart.');
+    } finally {
+      setAdding(false);
+    }
   }
 
   const sizeId = `${idPrefix}-size`;
@@ -188,7 +201,7 @@ export function PurchasePanel({ product, idPrefix }: PurchasePanelProps) {
       <button
         type="button"
         className="btn btn-primary"
-        disabled={!state.canAdd}
+        disabled={!state.canAdd || adding}
         aria-describedby={!state.canAdd && state.reason ? reasonId : undefined}
         onClick={() => void handleAdd()}
         data-testid="add-to-cart"
@@ -200,9 +213,16 @@ export function PurchasePanel({ product, idPrefix }: PurchasePanelProps) {
           {state.reason}
         </p>
       )}
-      {notice && (
-        <p role="status" className={styles.notice} data-testid="cart-notice">
-          {notice}
+      <div role="status" aria-live="polite">
+        {notice && (
+          <p className={styles.notice} data-testid="cart-notice">
+            {notice} <Link to="/cart">View cart</Link>
+          </p>
+        )}
+      </div>
+      {problem && (
+        <p role="alert" className={styles.problem} data-testid="cart-problem">
+          {problem}
         </p>
       )}
     </div>

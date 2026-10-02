@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useCart } from '../cart/CartContext';
 import { CategoriesProvider } from './CategoriesContext';
 import { CategoryNav } from './CategoryNav';
 import { SearchBox } from './SearchBox';
@@ -8,6 +9,7 @@ import styles from './Layout.module.css';
 
 export function Layout() {
   const { user, loading, logout } = useAuth();
+  const cart = useCart();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -47,6 +49,12 @@ export function Layout() {
               <SearchBox />
             </div>
             <nav aria-label="Account" className={styles.account}>
+              <NavLink to="/cart" className={styles.navLink} aria-label={`Cart, ${cart.count} ${cart.count === 1 ? 'item' : 'items'}`}>
+                Cart{' '}
+                <span className={styles.badge} data-testid="cart-badge" aria-hidden="true">
+                  {cart.count}
+                </span>
+              </NavLink>
               {!loading && user && (
                 <>
                   <NavLink to="/wishlist" className={styles.navLink}>

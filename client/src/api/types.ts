@@ -66,3 +66,132 @@ export interface Promotions {
   bannerText: string;
   flashSaleLabel: string;
 }
+
+export type ShippingMethod = 'standard' | 'express';
+
+export interface CartItem {
+  id: number;
+  productId: number;
+  variantId: number | null;
+  name: string;
+  category: string;
+  imageCount: number;
+  variantLabel: string | null;
+  unitPriceCents: number;
+  regularPriceCents: number;
+  onSale: boolean;
+  quantity: number;
+  lineTotalCents: number;
+  stock: number;
+  maxQuantity: number;
+  inStock: boolean;
+}
+
+export interface CartCoupon {
+  code: string;
+  description: string;
+  applied: boolean;
+  reason: 'expired' | 'below_minimum' | 'already_used' | null;
+  message: string | null;
+}
+
+export interface CartTotals {
+  subtotalCents: number;
+  discountCents: number;
+  shippingMethod: ShippingMethod;
+  shippingCents: number;
+  taxCents: number;
+  totalCents: number;
+}
+
+export interface Cart {
+  items: CartItem[];
+  itemCount: number;
+  coupon: CartCoupon | null;
+  totals: CartTotals;
+}
+
+export interface MergeReportItem {
+  productId: number;
+  variantId: number | null;
+  name: string;
+  requested: number;
+  resulting: number;
+  reason: 'unavailable' | 'out_of_stock' | 'capped';
+}
+
+export interface Quote extends Cart {
+  shippingMethod: ShippingMethod;
+  country: string;
+  deliveryWindow: { earliest: string; latest: string };
+}
+
+export interface Region {
+  code: string;
+  name: string;
+}
+
+export interface Country {
+  code: string;
+  name: string;
+  postalPattern: string;
+  postalHint: string;
+  regions: Region[];
+}
+
+export interface SavedAddress {
+  id: number;
+  label: string;
+  firstName: string;
+  lastName: string;
+  street: string;
+  city: string;
+  regionCode: string;
+  regionName: string;
+  countryCode: string;
+  countryName: string;
+  postalCode: string;
+  phone: string;
+  isDefault: boolean;
+}
+
+export interface OrderItem {
+  productId: number;
+  variantId: number | null;
+  name: string;
+  variantLabel: string | null;
+  unitPriceCents: number;
+  quantity: number;
+  lineTotalCents: number;
+}
+
+export interface OrderAddress {
+  firstName: string;
+  lastName: string;
+  street: string;
+  city: string;
+  regionCode: string;
+  regionName: string;
+  countryCode: string;
+  countryName: string;
+  postalCode: string;
+  phone: string;
+}
+
+export interface Order {
+  id: number;
+  number: string;
+  status: string;
+  createdAt: string;
+  deliveryDate: string;
+  couponCode: string | null;
+  shippingMethod: ShippingMethod;
+  subtotalCents: number;
+  discountCents: number;
+  shippingCents: number;
+  taxCents: number;
+  totalCents: number;
+  paymentLast4: string;
+  address: OrderAddress;
+  items: OrderItem[];
+}
