@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "number": "SL-20260812-0001",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-08-12T14:30:00.000Z",
+    "deliveryDate": "2026-08-17",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 8299,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 830,
+    "totalCents": 9629,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 3,
+        "variantId": null,
+        "name": "USB-C Fast Charger 65W",
+        "variantLabel": null,
+        "unitPriceCents": 2900,
+        "quantity": 2
+      },
+      {
+        "productId": 6,
+        "variantId": null,
+        "name": "Wireless Mouse",
+        "variantLabel": null,
+        "unitPriceCents": 2499,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "number": "SL-20260918-0002",
+    "userId": 1,
+    "status": "Shipped",
+    "createdAt": "2026-09-18T09:15:00.000Z",
+    "deliveryDate": "2026-09-24",
+    "couponCode": "SAVE10",
+    "shippingMethod": "standard",
+    "subtotalCents": 23700,
+    "discountCents": 2370,
+    "shippingCents": 0,
+    "taxCents": 2133,
+    "totalCents": 23463,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 1,
+        "variantId": null,
+        "name": "Wireless Noise-Cancelling Headphones",
+        "variantLabel": null,
+        "unitPriceCents": 19900,
+        "quantity": 1
+      },
+      {
+        "productId": 11,
+        "variantId": 6,
+        "name": "Classic Cotton T-Shirt",
+        "variantLabel": "M / White",
+        "unitPriceCents": 1900,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "number": "SL-20260930-0003",
+    "userId": 1,
+    "status": "Processing",
+    "createdAt": "2026-09-30T16:45:00.000Z",
+    "deliveryDate": "2026-10-05",
+    "couponCode": null,
+    "shippingMethod": "express",
+    "subtotalCents": 7000,
+    "discountCents": 0,
+    "shippingCents": 1500,
+    "taxCents": 700,
+    "totalCents": 9200,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 1
+      },
+      {
+        "productId": 40,
+        "variantId": null,
+        "name": "Jump Rope",
+        "variantLabel": null,
+        "unitPriceCents": 500,
+        "quantity": 3
+      },
+      {
+        "productId": 56,
+        "variantId": null,
+        "name": "Art and Craft Kit",
+        "variantLabel": null,
+        "unitPriceCents": 2100,
+        "quantity": 1
+      }
+    ]
+  }
+]

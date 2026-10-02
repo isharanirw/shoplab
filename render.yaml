@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: shoplab
+    runtime: node
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: TEST_API_KEY
+        sync: false

@@ -1,0 +1,74 @@
+.card {
+  max-width: 28rem;
+  margin: 1rem auto;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.note {
+  color: var(--color-muted);
+  margin-top: 0;
+}
+
+.formError {
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+
+.submit {
+  font: inherit;
+  font-weight: 600;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.submit:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.alt {
+  margin: 1rem 0 0;
+  text-align: center;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.25rem;
+  margin: 0 0 1.5rem;
+}
+
+.details dt {
+  font-weight: 600;
+}
+
+.details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.secondary {
+  font: inherit;
+  padding: 0.5rem 1rem;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius);
+  cursor: pointer;
+}

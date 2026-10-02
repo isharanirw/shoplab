@@ -1,0 +1,2070 @@
+[
+  {
+    "id": 4,
+    "number": "SL-20260101-0004",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-01-01T10:00:00.000Z",
+    "deliveryDate": "2026-01-01",
+    "couponCode": "SAVE10",
+    "shippingMethod": "express",
+    "subtotalCents": 23899,
+    "discountCents": 2390,
+    "shippingCents": 1500,
+    "taxCents": 2151,
+    "totalCents": 25160,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 1,
+        "variantId": null,
+        "name": "Wireless Noise-Cancelling Headphones",
+        "variantLabel": null,
+        "unitPriceCents": 19900,
+        "quantity": 1
+      },
+      {
+        "productId": 2,
+        "variantId": null,
+        "name": "Bluetooth Speaker Mini",
+        "variantLabel": null,
+        "unitPriceCents": 3999,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "number": "SL-20260102-0005",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-01-02T10:01:00.000Z",
+    "deliveryDate": "2026-01-02",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 106700,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 10670,
+    "totalCents": 117370,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 4,
+        "variantId": null,
+        "name": "Smart Lamp",
+        "variantLabel": null,
+        "unitPriceCents": 3450,
+        "quantity": 2
+      },
+      {
+        "productId": 10,
+        "variantId": null,
+        "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+        "variantLabel": null,
+        "unitPriceCents": 49900,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "number": "SL-20260103-0006",
+    "userId": 1,
+    "status": "Shipped",
+    "createdAt": "2026-01-03T10:02:00.000Z",
+    "deliveryDate": "2026-01-03",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 152900,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 15290,
+    "totalCents": 168190,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 10,
+        "variantId": null,
+        "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+        "variantLabel": null,
+        "unitPriceCents": 49900,
+        "quantity": 3
+      },
+      {
+        "productId": 24,
+        "variantId": null,
+        "name": "Memory Foam Pillow",
+        "variantLabel": null,
+        "unitPriceCents": 3200,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "number": "SL-20260104-0007",
+    "userId": 1,
+    "status": "Processing",
+    "createdAt": "2026-01-04T10:03:00.000Z",
+    "deliveryDate": "2026-01-04",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 32600,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 3260,
+    "totalCents": 35860,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 21,
+        "variantId": null,
+        "name": "Ceramic Dinner Plate Set",
+        "variantLabel": null,
+        "unitPriceCents": 4800,
+        "quantity": 1
+      },
+      {
+        "productId": 35,
+        "variantId": null,
+        "name": "Inflatable Camping Tent 2-Person",
+        "variantLabel": null,
+        "unitPriceCents": 13900,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "number": "SL-20260105-0008",
+    "userId": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-01-05T10:04:00.000Z",
+    "deliveryDate": "2026-01-05",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 16200,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 1620,
+    "totalCents": 17820,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 25,
+        "variantId": null,
+        "name": "Handwoven Organic Cotton Throw Blanket with Hand-Knotted Fringe, Extra Large Size, Machine Washable, Available in Multiple Seasonal Colours",
+        "variantLabel": null,
+        "unitPriceCents": 6400,
+        "quantity": 2
+      },
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "number": "SL-20260106-0009",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-01-06T10:05:00.000Z",
+    "deliveryDate": "2026-01-06",
+    "couponCode": null,
+    "shippingMethod": "express",
+    "subtotalCents": 46698,
+    "discountCents": 0,
+    "shippingCents": 1500,
+    "taxCents": 4670,
+    "totalCents": 52868,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 32,
+        "variantId": null,
+        "name": "Adjustable Dumbbell Set",
+        "variantLabel": null,
+        "unitPriceCents": 14900,
+        "quantity": 3
+      },
+      {
+        "productId": 48,
+        "variantId": null,
+        "name": "Children's Bedtime Stories",
+        "variantLabel": null,
+        "unitPriceCents": 999,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "number": "SL-20260207-0010",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-02-07T10:06:00.000Z",
+    "deliveryDate": "2026-02-07",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 9600,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 960,
+    "totalCents": 11060,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 37,
+        "variantId": null,
+        "name": "Tennis Racket",
+        "variantLabel": null,
+        "unitPriceCents": 7500,
+        "quantity": 1
+      },
+      {
+        "productId": 56,
+        "variantId": null,
+        "name": "Art and Craft Kit",
+        "variantLabel": null,
+        "unitPriceCents": 2100,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "number": "SL-20260208-0011",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-02-08T10:07:00.000Z",
+    "deliveryDate": "2026-02-08",
+    "couponCode": "SAVE10",
+    "shippingMethod": "standard",
+    "subtotalCents": 14798,
+    "discountCents": 1480,
+    "shippingCents": 0,
+    "taxCents": 1332,
+    "totalCents": 14650,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 2
+      },
+      {
+        "productId": 2,
+        "variantId": null,
+        "name": "Bluetooth Speaker Mini",
+        "variantLabel": null,
+        "unitPriceCents": 3999,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "number": "SL-20260209-0012",
+    "userId": 1,
+    "status": "Shipped",
+    "createdAt": "2026-02-09T10:08:00.000Z",
+    "deliveryDate": "2026-02-09",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 58600,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 5860,
+    "totalCents": 64460,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 44,
+        "variantId": null,
+        "name": "The Complete Illustrated Guide to Beginner Home Cooking, Meal Planning, Budgeting and Reducing Food Waste: Second Revised Edition",
+        "variantLabel": null,
+        "unitPriceCents": 2900,
+        "quantity": 3
+      },
+      {
+        "productId": 10,
+        "variantId": null,
+        "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+        "variantLabel": null,
+        "unitPriceCents": 49900,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "number": "SL-20260210-0013",
+    "userId": 1,
+    "status": "Processing",
+    "createdAt": "2026-02-10T10:09:00.000Z",
+    "deliveryDate": "2026-02-10",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 8399,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 840,
+    "totalCents": 9739,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 49,
+        "variantId": null,
+        "name": "Mastering Personal Finance",
+        "variantLabel": null,
+        "unitPriceCents": 1999,
+        "quantity": 1
+      },
+      {
+        "productId": 24,
+        "variantId": null,
+        "name": "Memory Foam Pillow",
+        "variantLabel": null,
+        "unitPriceCents": 3200,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "number": "SL-20260211-0014",
+    "userId": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-02-11T10:10:00.000Z",
+    "deliveryDate": "2026-02-11",
+    "couponCode": null,
+    "shippingMethod": "express",
+    "subtotalCents": 20900,
+    "discountCents": 0,
+    "shippingCents": 1500,
+    "taxCents": 2090,
+    "totalCents": 24490,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 52,
+        "variantId": null,
+        "name": "Remote Control Racing Car",
+        "variantLabel": null,
+        "unitPriceCents": 3500,
+        "quantity": 2
+      },
+      {
+        "productId": 35,
+        "variantId": null,
+        "name": "Inflatable Camping Tent 2-Person",
+        "variantLabel": null,
+        "unitPriceCents": 13900,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "number": "SL-20260212-0015",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-02-12T10:11:00.000Z",
+    "deliveryDate": "2026-02-12",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 10700,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 1070,
+    "totalCents": 11770,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 59,
+        "variantId": null,
+        "name": "Magnetic Drawing Board",
+        "variantLabel": null,
+        "unitPriceCents": 1300,
+        "quantity": 3
+      },
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "number": "SL-20260313-0016",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-03-13T10:12:00.000Z",
+    "deliveryDate": "2026-03-13",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 4998,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 500,
+    "totalCents": 5998,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 2,
+        "variantId": null,
+        "name": "Bluetooth Speaker Mini",
+        "variantLabel": null,
+        "unitPriceCents": 3999,
+        "quantity": 1
+      },
+      {
+        "productId": 48,
+        "variantId": null,
+        "name": "Children's Bedtime Stories",
+        "variantLabel": null,
+        "unitPriceCents": 999,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "number": "SL-20260314-0017",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-03-14T10:13:00.000Z",
+    "deliveryDate": "2026-03-14",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 9198,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 920,
+    "totalCents": 10618,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 6,
+        "variantId": null,
+        "name": "Wireless Mouse",
+        "variantLabel": null,
+        "unitPriceCents": 2499,
+        "quantity": 2
+      },
+      {
+        "productId": 56,
+        "variantId": null,
+        "name": "Art and Craft Kit",
+        "variantLabel": null,
+        "unitPriceCents": 2100,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "number": "SL-20260315-0018",
+    "userId": 1,
+    "status": "Shipped",
+    "createdAt": "2026-03-15T10:14:00.000Z",
+    "deliveryDate": "2026-03-15",
+    "couponCode": "SAVE10",
+    "shippingMethod": "standard",
+    "subtotalCents": 7674,
+    "discountCents": 767,
+    "shippingCents": 500,
+    "taxCents": 691,
+    "totalCents": 8098,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 15,
+        "variantId": null,
+        "name": "Wool Winter Scarf",
+        "variantLabel": null,
+        "unitPriceCents": 1225,
+        "quantity": 3
+      },
+      {
+        "productId": 2,
+        "variantId": null,
+        "name": "Bluetooth Speaker Mini",
+        "variantLabel": null,
+        "unitPriceCents": 3999,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "number": "SL-20260316-0019",
+    "userId": 1,
+    "status": "Processing",
+    "createdAt": "2026-03-16T10:15:00.000Z",
+    "deliveryDate": "2026-03-16",
+    "couponCode": null,
+    "shippingMethod": "express",
+    "subtotalCents": 102500,
+    "discountCents": 0,
+    "shippingCents": 1500,
+    "taxCents": 10250,
+    "totalCents": 114250,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 23,
+        "variantId": null,
+        "name": "Smart Lamp",
+        "variantLabel": null,
+        "unitPriceCents": 2700,
+        "quantity": 1
+      },
+      {
+        "productId": 10,
+        "variantId": null,
+        "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+        "variantLabel": null,
+        "unitPriceCents": 49900,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "number": "SL-20260317-0020",
+    "userId": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-03-17T10:16:00.000Z",
+    "deliveryDate": "2026-03-17",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 59000,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 5900,
+    "totalCents": 64900,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 27,
+        "variantId": null,
+        "name": "Robot Vacuum Cleaner",
+        "variantLabel": null,
+        "unitPriceCents": 27900,
+        "quantity": 2
+      },
+      {
+        "productId": 24,
+        "variantId": null,
+        "name": "Memory Foam Pillow",
+        "variantLabel": null,
+        "unitPriceCents": 3200,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "number": "SL-20260318-0021",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-03-18T10:17:00.000Z",
+    "deliveryDate": "2026-03-18",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 44900,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 4490,
+    "totalCents": 49390,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 35,
+        "variantId": null,
+        "name": "Inflatable Camping Tent 2-Person",
+        "variantLabel": null,
+        "unitPriceCents": 13900,
+        "quantity": 3
+      },
+      {
+        "productId": 36,
+        "variantId": null,
+        "name": "Football Size 5",
+        "variantLabel": null,
+        "unitPriceCents": 1600,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "number": "SL-20260419-0022",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-04-19T10:18:00.000Z",
+    "deliveryDate": "2026-04-19",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 10200,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 1020,
+    "totalCents": 11220,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 39,
+        "variantId": null,
+        "name": "Hiking Backpack 40L",
+        "variantLabel": null,
+        "unitPriceCents": 6800,
+        "quantity": 1
+      },
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "number": "SL-20260420-0023",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-04-20T10:19:00.000Z",
+    "deliveryDate": "2026-04-20",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 4596,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 460,
+    "totalCents": 5556,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 42,
+        "variantId": null,
+        "name": "Mystery at Lake Harbour",
+        "variantLabel": null,
+        "unitPriceCents": 1299,
+        "quantity": 2
+      },
+      {
+        "productId": 48,
+        "variantId": null,
+        "name": "Children's Bedtime Stories",
+        "variantLabel": null,
+        "unitPriceCents": 999,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "number": "SL-20260421-0024",
+    "userId": 1,
+    "status": "Shipped",
+    "createdAt": "2026-04-21T10:20:00.000Z",
+    "deliveryDate": "2026-04-21",
+    "couponCode": null,
+    "shippingMethod": "express",
+    "subtotalCents": 14700,
+    "discountCents": 0,
+    "shippingCents": 1500,
+    "taxCents": 1470,
+    "totalCents": 17670,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 45,
+        "variantId": null,
+        "name": "Learning TypeScript",
+        "variantLabel": null,
+        "unitPriceCents": 4200,
+        "quantity": 3
+      },
+      {
+        "productId": 56,
+        "variantId": null,
+        "name": "Art and Craft Kit",
+        "variantLabel": null,
+        "unitPriceCents": 2100,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "number": "SL-20260422-0025",
+    "userId": 1,
+    "status": "Processing",
+    "createdAt": "2026-04-22T10:21:00.000Z",
+    "deliveryDate": "2026-04-22",
+    "couponCode": "SAVE10",
+    "shippingMethod": "standard",
+    "subtotalCents": 10298,
+    "discountCents": 1030,
+    "shippingCents": 500,
+    "taxCents": 927,
+    "totalCents": 10695,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 50,
+        "variantId": null,
+        "name": "The Complete Poetry Collection",
+        "variantLabel": null,
+        "unitPriceCents": 2300,
+        "quantity": 1
+      },
+      {
+        "productId": 2,
+        "variantId": null,
+        "name": "Bluetooth Speaker Mini",
+        "variantLabel": null,
+        "unitPriceCents": 3999,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "number": "SL-20260423-0026",
+    "userId": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-04-23T10:22:00.000Z",
+    "deliveryDate": "2026-04-23",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 54100,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 5410,
+    "totalCents": 59510,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 56,
+        "variantId": null,
+        "name": "Art and Craft Kit",
+        "variantLabel": null,
+        "unitPriceCents": 2100,
+        "quantity": 2
+      },
+      {
+        "productId": 10,
+        "variantId": null,
+        "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+        "variantLabel": null,
+        "unitPriceCents": 49900,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "number": "SL-20260424-0027",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-04-24T10:23:00.000Z",
+    "deliveryDate": "2026-04-24",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 8800,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 880,
+    "totalCents": 10180,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 60,
+        "variantId": null,
+        "name": "Stuffed Dinosaur Toy",
+        "variantLabel": null,
+        "unitPriceCents": 800,
+        "quantity": 3
+      },
+      {
+        "productId": 24,
+        "variantId": null,
+        "name": "Memory Foam Pillow",
+        "variantLabel": null,
+        "unitPriceCents": 3200,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "number": "SL-20260525-0028",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-05-25T10:24:00.000Z",
+    "deliveryDate": "2026-05-25",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 16800,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 1680,
+    "totalCents": 18480,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 3,
+        "variantId": null,
+        "name": "USB-C Fast Charger 65W",
+        "variantLabel": null,
+        "unitPriceCents": 2900,
+        "quantity": 1
+      },
+      {
+        "productId": 35,
+        "variantId": null,
+        "name": "Inflatable Camping Tent 2-Person",
+        "variantLabel": null,
+        "unitPriceCents": 13900,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "number": "SL-20260526-0029",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-05-26T10:25:00.000Z",
+    "deliveryDate": "2026-05-26",
+    "couponCode": null,
+    "shippingMethod": "express",
+    "subtotalCents": 14000,
+    "discountCents": 0,
+    "shippingCents": 1500,
+    "taxCents": 1400,
+    "totalCents": 16900,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 8,
+        "variantId": null,
+        "name": "Portable Power Bank 20000mAh",
+        "variantLabel": null,
+        "unitPriceCents": 3600,
+        "quantity": 2
+      },
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "number": "SL-20260527-0030",
+    "userId": 1,
+    "status": "Shipped",
+    "createdAt": "2026-05-27T10:26:00.000Z",
+    "deliveryDate": "2026-05-27",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 4599,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 460,
+    "totalCents": 5559,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 16,
+        "variantId": null,
+        "name": "Running Socks 6-Pack",
+        "variantLabel": null,
+        "unitPriceCents": 1200,
+        "quantity": 3
+      },
+      {
+        "productId": 48,
+        "variantId": null,
+        "name": "Children's Bedtime Stories",
+        "variantLabel": null,
+        "unitPriceCents": 999,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "number": "SL-20260528-0031",
+    "userId": 1,
+    "status": "Processing",
+    "createdAt": "2026-05-28T10:27:00.000Z",
+    "deliveryDate": "2026-05-28",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 7400,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 740,
+    "totalCents": 8640,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 24,
+        "variantId": null,
+        "name": "Memory Foam Pillow",
+        "variantLabel": null,
+        "unitPriceCents": 3200,
+        "quantity": 1
+      },
+      {
+        "productId": 56,
+        "variantId": null,
+        "name": "Art and Craft Kit",
+        "variantLabel": null,
+        "unitPriceCents": 2100,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 32,
+    "number": "SL-20260501-0032",
+    "userId": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-05-01T10:28:00.000Z",
+    "deliveryDate": "2026-05-01",
+    "couponCode": "SAVE10",
+    "shippingMethod": "standard",
+    "subtotalCents": 8199,
+    "discountCents": 820,
+    "shippingCents": 500,
+    "taxCents": 738,
+    "totalCents": 8617,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 28,
+        "variantId": null,
+        "name": "Bamboo Cutting Board",
+        "variantLabel": null,
+        "unitPriceCents": 2100,
+        "quantity": 2
+      },
+      {
+        "productId": 2,
+        "variantId": null,
+        "name": "Bluetooth Speaker Mini",
+        "variantLabel": null,
+        "unitPriceCents": 3999,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 33,
+    "number": "SL-20260502-0033",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-05-02T10:29:00.000Z",
+    "deliveryDate": "2026-05-02",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 104600,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 10460,
+    "totalCents": 115060,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 36,
+        "variantId": null,
+        "name": "Football Size 5",
+        "variantLabel": null,
+        "unitPriceCents": 1600,
+        "quantity": 3
+      },
+      {
+        "productId": 10,
+        "variantId": null,
+        "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+        "variantLabel": null,
+        "unitPriceCents": 49900,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "number": "SL-20260603-0034",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-06-03T10:30:00.000Z",
+    "deliveryDate": "2026-06-03",
+    "couponCode": null,
+    "shippingMethod": "express",
+    "subtotalCents": 3700,
+    "discountCents": 0,
+    "shippingCents": 1500,
+    "taxCents": 370,
+    "totalCents": 5570,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 40,
+        "variantId": null,
+        "name": "Jump Rope",
+        "variantLabel": null,
+        "unitPriceCents": 500,
+        "quantity": 1
+      },
+      {
+        "productId": 24,
+        "variantId": null,
+        "name": "Memory Foam Pillow",
+        "variantLabel": null,
+        "unitPriceCents": 3200,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 35,
+    "number": "SL-20260604-0035",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-06-04T10:31:00.000Z",
+    "deliveryDate": "2026-06-04",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 31400,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 3140,
+    "totalCents": 34540,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 43,
+        "variantId": null,
+        "name": "A History of Northern Lights",
+        "variantLabel": null,
+        "unitPriceCents": 1800,
+        "quantity": 2
+      },
+      {
+        "productId": 35,
+        "variantId": null,
+        "name": "Inflatable Camping Tent 2-Person",
+        "variantLabel": null,
+        "unitPriceCents": 13900,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 36,
+    "number": "SL-20260605-0036",
+    "userId": 1,
+    "status": "Shipped",
+    "createdAt": "2026-06-05T10:32:00.000Z",
+    "deliveryDate": "2026-06-05",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 6397,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 640,
+    "totalCents": 7537,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 48,
+        "variantId": null,
+        "name": "Children's Bedtime Stories",
+        "variantLabel": null,
+        "unitPriceCents": 999,
+        "quantity": 3
+      },
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 37,
+    "number": "SL-20260606-0037",
+    "userId": 1,
+    "status": "Processing",
+    "createdAt": "2026-06-06T10:33:00.000Z",
+    "deliveryDate": "2026-06-06",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 4698,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 470,
+    "totalCents": 5668,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 51,
+        "variantId": null,
+        "name": "Wooden Building Blocks 100 pcs",
+        "variantLabel": null,
+        "unitPriceCents": 2700,
+        "quantity": 1
+      },
+      {
+        "productId": 48,
+        "variantId": null,
+        "name": "Children's Bedtime Stories",
+        "variantLabel": null,
+        "unitPriceCents": 999,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 38,
+    "number": "SL-20260607-0038",
+    "userId": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-06-07T10:34:00.000Z",
+    "deliveryDate": "2026-06-07",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 11540,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 1154,
+    "totalCents": 12694,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 57,
+        "variantId": null,
+        "name": "Toy Train Set",
+        "variantLabel": null,
+        "unitPriceCents": 4720,
+        "quantity": 2
+      },
+      {
+        "productId": 56,
+        "variantId": null,
+        "name": "Art and Craft Kit",
+        "variantLabel": null,
+        "unitPriceCents": 2100,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 39,
+    "number": "SL-20260608-0039",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-06-08T10:35:00.000Z",
+    "deliveryDate": "2026-06-08",
+    "couponCode": "SAVE10",
+    "shippingMethod": "express",
+    "subtotalCents": 67698,
+    "discountCents": 6770,
+    "shippingCents": 1500,
+    "taxCents": 6093,
+    "totalCents": 68521,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 1,
+        "variantId": null,
+        "name": "Wireless Noise-Cancelling Headphones",
+        "variantLabel": null,
+        "unitPriceCents": 19900,
+        "quantity": 3
+      },
+      {
+        "productId": 2,
+        "variantId": null,
+        "name": "Bluetooth Speaker Mini",
+        "variantLabel": null,
+        "unitPriceCents": 3999,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 40,
+    "number": "SL-20260709-0040",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-07-09T10:36:00.000Z",
+    "deliveryDate": "2026-07-09",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 53350,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 5335,
+    "totalCents": 58685,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 4,
+        "variantId": null,
+        "name": "Smart Lamp",
+        "variantLabel": null,
+        "unitPriceCents": 3450,
+        "quantity": 1
+      },
+      {
+        "productId": 10,
+        "variantId": null,
+        "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+        "variantLabel": null,
+        "unitPriceCents": 49900,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 41,
+    "number": "SL-20260710-0041",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-07-10T10:37:00.000Z",
+    "deliveryDate": "2026-07-10",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 106200,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 10620,
+    "totalCents": 116820,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 10,
+        "variantId": null,
+        "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+        "variantLabel": null,
+        "unitPriceCents": 49900,
+        "quantity": 2
+      },
+      {
+        "productId": 24,
+        "variantId": null,
+        "name": "Memory Foam Pillow",
+        "variantLabel": null,
+        "unitPriceCents": 3200,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 42,
+    "number": "SL-20260711-0042",
+    "userId": 1,
+    "status": "Shipped",
+    "createdAt": "2026-07-11T10:38:00.000Z",
+    "deliveryDate": "2026-07-11",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 28300,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 2830,
+    "totalCents": 31130,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 21,
+        "variantId": null,
+        "name": "Ceramic Dinner Plate Set",
+        "variantLabel": null,
+        "unitPriceCents": 4800,
+        "quantity": 3
+      },
+      {
+        "productId": 35,
+        "variantId": null,
+        "name": "Inflatable Camping Tent 2-Person",
+        "variantLabel": null,
+        "unitPriceCents": 13900,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 43,
+    "number": "SL-20260712-0043",
+    "userId": 1,
+    "status": "Processing",
+    "createdAt": "2026-07-12T10:39:00.000Z",
+    "deliveryDate": "2026-07-12",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 13200,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 1320,
+    "totalCents": 14520,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 25,
+        "variantId": null,
+        "name": "Handwoven Organic Cotton Throw Blanket with Hand-Knotted Fringe, Extra Large Size, Machine Washable, Available in Multiple Seasonal Colours",
+        "variantLabel": null,
+        "unitPriceCents": 6400,
+        "quantity": 1
+      },
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 44,
+    "number": "SL-20260713-0044",
+    "userId": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-07-13T10:40:00.000Z",
+    "deliveryDate": "2026-07-13",
+    "couponCode": null,
+    "shippingMethod": "express",
+    "subtotalCents": 30799,
+    "discountCents": 0,
+    "shippingCents": 1500,
+    "taxCents": 3080,
+    "totalCents": 35379,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 32,
+        "variantId": null,
+        "name": "Adjustable Dumbbell Set",
+        "variantLabel": null,
+        "unitPriceCents": 14900,
+        "quantity": 2
+      },
+      {
+        "productId": 48,
+        "variantId": null,
+        "name": "Children's Bedtime Stories",
+        "variantLabel": null,
+        "unitPriceCents": 999,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 45,
+    "number": "SL-20260714-0045",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-07-14T10:41:00.000Z",
+    "deliveryDate": "2026-07-14",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 26700,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 2670,
+    "totalCents": 29370,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 37,
+        "variantId": null,
+        "name": "Tennis Racket",
+        "variantLabel": null,
+        "unitPriceCents": 7500,
+        "quantity": 3
+      },
+      {
+        "productId": 56,
+        "variantId": null,
+        "name": "Art and Craft Kit",
+        "variantLabel": null,
+        "unitPriceCents": 2100,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 46,
+    "number": "SL-20260815-0046",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-08-15T10:42:00.000Z",
+    "deliveryDate": "2026-08-15",
+    "couponCode": "SAVE10",
+    "shippingMethod": "standard",
+    "subtotalCents": 7399,
+    "discountCents": 740,
+    "shippingCents": 500,
+    "taxCents": 666,
+    "totalCents": 7825,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 1
+      },
+      {
+        "productId": 2,
+        "variantId": null,
+        "name": "Bluetooth Speaker Mini",
+        "variantLabel": null,
+        "unitPriceCents": 3999,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 47,
+    "number": "SL-20260816-0047",
+    "userId": 1,
+    "status": "Delivered",
+    "createdAt": "2026-08-16T10:43:00.000Z",
+    "deliveryDate": "2026-08-16",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 105600,
+    "discountCents": 0,
+    "shippingCents": 0,
+    "taxCents": 10560,
+    "totalCents": 116160,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 44,
+        "variantId": null,
+        "name": "The Complete Illustrated Guide to Beginner Home Cooking, Meal Planning, Budgeting and Reducing Food Waste: Second Revised Edition",
+        "variantLabel": null,
+        "unitPriceCents": 2900,
+        "quantity": 2
+      },
+      {
+        "productId": 10,
+        "variantId": null,
+        "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+        "variantLabel": null,
+        "unitPriceCents": 49900,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 48,
+    "number": "SL-20260817-0048",
+    "userId": 1,
+    "status": "Shipped",
+    "createdAt": "2026-08-17T10:44:00.000Z",
+    "deliveryDate": "2026-08-17",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 9197,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 920,
+    "totalCents": 10617,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 49,
+        "variantId": null,
+        "name": "Mastering Personal Finance",
+        "variantLabel": null,
+        "unitPriceCents": 1999,
+        "quantity": 3
+      },
+      {
+        "productId": 24,
+        "variantId": null,
+        "name": "Memory Foam Pillow",
+        "variantLabel": null,
+        "unitPriceCents": 3200,
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 49,
+    "number": "SL-20260818-0049",
+    "userId": 1,
+    "status": "Processing",
+    "createdAt": "2026-08-18T10:45:00.000Z",
+    "deliveryDate": "2026-08-18",
+    "couponCode": null,
+    "shippingMethod": "express",
+    "subtotalCents": 31300,
+    "discountCents": 0,
+    "shippingCents": 1500,
+    "taxCents": 3130,
+    "totalCents": 35930,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 52,
+        "variantId": null,
+        "name": "Remote Control Racing Car",
+        "variantLabel": null,
+        "unitPriceCents": 3500,
+        "quantity": 1
+      },
+      {
+        "productId": 35,
+        "variantId": null,
+        "name": "Inflatable Camping Tent 2-Person",
+        "variantLabel": null,
+        "unitPriceCents": 13900,
+        "quantity": 2
+      }
+    ]
+  },
+  {
+    "id": 50,
+    "number": "SL-20260819-0050",
+    "userId": 1,
+    "status": "Cancelled",
+    "createdAt": "2026-08-19T10:46:00.000Z",
+    "deliveryDate": "2026-08-19",
+    "couponCode": null,
+    "shippingMethod": "standard",
+    "subtotalCents": 6000,
+    "discountCents": 0,
+    "shippingCents": 500,
+    "taxCents": 600,
+    "totalCents": 7100,
+    "paymentLast4": "4242",
+    "address": {
+      "firstName": "Casey",
+      "lastName": "Customer",
+      "street": "Sveavagen 12",
+      "city": "Stockholm",
+      "regionCode": "AB",
+      "countryCode": "SE",
+      "postalCode": "11157",
+      "phone": "+46 8 123 456"
+    },
+    "items": [
+      {
+        "productId": 59,
+        "variantId": null,
+        "name": "Magnetic Drawing Board",
+        "variantLabel": null,
+        "unitPriceCents": 1300,
+        "quantity": 2
+      },
+      {
+        "productId": 41,
+        "variantId": null,
+        "name": "The Pragmatic Tester",
+        "variantLabel": null,
+        "unitPriceCents": 3400,
+        "quantity": 1
+      }
+    ]
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "code": "SE",
+    "name": "Sweden",
+    "postalPattern": "^\\d{5}$",
+    "postalHint": "5 digits",
+    "regions": [
+      {
+        "code": "AB",
+        "name": "Stockholm"
+      },
+      {
+        "code": "O",
+        "name": "Vastra Gotaland"
+      },
+      {
+        "code": "M",
+        "name": "Skane"
+      },
+      {
+        "code": "C",
+        "name": "Uppsala"
+      }
+    ]
+  },
+  {
+    "code": "US",
+    "name": "United States",
+    "postalPattern": "^\\d{5}$",
+    "postalHint": "5 digits",
+    "regions": [
+      {
+        "code": "CA",
+        "name": "California"
+      },
+      {
+        "code": "NY",
+        "name": "New York"
+      },
+      {
+        "code": "TX",
+        "name": "Texas"
+      },
+      {
+        "code": "WA",
+        "name": "Washington"
+      }
+    ]
+  },
+  {
+    "code": "IN",
+    "name": "India",
+    "postalPattern": "^\\d{6}$",
+    "postalHint": "6 digits",
+    "regions": [
+      {
+        "code": "MH",
+        "name": "Maharashtra"
+      },
+      {
+        "code": "KA",
+        "name": "Karnataka"
+      },
+      {
+        "code": "DL",
+        "name": "Delhi"
+      },
+      {
+        "code": "TN",
+        "name": "Tamil Nadu"
+      }
+    ]
+  }
+]

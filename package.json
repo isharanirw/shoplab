@@ -1,0 +1,32 @@
+{
+  "name": "shoplab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ShopLab: a demo online store built as a test target for QA automation practice.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client && npm run build -w server",
+    "start": "node server/dist/index.js",
+    "seed": "npm run seed -w server",
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck -w client && npm run typecheck -w server",
+    "test": "npm run test -w client && npm run test -w server"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.5.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0"
+  }
+}

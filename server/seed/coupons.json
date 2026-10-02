@@ -1,0 +1,47 @@
+[
+  {
+    "code": "SAVE10",
+    "kind": "percent",
+    "value": 10,
+    "minSubtotalCents": 0,
+    "oncePerAccount": 0,
+    "expiresAt": null,
+    "description": "10% off the subtotal"
+  },
+  {
+    "code": "FREESHIP",
+    "kind": "free_shipping",
+    "value": 0,
+    "minSubtotalCents": 3000,
+    "oncePerAccount": 0,
+    "expiresAt": null,
+    "description": "Free standard shipping on subtotals of $30 or more"
+  },
+  {
+    "code": "MIN100",
+    "kind": "fixed",
+    "value": 2000,
+    "minSubtotalCents": 10000,
+    "oncePerAccount": 0,
+    "expiresAt": null,
+    "description": "$20 off when the subtotal is $100 or more"
+  },
+  {
+    "code": "ONCE5",
+    "kind": "fixed",
+    "value": 500,
+    "minSubtotalCents": 0,
+    "oncePerAccount": 1,
+    "expiresAt": null,
+    "description": "$5 off, usable once per account"
+  },
+  {
+    "code": "EXPIRED20",
+    "kind": "percent",
+    "value": 20,
+    "minSubtotalCents": 0,
+    "oncePerAccount": 0,
+    "expiresAt": "2020-01-01T00:00:00.000Z",
+    "description": "Expired"
+  }
+]

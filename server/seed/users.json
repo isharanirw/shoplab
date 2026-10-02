@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Casey Customer",
+    "email": "customer1@shoplab.test",
+    "role": "customer",
+    "locked": 0,
+    "passwordHash": "$2b$10$tt8xx3cxs1YyY0fB0MB3a.Mr3QgHurnrT66C9krviF9qDhYBr0AOu",
+    "createdAt": "2026-01-05T09:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Sam Shopper",
+    "email": "customer2@shoplab.test",
+    "role": "customer",
+    "locked": 0,
+    "passwordHash": "$2b$10$PKnAzicRPhOqoBA2a2ojZebTG.xERrmjn0NrmHeWKy.NX4Bvy9Dsa",
+    "createdAt": "2026-01-05T09:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "Lee Locked",
+    "email": "locked@shoplab.test",
+    "role": "customer",
+    "locked": 1,
+    "passwordHash": "$2b$10$elOBmEhR2TzPA2x71WalTeem5h6r7zNIhoKSxBbC2jLXYqf.YFiwm",
+    "createdAt": "2026-01-05T09:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "name": "Alex Admin",
+    "email": "admin@shoplab.test",
+    "role": "admin",
+    "locked": 0,
+    "passwordHash": "$2b$10$3UcT6HRoCfOJmauH8A52AeCLckNwTdO1wHDAPmpZ3o9zlQpj0HTa.",
+    "createdAt": "2026-01-05T09:00:00.000Z"
+  }
+]

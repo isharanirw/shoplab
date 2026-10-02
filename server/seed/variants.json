@@ -1,0 +1,520 @@
+[
+  {
+    "id": 1,
+    "productId": 9,
+    "size": null,
+    "colour": "Black",
+    "stock": 12
+  },
+  {
+    "id": 2,
+    "productId": 9,
+    "size": null,
+    "colour": "Blue",
+    "stock": 8
+  },
+  {
+    "id": 3,
+    "productId": 9,
+    "size": null,
+    "colour": "Red",
+    "stock": 0
+  },
+  {
+    "id": 4,
+    "productId": 11,
+    "size": "S",
+    "colour": "White",
+    "stock": 10
+  },
+  {
+    "id": 5,
+    "productId": 11,
+    "size": "S",
+    "colour": "Black",
+    "stock": 8
+  },
+  {
+    "id": 6,
+    "productId": 11,
+    "size": "M",
+    "colour": "White",
+    "stock": 12
+  },
+  {
+    "id": 7,
+    "productId": 11,
+    "size": "M",
+    "colour": "Black",
+    "stock": 0
+  },
+  {
+    "id": 8,
+    "productId": 11,
+    "size": "L",
+    "colour": "White",
+    "stock": 6
+  },
+  {
+    "id": 9,
+    "productId": 11,
+    "size": "L",
+    "colour": "Black",
+    "stock": 9
+  },
+  {
+    "id": 10,
+    "productId": 11,
+    "size": "XL",
+    "colour": "White",
+    "stock": 4
+  },
+  {
+    "id": 11,
+    "productId": 11,
+    "size": "XL",
+    "colour": "Black",
+    "stock": 15
+  },
+  {
+    "id": 12,
+    "productId": 12,
+    "size": "30",
+    "colour": "Blue",
+    "stock": 5
+  },
+  {
+    "id": 13,
+    "productId": 12,
+    "size": "30",
+    "colour": "Black",
+    "stock": 7
+  },
+  {
+    "id": 14,
+    "productId": 12,
+    "size": "32",
+    "colour": "Blue",
+    "stock": 9
+  },
+  {
+    "id": 15,
+    "productId": 12,
+    "size": "32",
+    "colour": "Black",
+    "stock": 3
+  },
+  {
+    "id": 16,
+    "productId": 12,
+    "size": "34",
+    "colour": "Blue",
+    "stock": 0
+  },
+  {
+    "id": 17,
+    "productId": 12,
+    "size": "34",
+    "colour": "Black",
+    "stock": 6
+  },
+  {
+    "id": 18,
+    "productId": 12,
+    "size": "36",
+    "colour": "Blue",
+    "stock": 8
+  },
+  {
+    "id": 19,
+    "productId": 12,
+    "size": "36",
+    "colour": "Black",
+    "stock": 4
+  },
+  {
+    "id": 20,
+    "productId": 13,
+    "size": "S",
+    "colour": "Grey",
+    "stock": 6
+  },
+  {
+    "id": 21,
+    "productId": 13,
+    "size": "S",
+    "colour": "Navy",
+    "stock": 9
+  },
+  {
+    "id": 22,
+    "productId": 13,
+    "size": "M",
+    "colour": "Grey",
+    "stock": 0
+  },
+  {
+    "id": 23,
+    "productId": 13,
+    "size": "M",
+    "colour": "Navy",
+    "stock": 3
+  },
+  {
+    "id": 24,
+    "productId": 13,
+    "size": "L",
+    "colour": "Grey",
+    "stock": 7
+  },
+  {
+    "id": 25,
+    "productId": 13,
+    "size": "L",
+    "colour": "Navy",
+    "stock": 0
+  },
+  {
+    "id": 26,
+    "productId": 13,
+    "size": "XL",
+    "colour": "Grey",
+    "stock": 5
+  },
+  {
+    "id": 27,
+    "productId": 13,
+    "size": "XL",
+    "colour": "Navy",
+    "stock": 8
+  },
+  {
+    "id": 28,
+    "productId": 17,
+    "size": "S",
+    "colour": "Red",
+    "stock": 4
+  },
+  {
+    "id": 29,
+    "productId": 17,
+    "size": "S",
+    "colour": "Blue",
+    "stock": 6
+  },
+  {
+    "id": 30,
+    "productId": 17,
+    "size": "M",
+    "colour": "Red",
+    "stock": 0
+  },
+  {
+    "id": 31,
+    "productId": 17,
+    "size": "M",
+    "colour": "Blue",
+    "stock": 5
+  },
+  {
+    "id": 32,
+    "productId": 17,
+    "size": "L",
+    "colour": "Red",
+    "stock": 0
+  },
+  {
+    "id": 33,
+    "productId": 17,
+    "size": "L",
+    "colour": "Blue",
+    "stock": 7
+  },
+  {
+    "id": 34,
+    "productId": 18,
+    "size": "S",
+    "colour": "Blue",
+    "stock": 0
+  },
+  {
+    "id": 35,
+    "productId": 18,
+    "size": "M",
+    "colour": "Blue",
+    "stock": 0
+  },
+  {
+    "id": 36,
+    "productId": 18,
+    "size": "L",
+    "colour": "Blue",
+    "stock": 0
+  },
+  {
+    "id": 37,
+    "productId": 19,
+    "size": "S",
+    "colour": "White",
+    "stock": 9
+  },
+  {
+    "id": 38,
+    "productId": 19,
+    "size": "S",
+    "colour": "Light Blue",
+    "stock": 11
+  },
+  {
+    "id": 39,
+    "productId": 19,
+    "size": "M",
+    "colour": "White",
+    "stock": 6
+  },
+  {
+    "id": 40,
+    "productId": 19,
+    "size": "M",
+    "colour": "Light Blue",
+    "stock": 2
+  },
+  {
+    "id": 41,
+    "productId": 19,
+    "size": "L",
+    "colour": "White",
+    "stock": 7
+  },
+  {
+    "id": 42,
+    "productId": 19,
+    "size": "L",
+    "colour": "Light Blue",
+    "stock": 5
+  },
+  {
+    "id": 43,
+    "productId": 19,
+    "size": "XL",
+    "colour": "White",
+    "stock": 0
+  },
+  {
+    "id": 44,
+    "productId": 19,
+    "size": "XL",
+    "colour": "Light Blue",
+    "stock": 4
+  },
+  {
+    "id": 45,
+    "productId": 20,
+    "size": "S",
+    "colour": "Grey",
+    "stock": 8
+  },
+  {
+    "id": 46,
+    "productId": 20,
+    "size": "S",
+    "colour": "Navy",
+    "stock": 5
+  },
+  {
+    "id": 47,
+    "productId": 20,
+    "size": "M",
+    "colour": "Grey",
+    "stock": 6
+  },
+  {
+    "id": 48,
+    "productId": 20,
+    "size": "M",
+    "colour": "Navy",
+    "stock": 7
+  },
+  {
+    "id": 49,
+    "productId": 20,
+    "size": "L",
+    "colour": "Grey",
+    "stock": 0
+  },
+  {
+    "id": 50,
+    "productId": 20,
+    "size": "L",
+    "colour": "Navy",
+    "stock": 9
+  },
+  {
+    "id": 51,
+    "productId": 22,
+    "size": null,
+    "colour": "Silver",
+    "stock": 14
+  },
+  {
+    "id": 52,
+    "productId": 22,
+    "size": null,
+    "colour": "Black",
+    "stock": 9
+  },
+  {
+    "id": 53,
+    "productId": 22,
+    "size": null,
+    "colour": "Blue",
+    "stock": 0
+  },
+  {
+    "id": 54,
+    "productId": 30,
+    "size": "Small",
+    "colour": "Grey",
+    "stock": 3
+  },
+  {
+    "id": 55,
+    "productId": 30,
+    "size": "Small",
+    "colour": "Beige",
+    "stock": 2
+  },
+  {
+    "id": 56,
+    "productId": 30,
+    "size": "Large",
+    "colour": "Grey",
+    "stock": 0
+  },
+  {
+    "id": 57,
+    "productId": 30,
+    "size": "Large",
+    "colour": "Beige",
+    "stock": 4
+  },
+  {
+    "id": 58,
+    "productId": 31,
+    "size": null,
+    "colour": "Purple",
+    "stock": 10
+  },
+  {
+    "id": 59,
+    "productId": 31,
+    "size": null,
+    "colour": "Green",
+    "stock": 0
+  },
+  {
+    "id": 60,
+    "productId": 31,
+    "size": null,
+    "colour": "Black",
+    "stock": 12
+  },
+  {
+    "id": 61,
+    "productId": 33,
+    "size": "40",
+    "colour": "Black",
+    "stock": 6
+  },
+  {
+    "id": 62,
+    "productId": 33,
+    "size": "40",
+    "colour": "Orange",
+    "stock": 4
+  },
+  {
+    "id": 63,
+    "productId": 33,
+    "size": "42",
+    "colour": "Black",
+    "stock": 8
+  },
+  {
+    "id": 64,
+    "productId": 33,
+    "size": "42",
+    "colour": "Orange",
+    "stock": 0
+  },
+  {
+    "id": 65,
+    "productId": 33,
+    "size": "44",
+    "colour": "Black",
+    "stock": 5
+  },
+  {
+    "id": 66,
+    "productId": 33,
+    "size": "44",
+    "colour": "Orange",
+    "stock": 2
+  },
+  {
+    "id": 67,
+    "productId": 34,
+    "size": "S",
+    "colour": "Black",
+    "stock": 7
+  },
+  {
+    "id": 68,
+    "productId": 34,
+    "size": "S",
+    "colour": "White",
+    "stock": 3
+  },
+  {
+    "id": 69,
+    "productId": 34,
+    "size": "M",
+    "colour": "Black",
+    "stock": 9
+  },
+  {
+    "id": 70,
+    "productId": 34,
+    "size": "M",
+    "colour": "White",
+    "stock": 0
+  },
+  {
+    "id": 71,
+    "productId": 34,
+    "size": "L",
+    "colour": "Black",
+    "stock": 6
+  },
+  {
+    "id": 72,
+    "productId": 34,
+    "size": "L",
+    "colour": "White",
+    "stock": 4
+  },
+  {
+    "id": 73,
+    "productId": 54,
+    "size": null,
+    "colour": "Brown",
+    "stock": 11
+  },
+  {
+    "id": 74,
+    "productId": 54,
+    "size": null,
+    "colour": "White",
+    "stock": 0
+  }
+]

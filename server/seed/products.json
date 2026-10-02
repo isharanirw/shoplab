@@ -1,0 +1,1682 @@
+[
+  {
+    "id": 1,
+    "name": "Wireless Noise-Cancelling Headphones",
+    "category": "Electronics",
+    "subcategory": "Audio",
+    "description": "Wireless Noise-Cancelling Headphones: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "2 years"
+      },
+      {
+        "label": "Power",
+        "value": "Rechargeable battery"
+      }
+    ],
+    "priceCents": 19900,
+    "salePriceCents": null,
+    "stock": 24,
+    "featured": 1,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-08-12T08:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Bluetooth Speaker Mini",
+    "category": "Electronics",
+    "subcategory": "Audio",
+    "description": "Bluetooth Speaker Mini: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "1 year"
+      },
+      {
+        "label": "Power",
+        "value": "Mains"
+      }
+    ],
+    "priceCents": 4999,
+    "salePriceCents": 3999,
+    "stock": 40,
+    "featured": 1,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-06-23T08:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "USB-C Fast Charger 65W",
+    "category": "Electronics",
+    "subcategory": "Accessories",
+    "description": "USB-C Fast Charger 65W: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "2 years"
+      },
+      {
+        "label": "Power",
+        "value": "USB-C"
+      }
+    ],
+    "priceCents": 2900,
+    "salePriceCents": null,
+    "stock": 60,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-04-07T08:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "name": "Smart Lamp",
+    "category": "Electronics",
+    "subcategory": "Smart Home",
+    "description": "Smart Lamp: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "1 year"
+      },
+      {
+        "label": "Power",
+        "value": "Rechargeable battery"
+      }
+    ],
+    "priceCents": 3450,
+    "salePriceCents": null,
+    "stock": 18,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-02-18T08:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "name": "Mechanical Keyboard",
+    "category": "Electronics",
+    "subcategory": "Computers",
+    "description": "Mechanical Keyboard: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "2 years"
+      },
+      {
+        "label": "Power",
+        "value": "Mains"
+      }
+    ],
+    "priceCents": 8900,
+    "salePriceCents": null,
+    "stock": 2,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-09-02T08:00:00.000Z"
+  },
+  {
+    "id": 6,
+    "name": "Wireless Mouse",
+    "category": "Electronics",
+    "subcategory": "Computers",
+    "description": "Wireless Mouse: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "1 year"
+      },
+      {
+        "label": "Power",
+        "value": "USB-C"
+      }
+    ],
+    "priceCents": 2499,
+    "salePriceCents": null,
+    "stock": 55,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-07-13T08:00:00.000Z"
+  },
+  {
+    "id": 7,
+    "name": "4K Action Camera",
+    "category": "Electronics",
+    "subcategory": "Cameras",
+    "description": "4K Action Camera: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "2 years"
+      },
+      {
+        "label": "Power",
+        "value": "Rechargeable battery"
+      }
+    ],
+    "priceCents": 24900,
+    "salePriceCents": null,
+    "stock": 0,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-05-24T08:00:00.000Z"
+  },
+  {
+    "id": 8,
+    "name": "Portable Power Bank 20000mAh",
+    "category": "Electronics",
+    "subcategory": "Accessories",
+    "description": "Portable Power Bank 20000mAh: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "1 year"
+      },
+      {
+        "label": "Power",
+        "value": "Mains"
+      }
+    ],
+    "priceCents": 4500,
+    "salePriceCents": 3600,
+    "stock": 32,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-03-08T08:00:00.000Z"
+  },
+  {
+    "id": 9,
+    "name": "Smartphone Case",
+    "category": "Electronics",
+    "subcategory": "Accessories",
+    "description": "Smartphone Case: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "2 years"
+      },
+      {
+        "label": "Power",
+        "value": "USB-C"
+      }
+    ],
+    "priceCents": 1500,
+    "salePriceCents": null,
+    "stock": 20,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-01-19T08:00:00.000Z"
+  },
+  {
+    "id": 10,
+    "name": "Ultra-Wide Curved Gaming Monitor 34-inch 144Hz with Adjustable Stand, HDR Support and Built-In Speakers (Limited Collector's Edition)",
+    "category": "Electronics",
+    "subcategory": "Computers",
+    "description": "This product: A dependable piece of everyday tech, tested for comfort and reliability.",
+    "specs": [
+      {
+        "label": "Brand",
+        "value": "Nordic Labs"
+      },
+      {
+        "label": "Warranty",
+        "value": "1 year"
+      },
+      {
+        "label": "Power",
+        "value": "Rechargeable battery"
+      }
+    ],
+    "priceCents": 49900,
+    "salePriceCents": null,
+    "stock": 6,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-08-03T08:00:00.000Z"
+  },
+  {
+    "id": 11,
+    "name": "Classic Cotton T-Shirt",
+    "category": "Clothing",
+    "subcategory": "Tops",
+    "description": "Classic Cotton T-Shirt: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Denim"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Relaxed"
+      }
+    ],
+    "priceCents": 1900,
+    "salePriceCents": null,
+    "stock": 64,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-06-14T08:00:00.000Z"
+  },
+  {
+    "id": 12,
+    "name": "Slim Fit Jeans",
+    "category": "Clothing",
+    "subcategory": "Bottoms",
+    "description": "Slim Fit Jeans: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "100% cotton"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Regular"
+      }
+    ],
+    "priceCents": 5900,
+    "salePriceCents": null,
+    "stock": 42,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-04-25T08:00:00.000Z"
+  },
+  {
+    "id": 13,
+    "name": "Hooded Sweatshirt",
+    "category": "Clothing",
+    "subcategory": "Tops",
+    "description": "Hooded Sweatshirt: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Cotton blend"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Slim"
+      }
+    ],
+    "priceCents": 4900,
+    "salePriceCents": 3900,
+    "stock": 38,
+    "featured": 1,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-02-09T08:00:00.000Z"
+  },
+  {
+    "id": 14,
+    "name": "Leather Belt",
+    "category": "Clothing",
+    "subcategory": "Accessories",
+    "description": "Leather Belt: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Wool blend"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Relaxed"
+      }
+    ],
+    "priceCents": 2200,
+    "salePriceCents": null,
+    "stock": 3,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-09-20T08:00:00.000Z"
+  },
+  {
+    "id": 15,
+    "name": "Wool Winter Scarf",
+    "category": "Clothing",
+    "subcategory": "Accessories",
+    "description": "Wool Winter Scarf: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Denim"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Regular"
+      }
+    ],
+    "priceCents": 1750,
+    "salePriceCents": 1225,
+    "stock": 28,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-07-04T08:00:00.000Z"
+  },
+  {
+    "id": 16,
+    "name": "Running Socks 6-Pack",
+    "category": "Clothing",
+    "subcategory": "Accessories",
+    "description": "Running Socks 6-Pack: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "100% cotton"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Slim"
+      }
+    ],
+    "priceCents": 1200,
+    "salePriceCents": null,
+    "stock": 90,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-05-15T08:00:00.000Z"
+  },
+  {
+    "id": 17,
+    "name": "Summer Dress",
+    "category": "Clothing",
+    "subcategory": "Dresses",
+    "description": "Summer Dress: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Cotton blend"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Relaxed"
+      }
+    ],
+    "priceCents": 4500,
+    "salePriceCents": 3600,
+    "stock": 22,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-03-26T08:00:00.000Z"
+  },
+  {
+    "id": 18,
+    "name": "Denim Jacket",
+    "category": "Clothing",
+    "subcategory": "Outerwear",
+    "description": "Denim Jacket: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Wool blend"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Regular"
+      }
+    ],
+    "priceCents": 7900,
+    "salePriceCents": null,
+    "stock": 0,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-01-10T08:00:00.000Z"
+  },
+  {
+    "id": 19,
+    "name": "Formal Oxford Shirt",
+    "category": "Clothing",
+    "subcategory": "Tops",
+    "description": "Formal Oxford Shirt: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Denim"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Slim"
+      }
+    ],
+    "priceCents": 5400,
+    "salePriceCents": null,
+    "stock": 44,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-08-21T08:00:00.000Z"
+  },
+  {
+    "id": 20,
+    "name": "Cotton Pyjama Set",
+    "category": "Clothing",
+    "subcategory": "Sleepwear",
+    "description": "Cotton Pyjama Set: Made from soft, durable fabric and designed to last through many washes.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "100% cotton"
+      },
+      {
+        "label": "Care",
+        "value": "Machine wash 30 C"
+      },
+      {
+        "label": "Fit",
+        "value": "Relaxed"
+      }
+    ],
+    "priceCents": 3500,
+    "salePriceCents": null,
+    "stock": 35,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-06-05T08:00:00.000Z"
+  },
+  {
+    "id": 21,
+    "name": "Ceramic Dinner Plate Set",
+    "category": "Home",
+    "subcategory": "Kitchen",
+    "description": "Ceramic Dinner Plate Set: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Stainless steel"
+      },
+      {
+        "label": "Dimensions",
+        "value": "20 x 19 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 4800,
+    "salePriceCents": null,
+    "stock": 20,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-04-16T08:00:00.000Z"
+  },
+  {
+    "id": 22,
+    "name": "Stainless Steel Water Bottle",
+    "category": "Home",
+    "subcategory": "Kitchen",
+    "description": "Stainless Steel Water Bottle: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Cotton"
+      },
+      {
+        "label": "Dimensions",
+        "value": "25 x 23 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 1800,
+    "salePriceCents": 1440,
+    "stock": 23,
+    "featured": 1,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-02-27T08:00:00.000Z"
+  },
+  {
+    "id": 23,
+    "name": "Smart Lamp",
+    "category": "Home",
+    "subcategory": "Lighting",
+    "description": "Smart Lamp: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Bamboo"
+      },
+      {
+        "label": "Dimensions",
+        "value": "30 x 27 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 2700,
+    "salePriceCents": null,
+    "stock": 35,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-09-11T08:00:00.000Z"
+  },
+  {
+    "id": 24,
+    "name": "Memory Foam Pillow",
+    "category": "Home",
+    "subcategory": "Bedroom",
+    "description": "Memory Foam Pillow: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic"
+      },
+      {
+        "label": "Dimensions",
+        "value": "35 x 31 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 3200,
+    "salePriceCents": null,
+    "stock": 44,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-07-22T08:00:00.000Z"
+  },
+  {
+    "id": 25,
+    "name": "Handwoven Organic Cotton Throw Blanket with Hand-Knotted Fringe, Extra Large Size, Machine Washable, Available in Multiple Seasonal Colours",
+    "category": "Home",
+    "subcategory": "Bedroom",
+    "description": "This product: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Ceramic"
+      },
+      {
+        "label": "Dimensions",
+        "value": "40 x 15 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 6400,
+    "salePriceCents": null,
+    "stock": 12,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-05-06T08:00:00.000Z"
+  },
+  {
+    "id": 26,
+    "name": "Scented Candle Set",
+    "category": "Home",
+    "subcategory": "Decor",
+    "description": "Scented Candle Set: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Stainless steel"
+      },
+      {
+        "label": "Dimensions",
+        "value": "45 x 19 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 1400,
+    "salePriceCents": null,
+    "stock": 1,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-03-17T08:00:00.000Z"
+  },
+  {
+    "id": 27,
+    "name": "Robot Vacuum Cleaner",
+    "category": "Home",
+    "subcategory": "Appliances",
+    "description": "Robot Vacuum Cleaner: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Cotton"
+      },
+      {
+        "label": "Dimensions",
+        "value": "50 x 23 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 32900,
+    "salePriceCents": 27900,
+    "stock": 9,
+    "featured": 1,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-01-01T08:00:00.000Z"
+  },
+  {
+    "id": 28,
+    "name": "Bamboo Cutting Board",
+    "category": "Home",
+    "subcategory": "Kitchen",
+    "description": "Bamboo Cutting Board: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Bamboo"
+      },
+      {
+        "label": "Dimensions",
+        "value": "20 x 27 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 2100,
+    "salePriceCents": null,
+    "stock": 38,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-08-12T08:00:00.000Z"
+  },
+  {
+    "id": 29,
+    "name": "Cast Iron Skillet 12-inch",
+    "category": "Home",
+    "subcategory": "Kitchen",
+    "description": "Cast Iron Skillet 12-inch: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic"
+      },
+      {
+        "label": "Dimensions",
+        "value": "25 x 31 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 3600,
+    "salePriceCents": null,
+    "stock": 0,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-06-23T08:00:00.000Z"
+  },
+  {
+    "id": 30,
+    "name": "Area Rug",
+    "category": "Home",
+    "subcategory": "Decor",
+    "description": "Area Rug: A practical addition to any room, built with quality materials.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Ceramic"
+      },
+      {
+        "label": "Dimensions",
+        "value": "30 x 15 cm"
+      },
+      {
+        "label": "Care",
+        "value": "Wipe clean"
+      }
+    ],
+    "priceCents": 11900,
+    "salePriceCents": null,
+    "stock": 9,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-04-07T08:00:00.000Z"
+  },
+  {
+    "id": 31,
+    "name": "Yoga Mat",
+    "category": "Sports",
+    "subcategory": "Fitness",
+    "description": "Yoga Mat: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Steel"
+      },
+      {
+        "label": "Weight",
+        "value": "5.1 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Outdoor"
+      }
+    ],
+    "priceCents": 2500,
+    "salePriceCents": null,
+    "stock": 22,
+    "featured": 1,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-02-18T08:00:00.000Z"
+  },
+  {
+    "id": 32,
+    "name": "Adjustable Dumbbell Set",
+    "category": "Sports",
+    "subcategory": "Fitness",
+    "description": "Adjustable Dumbbell Set: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Nylon"
+      },
+      {
+        "label": "Weight",
+        "value": "6.2 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Indoor and outdoor"
+      }
+    ],
+    "priceCents": 14900,
+    "salePriceCents": null,
+    "stock": 7,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-09-02T08:00:00.000Z"
+  },
+  {
+    "id": 33,
+    "name": "Trail Running Shoes",
+    "category": "Sports",
+    "subcategory": "Footwear",
+    "description": "Trail Running Shoes: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Rubber"
+      },
+      {
+        "label": "Weight",
+        "value": "7.3 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Indoor"
+      }
+    ],
+    "priceCents": 10900,
+    "salePriceCents": 8900,
+    "stock": 25,
+    "featured": 1,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-07-13T08:00:00.000Z"
+  },
+  {
+    "id": 34,
+    "name": "Cycling Helmet",
+    "category": "Sports",
+    "subcategory": "Cycling",
+    "description": "Cycling Helmet: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Polyester"
+      },
+      {
+        "label": "Weight",
+        "value": "8.4 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Outdoor"
+      }
+    ],
+    "priceCents": 5500,
+    "salePriceCents": null,
+    "stock": 29,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-05-24T08:00:00.000Z"
+  },
+  {
+    "id": 35,
+    "name": "Inflatable Camping Tent 2-Person",
+    "category": "Sports",
+    "subcategory": "Outdoors",
+    "description": "Inflatable Camping Tent 2-Person: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Steel"
+      },
+      {
+        "label": "Weight",
+        "value": "9.5 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Indoor and outdoor"
+      }
+    ],
+    "priceCents": 13900,
+    "salePriceCents": null,
+    "stock": 11,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-03-08T08:00:00.000Z"
+  },
+  {
+    "id": 36,
+    "name": "Football Size 5",
+    "category": "Sports",
+    "subcategory": "Team Sports",
+    "description": "Football Size 5: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Nylon"
+      },
+      {
+        "label": "Weight",
+        "value": "1.6 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Indoor"
+      }
+    ],
+    "priceCents": 2000,
+    "salePriceCents": 1600,
+    "stock": 70,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-01-19T08:00:00.000Z"
+  },
+  {
+    "id": 37,
+    "name": "Tennis Racket",
+    "category": "Sports",
+    "subcategory": "Racquet Sports",
+    "description": "Tennis Racket: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Rubber"
+      },
+      {
+        "label": "Weight",
+        "value": "2.7 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Outdoor"
+      }
+    ],
+    "priceCents": 7500,
+    "salePriceCents": null,
+    "stock": 15,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-08-03T08:00:00.000Z"
+  },
+  {
+    "id": 38,
+    "name": "Resistance Bands Set",
+    "category": "Sports",
+    "subcategory": "Fitness",
+    "description": "Resistance Bands Set: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Polyester"
+      },
+      {
+        "label": "Weight",
+        "value": "3.8 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Indoor and outdoor"
+      }
+    ],
+    "priceCents": 1600,
+    "salePriceCents": null,
+    "stock": 2,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-06-14T08:00:00.000Z"
+  },
+  {
+    "id": 39,
+    "name": "Hiking Backpack 40L",
+    "category": "Sports",
+    "subcategory": "Outdoors",
+    "description": "Hiking Backpack 40L: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Steel"
+      },
+      {
+        "label": "Weight",
+        "value": "4.9 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Indoor"
+      }
+    ],
+    "priceCents": 8500,
+    "salePriceCents": 6800,
+    "stock": 22,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-04-25T08:00:00.000Z"
+  },
+  {
+    "id": 40,
+    "name": "Jump Rope",
+    "category": "Sports",
+    "subcategory": "Fitness",
+    "description": "Jump Rope: Built for training and the outdoors, with a focus on durability.",
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Nylon"
+      },
+      {
+        "label": "Weight",
+        "value": "5.0 kg"
+      },
+      {
+        "label": "Use",
+        "value": "Outdoor"
+      }
+    ],
+    "priceCents": 500,
+    "salePriceCents": null,
+    "stock": 120,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-02-09T08:00:00.000Z"
+  },
+  {
+    "id": 41,
+    "name": "The Pragmatic Tester",
+    "category": "Books",
+    "subcategory": "Technology",
+    "description": "The Pragmatic Tester: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "407"
+      },
+      {
+        "label": "Format",
+        "value": "Paperback"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 3400,
+    "salePriceCents": null,
+    "stock": 30,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-09-20T08:00:00.000Z"
+  },
+  {
+    "id": 42,
+    "name": "Mystery at Lake Harbour",
+    "category": "Books",
+    "subcategory": "Fiction",
+    "description": "Mystery at Lake Harbour: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "414"
+      },
+      {
+        "label": "Format",
+        "value": "Hardcover"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 1299,
+    "salePriceCents": null,
+    "stock": 41,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-07-04T08:00:00.000Z"
+  },
+  {
+    "id": 43,
+    "name": "A History of Northern Lights",
+    "category": "Books",
+    "subcategory": "Non-fiction",
+    "description": "A History of Northern Lights: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "421"
+      },
+      {
+        "label": "Format",
+        "value": "Paperback"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 1800,
+    "salePriceCents": null,
+    "stock": 26,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-05-15T08:00:00.000Z"
+  },
+  {
+    "id": 44,
+    "name": "The Complete Illustrated Guide to Beginner Home Cooking, Meal Planning, Budgeting and Reducing Food Waste: Second Revised Edition",
+    "category": "Books",
+    "subcategory": "Cooking",
+    "description": "This product: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "428"
+      },
+      {
+        "label": "Format",
+        "value": "Hardcover"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 2900,
+    "salePriceCents": null,
+    "stock": 17,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-03-26T08:00:00.000Z"
+  },
+  {
+    "id": 45,
+    "name": "Learning TypeScript",
+    "category": "Books",
+    "subcategory": "Technology",
+    "description": "Learning TypeScript: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "435"
+      },
+      {
+        "label": "Format",
+        "value": "Paperback"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 4200,
+    "salePriceCents": null,
+    "stock": 33,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-01-10T08:00:00.000Z"
+  },
+  {
+    "id": 46,
+    "name": "The Quiet Garden",
+    "category": "Books",
+    "subcategory": "Fiction",
+    "description": "The Quiet Garden: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "442"
+      },
+      {
+        "label": "Format",
+        "value": "Hardcover"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 1150,
+    "salePriceCents": null,
+    "stock": 0,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-08-21T08:00:00.000Z"
+  },
+  {
+    "id": 47,
+    "name": "Atlas of the Seven Seas",
+    "category": "Books",
+    "subcategory": "Non-fiction",
+    "description": "Atlas of the Seven Seas: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "449"
+      },
+      {
+        "label": "Format",
+        "value": "Paperback"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 2600,
+    "salePriceCents": null,
+    "stock": 3,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-06-05T08:00:00.000Z"
+  },
+  {
+    "id": 48,
+    "name": "Children's Bedtime Stories",
+    "category": "Books",
+    "subcategory": "Children",
+    "description": "Children's Bedtime Stories: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "456"
+      },
+      {
+        "label": "Format",
+        "value": "Hardcover"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 999,
+    "salePriceCents": null,
+    "stock": 52,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-04-16T08:00:00.000Z"
+  },
+  {
+    "id": 49,
+    "name": "Mastering Personal Finance",
+    "category": "Books",
+    "subcategory": "Non-fiction",
+    "description": "Mastering Personal Finance: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "463"
+      },
+      {
+        "label": "Format",
+        "value": "Paperback"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 1999,
+    "salePriceCents": null,
+    "stock": 25,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-02-27T08:00:00.000Z"
+  },
+  {
+    "id": 50,
+    "name": "The Complete Poetry Collection",
+    "category": "Books",
+    "subcategory": "Fiction",
+    "description": "The Complete Poetry Collection: A well-regarded read that works for a quiet evening or a long journey.",
+    "specs": [
+      {
+        "label": "Pages",
+        "value": "470"
+      },
+      {
+        "label": "Format",
+        "value": "Hardcover"
+      },
+      {
+        "label": "Language",
+        "value": "English"
+      }
+    ],
+    "priceCents": 2300,
+    "salePriceCents": null,
+    "stock": 14,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-09-11T08:00:00.000Z"
+  },
+  {
+    "id": 51,
+    "name": "Wooden Building Blocks 100 pcs",
+    "category": "Toys",
+    "subcategory": "Building",
+    "description": "Wooden Building Blocks 100 pcs: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "12+"
+      },
+      {
+        "label": "Material",
+        "value": "Cardboard"
+      },
+      {
+        "label": "Batteries",
+        "value": "Not required"
+      }
+    ],
+    "priceCents": 2700,
+    "salePriceCents": null,
+    "stock": 36,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-07-22T08:00:00.000Z"
+  },
+  {
+    "id": 52,
+    "name": "Remote Control Racing Car",
+    "category": "Toys",
+    "subcategory": "Electronic Toys",
+    "description": "Remote Control Racing Car: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "3+"
+      },
+      {
+        "label": "Material",
+        "value": "Wood"
+      },
+      {
+        "label": "Batteries",
+        "value": "2 x AA (not included)"
+      }
+    ],
+    "priceCents": 4400,
+    "salePriceCents": 3500,
+    "stock": 19,
+    "featured": 1,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-05-06T08:00:00.000Z"
+  },
+  {
+    "id": 53,
+    "name": "Jigsaw Puzzle 1000 Pieces",
+    "category": "Toys",
+    "subcategory": "Puzzles",
+    "description": "Jigsaw Puzzle 1000 Pieces: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "5+"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic"
+      },
+      {
+        "label": "Batteries",
+        "value": "Not required"
+      }
+    ],
+    "priceCents": 1900,
+    "salePriceCents": null,
+    "stock": 0,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-03-17T08:00:00.000Z"
+  },
+  {
+    "id": 54,
+    "name": "Plush Teddy Bear",
+    "category": "Toys",
+    "subcategory": "Soft Toys",
+    "description": "Plush Teddy Bear: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "8+"
+      },
+      {
+        "label": "Material",
+        "value": "Fabric"
+      },
+      {
+        "label": "Batteries",
+        "value": "2 x AA (not included)"
+      }
+    ],
+    "priceCents": 1600,
+    "salePriceCents": null,
+    "stock": 11,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-01-01T08:00:00.000Z"
+  },
+  {
+    "id": 55,
+    "name": "Family Board Game",
+    "category": "Toys",
+    "subcategory": "Games",
+    "description": "Family Board Game: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "12+"
+      },
+      {
+        "label": "Material",
+        "value": "Cardboard"
+      },
+      {
+        "label": "Batteries",
+        "value": "Not required"
+      }
+    ],
+    "priceCents": 3200,
+    "salePriceCents": null,
+    "stock": 3,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-08-12T08:00:00.000Z"
+  },
+  {
+    "id": 56,
+    "name": "Art and Craft Kit",
+    "category": "Toys",
+    "subcategory": "Creative",
+    "description": "Art and Craft Kit: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "3+"
+      },
+      {
+        "label": "Material",
+        "value": "Wood"
+      },
+      {
+        "label": "Batteries",
+        "value": "2 x AA (not included)"
+      }
+    ],
+    "priceCents": 2100,
+    "salePriceCents": null,
+    "stock": 29,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-06-23T08:00:00.000Z"
+  },
+  {
+    "id": 57,
+    "name": "Toy Train Set",
+    "category": "Toys",
+    "subcategory": "Building",
+    "description": "Toy Train Set: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "5+"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic"
+      },
+      {
+        "label": "Batteries",
+        "value": "Not required"
+      }
+    ],
+    "priceCents": 5900,
+    "salePriceCents": 4720,
+    "stock": 13,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-04-07T08:00:00.000Z"
+  },
+  {
+    "id": 58,
+    "name": "Science Experiment Kit",
+    "category": "Toys",
+    "subcategory": "Educational",
+    "description": "Science Experiment Kit: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "8+"
+      },
+      {
+        "label": "Material",
+        "value": "Fabric"
+      },
+      {
+        "label": "Batteries",
+        "value": "2 x AA (not included)"
+      }
+    ],
+    "priceCents": 3800,
+    "salePriceCents": null,
+    "stock": 0,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-02-18T08:00:00.000Z"
+  },
+  {
+    "id": 59,
+    "name": "Magnetic Drawing Board",
+    "category": "Toys",
+    "subcategory": "Creative",
+    "description": "Magnetic Drawing Board: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "12+"
+      },
+      {
+        "label": "Material",
+        "value": "Cardboard"
+      },
+      {
+        "label": "Batteries",
+        "value": "Not required"
+      }
+    ],
+    "priceCents": 1300,
+    "salePriceCents": null,
+    "stock": 48,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-09-02T08:00:00.000Z"
+  },
+  {
+    "id": 60,
+    "name": "Stuffed Dinosaur Toy",
+    "category": "Toys",
+    "subcategory": "Soft Toys",
+    "description": "Stuffed Dinosaur Toy: A fun and safe pick that keeps young minds and hands busy.",
+    "specs": [
+      {
+        "label": "Recommended age",
+        "value": "3+"
+      },
+      {
+        "label": "Material",
+        "value": "Wood"
+      },
+      {
+        "label": "Batteries",
+        "value": "2 x AA (not included)"
+      }
+    ],
+    "priceCents": 800,
+    "salePriceCents": null,
+    "stock": 21,
+    "featured": 0,
+    "active": 1,
+    "imageCount": 3,
+    "createdAt": "2026-07-13T08:00:00.000Z"
+  }
+]

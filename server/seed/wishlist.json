@@ -1,0 +1,14 @@
+[
+  {
+    "userId": 1,
+    "productId": 36,
+    "position": 1,
+    "addedAt": "2026-09-01T10:00:00.000Z"
+  },
+  {
+    "userId": 1,
+    "productId": 21,
+    "position": 2,
+    "addedAt": "2026-09-02T10:00:00.000Z"
+  }
+]
