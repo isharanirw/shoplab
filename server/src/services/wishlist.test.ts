@@ -18,7 +18,7 @@ describe('wishlist', () => {
     expect(res.data.map((i) => i.id)).toEqual([36, 21]);
     expect(res.data.map((i) => i.position)).toEqual([1, 2]);
     expect(res).toMatchObject({ page: 1, pageSize: 2, total: 2 });
-    expect(res.data[0].name).toBeTruthy();
+    expect(res.data[0]!.name).toBeTruthy();
   });
 
   it('is empty for a user with no items', () => {

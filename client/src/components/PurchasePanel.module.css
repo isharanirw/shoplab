@@ -1,0 +1,110 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.label {
+  font-weight: 600;
+  padding: 0;
+}
+
+.select {
+  min-width: 12rem;
+}
+
+.colours {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.swatchRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.swatch {
+  position: relative;
+}
+
+.swatchInput {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.swatchLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem 0.3rem 0.4rem;
+  border: 2px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.swatchChip {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  border: 1px solid #6b7280;
+}
+
+.swatchInput:checked + .swatchLabel {
+  border-color: var(--color-primary);
+  background: #eff6ff;
+  font-weight: 600;
+}
+
+.swatchInput:focus-visible + .swatchLabel {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.swatchInput:disabled + .swatchLabel {
+  opacity: 0.5;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.qtyInput {
+  width: 4rem;
+  text-align: center;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.notice {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  border-radius: var(--radius);
+  color: #1e3a8a;
+  font-size: 0.9rem;
+}

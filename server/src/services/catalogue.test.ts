@@ -147,7 +147,7 @@ describe('rating filter', () => {
 
   it('is cumulative: each higher minimum returns a subset', () => {
     const counts = [1, 2, 3, 4, 5].map((r) => ids({ rating: String(r) }).length);
-    for (let i = 1; i < counts.length; i++) expect(counts[i]).toBeLessThanOrEqual(counts[i - 1]);
+    for (let i = 1; i < counts.length; i++) expect(counts[i]!).toBeLessThanOrEqual(counts[i - 1]!);
   });
 });
 
@@ -180,7 +180,9 @@ describe('sorting', () => {
   it('breaks price ties by ID so the order is stable', () => {
     const res = every({ sort: 'price_asc' });
     for (let i = 1; i < res.length; i++) {
-      if (effective(res[i]) === effective(res[i - 1])) expect(res[i].id).toBeGreaterThan(res[i - 1].id);
+      const a = res[i - 1]!;
+      const b = res[i]!;
+      if (effective(a) === effective(b)) expect(b.id).toBeGreaterThan(a.id);
     }
   });
 
@@ -188,7 +190,7 @@ describe('sorting', () => {
     const res = every({ sort: 'rating' });
     const averages = res.map((p) => p.rating.average ?? -1);
     expect(averages).toEqual([...averages].sort((a, b) => b - a));
-    expect(res[res.length - 1].id).toBe(60);
+    expect(res[res.length - 1]!.id).toBe(60);
   });
 
   it('sorts newest first', () => {

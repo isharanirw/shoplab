@@ -1,0 +1,20 @@
+.heading:focus {
+  outline: none;
+}
+
+.message {
+  min-height: 1.5rem;
+  color: var(--color-muted);
+}
+
+.error {
+  color: var(--color-danger);
+}
+
+.empty {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 2rem 1.5rem;
+  text-align: center;
+}

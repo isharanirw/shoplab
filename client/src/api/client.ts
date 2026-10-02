@@ -17,12 +17,13 @@ export class ApiRequestError extends Error {
   }
 }
 
-export async function api<T>(path: string, options: { method?: string; body?: unknown } = {}): Promise<T> {
+export async function api<T>(path: string, options: { method?: string; body?: unknown; signal?: AbortSignal } = {}): Promise<T> {
   let response: Response;
   try {
     response = await fetch(path, {
       method: options.method ?? 'GET',
       credentials: 'same-origin',
+      signal: options.signal,
       headers: options.body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
       body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
     });
