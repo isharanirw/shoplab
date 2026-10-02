@@ -8,6 +8,7 @@ import { AdminUsersPage } from './admin/AdminUsersPage';
 import { AdminRoute } from './auth/AdminRoute';
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { Layout } from './components/Layout';
+import { AboutPage } from './pages/AboutPage';
 import { AccountPage } from './pages/AccountPage';
 import { CartPage } from './pages/CartPage';
 import { CheckoutPage } from './pages/CheckoutPage';
@@ -22,6 +23,7 @@ import { PaymentFramePage } from './pages/PaymentFramePage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ServerErrorPage } from './pages/ServerErrorPage';
 import { TermsPage } from './pages/TermsPage';
 import { WishlistPage } from './pages/WishlistPage';
 
@@ -35,6 +37,8 @@ export function App() {
         <Route path="products/:id" element={<ProductDetailPage />} />
         <Route path="cart" element={<CartPage />} />
         <Route path="terms" element={<TermsPage />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="500" element={<ServerErrorPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />

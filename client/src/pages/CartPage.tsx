@@ -11,6 +11,9 @@ import { ErrorState, Spinner } from '../components/Feedback';
 import { lineKey, removeGuestLine, setGuestQuantity } from '../lib/cart';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import styles from './CartPage.module.css';
+import { useToast } from '../components/Toasts';
+import { failureOf, isTransientError } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 export function CartPage() {
   useDocumentTitle('Your cart');
@@ -64,7 +67,8 @@ function ServerCart() {
   const [attempt, setAttempt] = useState(0);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Failure | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     if (syncing) return;
@@ -93,7 +97,7 @@ function ServerCart() {
         setMessage(success);
         return true;
       } catch (err) {
-        setError(messageOf(err));
+        setError(failureOf(err, 'Something went wrong. Please try again.', () => void change(run, success)));
         setMessage(null);
         return false;
       } finally {
@@ -146,10 +150,10 @@ function ServerCart() {
           setState({ status: 'ready', cart: next });
           setServerCart(next);
           const applied = next.coupon;
+          toast.success('Coupon applied');
           return { kind: 'success', text: applied ? `Coupon ${applied.code} applied: ${applied.description}.` : 'Coupon applied.' };
         } catch (err) {
-          if (err instanceof ApiRequestError) return { kind: 'error', text: err.message };
-          return { kind: 'error', text: messageOf(err) };
+          return { kind: 'error', text: messageOf(err), transient: isTransientError(err) };
         }
       }}
       onRemoveCoupon={async () => {
@@ -165,7 +169,7 @@ function GuestCart() {
   const { guestLines, setGuestLines } = cartCtx;
   const view = useGuestCart(guestLines);
   const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Failure | null>(null);
 
   // Products that no longer exist are dropped from the stored cart.
   useEffect(() => {
@@ -192,7 +196,7 @@ function GuestCart() {
       onQuantity={(item: CartItem, quantity) => {
         const result = setGuestQuantity(guestLines, lineKey(item), quantity, item.stock);
         if (result.error) {
-          setError(result.error);
+          setError({ message: result.error });
           setMessage(null);
           return;
         }

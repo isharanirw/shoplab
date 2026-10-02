@@ -6,6 +6,7 @@ import { hashPassword, verifyPassword } from '../lib/passwords';
 import { normaliseEmail, validateName, validateRegistration } from '../lib/validation';
 import { SESSION_COOKIE, requireAuth } from '../middleware/auth';
 import { createSession, deleteSession } from '../services/sessions';
+import { f04, f18 } from '../testability/variants';
 
 const DUMMY_HASH = hashPassword('Dummy@1234');
 
@@ -46,7 +47,7 @@ export function authRouter(ctx: AppContext): Router {
       .prepare('INSERT INTO users (name, email, password_hash, role, locked, created_at) VALUES (?, ?, ?, ?, 0, ?)')
       .run(name, email, hashPassword(body.password as string), 'customer', new Date().toISOString());
     const user: AuthUser = { id: Number(info.lastInsertRowid), name, email, role: 'customer' };
-    res.status(201).json(startSession(ctx, req, res, user, body.rememberMe === true));
+    res.status(f18(201)).json(startSession(ctx, req, res, user, body.rememberMe === true));
   });
 
   router.post('/login', (req, res) => {
@@ -86,7 +87,7 @@ export function authRouter(ctx: AppContext): Router {
   });
 
   router.post('/logout', requireAuth, (req, res) => {
-    if (req.sessionToken) deleteSession(ctx.db, req.sessionToken);
+    if (req.sessionToken && !f04()) deleteSession(ctx.db, req.sessionToken);
     res.clearCookie(SESSION_COOKIE, { httpOnly: true, sameSite: 'lax', secure: req.secure, path: '/' });
     res.status(204).end();
   });

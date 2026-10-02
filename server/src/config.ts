@@ -20,6 +20,8 @@ export interface Config {
   seedDir: string;
   /** The OpenAPI document served at /api/docs/openapi.yaml. */
   openApiPath: string;
+  /** Self-hosted scripts served at /ads and /analytics. */
+  staticDir: string;
   /** Where review images are stored. Git-ignored and wiped by reset. */
   uploadsDir: string;
   version: string;
@@ -35,6 +37,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     clientDistDir: path.join(rootDir, 'client', 'dist'),
     seedDir: path.join(rootDir, 'server', 'seed'),
     openApiPath: path.join(rootDir, 'docs', 'openapi.yaml'),
+    staticDir: path.join(rootDir, 'server', 'static'),
     uploadsDir: env.UPLOADS_DIR && env.UPLOADS_DIR.length > 0 ? path.resolve(env.UPLOADS_DIR) : path.join(rootDir, 'uploads'),
     version: readVersion(),
     logRequests: env.LOG_REQUESTS !== 'false',

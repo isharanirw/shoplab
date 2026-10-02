@@ -29,13 +29,15 @@ export function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [retryable, setRetryable] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   if (user) return <Navigate to={next} replace />;
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+  async function handleSubmit(event?: FormEvent) {
+    event?.preventDefault();
     setFormError(null);
+    setRetryable(false);
     const errors: { email?: string; password?: string } = {};
     if (email.trim() === '') errors.email = 'Email is required.';
     if (password === '') errors.password = 'Password is required.';
@@ -47,6 +49,7 @@ export function LoginPage() {
       await login(email.trim(), password, rememberMe);
     } catch (err) {
       setFormError(loginErrorMessage(err));
+      setRetryable(err instanceof ApiRequestError && (err.status === 0 || err.status >= 500));
       setSubmitting(false);
     }
   }
@@ -59,6 +62,14 @@ export function LoginPage() {
         {formError && (
           <div role="alert" className={styles.formError} data-testid="login-error">
             {formError}
+            {retryable && (
+              <>
+                {' '}
+                <button type="button" className="btn btn-small" onClick={() => void handleSubmit()}>
+                  Retry
+                </button>
+              </>
+            )}
           </div>
         )}
         <FormField

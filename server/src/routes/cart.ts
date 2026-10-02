@@ -4,6 +4,7 @@ import { parseIdParam } from '../lib/catalogueQuery';
 import { bodyOf } from '../lib/request';
 import { requireAuth } from '../middleware/auth';
 import { addItem, applyCoupon, clearCart, getCart, mergeGuestCart, removeCoupon, removeItem, setItemQuantity } from '../services/cart';
+import { f05 } from '../testability/variants';
 
 export function cartRouter(ctx: AppContext): Router {
   const router = Router();
@@ -20,7 +21,7 @@ export function cartRouter(ctx: AppContext): Router {
 
   router.post('/items', (req, res) => {
     const { created } = addItem(ctx.db, req.user!.id, bodyOf(req) as { productId: unknown; quantity: unknown; variantId?: unknown });
-    res.status(created ? 201 : 200).json(getCart(ctx.db, req.user!.id));
+    res.status(f05(created ? 201 : 200)).json(getCart(ctx.db, req.user!.id));
   });
 
   router.patch('/items/:itemId', (req, res) => {

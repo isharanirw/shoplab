@@ -1180,6 +1180,75 @@ paths:
         '401': { $ref: '#/components/responses/Unauthenticated' }
         '409': { $ref: '#/components/responses/Conflict' }
 
+  /api/test/flags:
+    get:
+      tags: [Test]
+      operationId: testGetFlags
+      summary: Active and available flag IDs
+      security: [{ testKey: [] }]
+      responses:
+        '200':
+          description: The flags that are on and every ID the server knows.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FlagSet' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+    post:
+      tags: [Test]
+      operationId: testSetFlags
+      summary: Switch flags on or off
+      description: |
+        Flags are opaque IDs (`f01`, `f02`, ...). All flags are off by default; the `FLAGS` environment variable (comma separated)
+        sets the starting list. A request may combine `preset`, `enable` and `disable`; they are applied in that order. Unknown IDs
+        are a 400 and nothing changes. `POST /api/test/reset` does not change flags.
+      security: [{ testKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable: { type: array, items: { type: string }, example: [f03, f07] }
+                disable: { type: array, items: { type: string }, example: [f03] }
+                preset: { type: string, enum: [none, all] }
+      responses:
+        '200':
+          description: The flags that are on after the change.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FlagSet' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/test/chaos:
+    post:
+      tags: [Test]
+      operationId: testSetChaos
+      summary: Set latency and failures
+      description: |
+        Replaces the current settings; omitted fields go back to 0, `[]`, 503 and `true`. While active, a request whose path matches
+        `paths` (`*` matches any run of characters; an empty list matches every `/api` path) is delayed by `latencyMs` plus a
+        jitter of 0 to `jitterMs`. With `deterministic: true` every Nth matching request fails, where N is `round(1 / failureRate)`
+        (a rate of 0 never fails), and jitter repeats the pattern 0, 25, 50, 75, 100 percent of `jitterMs`. With `deterministic: false`
+        a generator with a fixed seed decides, so a run can be repeated by restarting the server. A failed request answers with the
+        chosen status in the standard error shape; a 429 carries a `Retry-After` header. Chaos never applies to `/api/test/*`,
+        `/api/health`, `/api/docs`, `/api/config` or to static files. `POST /api/test/reset` clears it.
+      security: [{ testKey: [] }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChaosSettings' }
+      responses:
+        '200':
+          description: The settings now in force.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ChaosSettings' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
   /api/test/state:
     get:
       tags: [Test]
@@ -1193,6 +1262,24 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/TestState' }
         '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/config:
+    get:
+      tags: [Store info]
+      operationId: getConfig
+      summary: Client configuration
+      description: Read once by the web app when it starts. Lists the IDs of the flags that are currently on (an empty list normally).
+      responses:
+        '200':
+          description: The configuration.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [flags]
+                additionalProperties: false
+                properties:
+                  flags: { type: array, items: { type: string } }
 
   /api/docs:
     get:
@@ -1314,6 +1401,7 @@ components:
         - CONFLICT
         - ACCOUNT_LOCKED
         - RATE_LIMITED
+        - SERVICE_UNAVAILABLE
         - INTERNAL_ERROR
     Error:
       type: object
@@ -1981,6 +2069,35 @@ components:
               items: { $ref: '#/components/schemas/AdminUser' }
       unevaluatedProperties: false
 
+    FlagSet:
+      type: object
+      required: [flags, available]
+      additionalProperties: false
+      properties:
+        flags:
+          type: array
+          description: IDs that are on, in order.
+          items: { type: string }
+        available:
+          type: array
+          description: Every ID the server knows.
+          items: { type: string }
+
+    ChaosSettings:
+      type: object
+      additionalProperties: false
+      properties:
+        latencyMs: { type: integer, minimum: 0, maximum: 5000, default: 0 }
+        jitterMs: { type: integer, minimum: 0, maximum: 1000, default: 0 }
+        failureRate: { type: number, minimum: 0, maximum: 1, default: 0 }
+        paths:
+          type: array
+          items: { type: string }
+          default: []
+          example: ['/api/products*']
+        status: { type: integer, enum: [500, 503, 429], default: 503 }
+        deterministic: { type: boolean, default: true }
+
     TestState:
       type: object
       required: [scenario, counts, flags, latency]
@@ -2005,5 +2122,5 @@ components:
             paths:
               type: array
               items: { type: string }
-            status: { type: integer }
+            status: { type: integer, enum: [500, 503, 429] }
             deterministic: { type: boolean }

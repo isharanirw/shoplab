@@ -14,6 +14,8 @@ import { formatPrice, pluralise } from '../lib/format';
 import { totalPagesOf } from '../lib/pagination';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import styles from './Admin.module.css';
+import { useToast } from '../components/Toasts';
+import { isTransientError } from '../lib/failure';
 
 /** /admin/products: a searchable, paginated product table with Add, Edit and Delete (with a confirm modal). */
 export function AdminProductsPage() {
@@ -27,6 +29,8 @@ export function AdminProductsPage() {
   const [pendingDelete, setPendingDelete] = useState<AdminProduct | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteRetryable, setDeleteRetryable] = useState(false);
+  const toast = useToast();
   const [notice, setNotice] = useState<string | null>((location.state as { notice?: string } | null)?.notice ?? null);
   const deleteTrigger = useRef<HTMLButtonElement | null>(null);
 
@@ -55,11 +59,13 @@ export function AdminProductsPage() {
     if (!pendingDelete) return;
     setDeleting(true);
     setDeleteError(null);
+    setDeleteRetryable(false);
     try {
       await api<void>(`/api/admin/products/${pendingDelete.id}`, { method: 'DELETE' });
       const removed = pendingDelete;
       setPendingDelete(null);
       setNotice(`Deleted "${removed.name}" (ID ${removed.id}).`);
+      toast.success('Product deleted');
       // The last row of a page was deleted: step back one page so the table is not empty.
       if (result.status === 'success' && result.data.data.length === 1 && state.page > 1) {
         setParams(new URLSearchParams(adminListSearch({ ...state, page: state.page - 1 }, PRODUCTS_LIST)));
@@ -68,6 +74,7 @@ export function AdminProductsPage() {
       }
     } catch (err) {
       setDeleteError(err instanceof ApiRequestError ? err.message : 'Could not delete the product. Please try again.');
+      setDeleteRetryable(isTransientError(err));
     } finally {
       setDeleting(false);
     }
@@ -251,6 +258,7 @@ export function AdminProductsPage() {
           cancelLabel="Keep product"
           busy={deleting}
           error={deleteError}
+          errorRetryable={deleteRetryable}
           onConfirm={() => void confirmDelete()}
           onCancel={closeDelete}
         >

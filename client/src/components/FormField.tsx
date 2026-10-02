@@ -1,4 +1,5 @@
 import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import { f12 } from '../testability/variants';
 import styles from './FormField.module.css';
 
 interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -15,14 +16,14 @@ export function FormField({ id, label, error, hint, ...inputProps }: FormFieldPr
   const describedBy = [error ? errorId : null, hint ? hintId : null].filter(Boolean).join(' ') || undefined;
   return (
     <div className={styles.field}>
-      <label htmlFor={id} className={styles.label}>
+      <label htmlFor={f12(id)} className={styles.label}>
         {label}
       </label>
       <input
         id={id}
         className={error ? `${styles.input} ${styles.inputInvalid}` : styles.input}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy}
+        aria-invalid={f12(error ? true : undefined)}
+        aria-describedby={f12(describedBy)}
         {...inputProps}
       />
       {hint && !error && (
@@ -53,14 +54,14 @@ export function TextAreaField({ id, label, error, hint, ...areaProps }: TextArea
   const describedBy = [error ? errorId : null, hint ? hintId : null].filter(Boolean).join(' ') || undefined;
   return (
     <div className={styles.field}>
-      <label htmlFor={id} className={styles.label}>
+      <label htmlFor={f12(id)} className={styles.label}>
         {label}
       </label>
       <textarea
         id={id}
         className={error ? `${styles.input} ${styles.textarea} ${styles.inputInvalid}` : `${styles.input} ${styles.textarea}`}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy}
+        aria-invalid={f12(error ? true : undefined)}
+        aria-describedby={f12(describedBy)}
         {...areaProps}
       />
       {hint && (
@@ -122,14 +123,14 @@ export function SelectField({ id, label, error, hint, placeholder, options, ...s
   const describedBy = [error ? errorId : null, hint ? hintId : null].filter(Boolean).join(' ') || undefined;
   return (
     <div className={styles.field}>
-      <label htmlFor={id} className={styles.label}>
+      <label htmlFor={f12(id)} className={styles.label}>
         {label}
       </label>
       <select
         id={id}
         className={error ? `${styles.input} ${styles.inputInvalid}` : styles.input}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy}
+        aria-invalid={f12(error ? true : undefined)}
+        aria-describedby={f12(describedBy)}
         {...selectProps}
       >
         <option value="">{placeholder}</option>

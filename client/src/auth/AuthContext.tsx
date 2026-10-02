@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { api } from '../api/client';
+import { api, ApiRequestError } from '../api/client';
+import { isTransientStatus } from '../lib/failure';
 
 export interface User {
   id: number;
@@ -21,6 +22,10 @@ interface AuthState {
   user: User | null;
   /** True until the first /api/auth/me call has finished. */
   loading: boolean;
+  /** Set when the login check itself failed in a way that can pass (network, 5xx, 429). The user is not treated as logged out. */
+  checkError: string | null;
+  /** Repeats the login check. */
+  retryCheck: () => void;
   login: (email: string, password: string, rememberMe: boolean) => Promise<User>;
   register: (input: RegisterInput) => Promise<User>;
   logout: () => Promise<void>;
@@ -33,15 +38,21 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkError, setCheckError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
+    setCheckError(null);
     api<{ user: User }>('/api/auth/me')
       .then((res) => {
         if (!cancelled) setUser(res.user);
       })
-      .catch(() => {
-        if (!cancelled) setUser(null);
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setUser(null);
+        if (err instanceof ApiRequestError && isTransientStatus(err.status)) setCheckError(err.message);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -49,7 +60,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [attempt]);
+
+  const retryCheck = useCallback(() => setAttempt((n) => n + 1), []);
 
   const login = useCallback(async (email: string, password: string, rememberMe: boolean) => {
     const res = await api<{ user: User }>('/api/auth/login', { method: 'POST', body: { email, password, rememberMe } });
@@ -79,8 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, register, logout, updateName }),
-    [user, loading, login, register, logout, updateName],
+    () => ({ user, loading, checkError, retryCheck, login, register, logout, updateName }),
+    [user, loading, checkError, retryCheck, login, register, logout, updateName],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

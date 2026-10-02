@@ -1,3 +1,5 @@
+import { f09 } from '../testability/variants';
+import { f19 } from '../testability/variants';
 export interface CountryInfo {
   code: string;
   name: string;
@@ -21,7 +23,7 @@ export interface AddressInput {
 export function validatePostalCode(country: CountryInfo, value: string): string | null {
   const code = value.trim();
   if (code === '') return 'Postal code is required.';
-  if (!new RegExp(country.postalPattern).test(code)) {
+  if (!new RegExp(f09(country.postalPattern)).test(code)) {
     return `Postal code for ${country.name} must be ${country.postalHint}.`;
   }
   return null;
@@ -32,7 +34,7 @@ export function validatePhone(value: string): string | null {
   if (phone === '') return 'Phone number is required.';
   if (!/^[0-9 ()+-]+$/.test(phone)) return 'Phone number can only contain digits, spaces, + - and parentheses.';
   const digits = phone.replace(/\D/g, '');
-  if (digits.length < 7 || digits.length > 15) return 'Phone number must have 7 to 15 digits.';
+  if (digits.length < f19(7) || digits.length > 15) return 'Phone number must have 7 to 15 digits.';
   return null;
 }
 

@@ -1,4 +1,5 @@
 import type { Country } from '../api/types';
+import { f19 } from '../testability/variants';
 
 export interface AddressForm {
   firstName: string;
@@ -36,7 +37,7 @@ export function validatePhone(value: string): string | null {
   if (phone === '') return 'Phone number is required.';
   if (!/^[0-9 ()+-]+$/.test(phone)) return 'Phone number can only contain digits, spaces, + - and parentheses.';
   const digits = phone.replace(/\D/g, '');
-  if (digits.length < 7 || digits.length > 15) return 'Phone number must have 7 to 15 digits.';
+  if (digits.length < f19(7) || digits.length > 15) return 'Phone number must have 7 to 15 digits.';
   return null;
 }
 

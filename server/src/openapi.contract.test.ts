@@ -405,6 +405,13 @@ describe('real responses match the document', () => {
     expectContract(await call(server, 'POST', '/api/test/users', { json: { email: 'x' } }), 'post', '/api/test/users', 400);
     expectContract(await call(server, 'POST', '/api/test/reset', { json: { scenario: 'nope' } }), 'post', '/api/test/reset', 400);
     expectContract(await call(server, 'POST', '/api/test/reset', { json: { scenario: 'default' } }), 'post', '/api/test/reset', 204);
+    expectContract(await get('/api/test/flags'), 'get', '/api/test/flags', 200);
+    expectContract(await call(server, 'POST', '/api/test/flags', { json: { enable: ['nope'] } }), 'post', '/api/test/flags', 400);
+    expectContract(await call(server, 'POST', '/api/test/flags', { json: { preset: 'none' } }), 'post', '/api/test/flags', 200);
+    const chaos = { latencyMs: 0, jitterMs: 0, failureRate: 0, paths: [], status: 503, deterministic: true };
+    expectContract(await call(server, 'POST', '/api/test/chaos', { json: chaos }), 'post', '/api/test/chaos', 200);
+    expectContract(await call(server, 'POST', '/api/test/chaos', { json: { latencyMs: 6000 } }), 'post', '/api/test/chaos', 400);
+    expectContract(await get('/api/config'), 'get', '/api/config', 200);
 
     const keyed = await startTestServer('default', { testApiKey: 'secret' });
     try {

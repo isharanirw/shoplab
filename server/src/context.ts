@@ -1,11 +1,13 @@
 import type { Config } from './config';
 import type { Db } from './db/connection';
 import type { FailureLimiter } from './lib/rateLimiter';
+import type { ChaosEngine } from './testability/chaos';
 
 export interface AppContext {
   config: Config;
   db: Db;
   loginLimiter: FailureLimiter;
+  chaos: ChaosEngine;
   startedAt: number;
 }
 

@@ -68,3 +68,15 @@ One line per notable technical decision.
 - Order cancel and the admin status change share one `applyCancellation` function, so the stock effect cannot differ between the customer path and the admin path.
 - Locking a user deletes their sessions rather than only refusing them at request time, so unlocking cannot silently revive an old login.
 - The test harness (`server/src/testing/harness.ts`) starts the real Express app on a free port with an in-memory database and a temporary uploads directory, and tests call it with `fetch`; this avoids adding supertest.
+- Optional variants are switched by ID only: a registry in `server/src/testability/flags.ts`, one hook per ID in `variants.ts` that returns its input unchanged when the ID is off, and a matching small module on the client; ordinary code has no other trace of them.
+- Flags are held in process memory and reset does not clear them (a suite that resets between tests keeps its flags); `FLAGS` sets the starting list and an unknown ID stops the boot, so a typo is not silently ignored.
+- The client learns the flag IDs from a public `GET /api/config` read once before first render, with a 3 second timeout that falls back to no flags, so the flag lookup can never stop the app from starting.
+- Chaos state lives in a per-app engine (counter, settings, seeded generator) with pure helpers for matching and intervals, so it is unit tested without HTTP; it runs as one middleware in front of the API router.
+- Deterministic chaos uses a counter of matching requests (every Nth fails, jitter cycles through five fixed steps); the non-deterministic mode uses a seeded generator, so even "random" runs repeat after a restart.
+- Chaos skips `/api/test/*`, `/api/health`, `/api/docs*`, `/api/config` and everything outside `/api`, so a tester can never lock themselves out of the controls or the warm-up check.
+- The promo and analytics scripts are plain files in `server/static` served at `/ads` and `/analytics` and loaded by `<script defer>` tags in `index.html`, so blocking them by URL pattern works and nothing in the React bundle depends on them.
+- The promo script follows route changes by wrapping `history.pushState` and listening for `popstate`, because the app is a single-page app and the overlay belongs to two routes only.
+- The analytics script sends to a same-origin endpoint that answers 204 and stores nothing, and only after analytics cookies are allowed, which also gives the cookie banner choice a visible effect.
+- Cookie choice is stored as a small versioned JSON value in `localStorage`; parsing and saving are pure functions over a storage-like object, tested with a fake store.
+- Toasts and Retry are shared pieces (`ToastProvider`, `ActionError`, `failureOf`): only network failures, 5xx and 429 get a Retry button, so a message such as "only 3 in stock" is never offered a pointless retry.
+- A render crash is caught by a React error boundary around the routed page (keeping header and footer) that shows the 500 page; `/500` shows the same page directly.

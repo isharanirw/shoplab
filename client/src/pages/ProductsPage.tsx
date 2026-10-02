@@ -25,6 +25,7 @@ import type { ListFilters, SortValue } from '../lib/productQuery';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import { ApiRequestError } from '../api/client';
 import styles from './ProductsPage.module.css';
+import { f16 } from '../testability/variants';
 
 const PAGE_SIZE = 12;
 
@@ -56,6 +57,7 @@ export function ProductsPage() {
   /** Writes new filters to the URL. Any change other than the page itself goes back to page 1. */
   function update(patch: Partial<ListFilters>) {
     const next: ListFilters = { ...filters, page: 1, ...patch };
+    if (patch.sort !== undefined) next.page = f16(1, filters.page);
     setParams(toSearchParams(next));
   }
 

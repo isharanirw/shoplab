@@ -7,6 +7,9 @@ import { useFetch } from '../hooks/useFetch';
 import { addressSummary } from '../lib/addressBook';
 import { AddressEditor } from './AddressEditor';
 import styles from './Account.module.css';
+import { ActionError } from '../components/ActionError';
+import { failureOf, isTransientError } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 type Editing = { kind: 'new' } | { kind: 'edit'; address: SavedAddress } | null;
 
@@ -18,9 +21,10 @@ export function AddressBook() {
   const [editing, setEditing] = useState<Editing>(null);
   const [deleting, setDeleting] = useState<SavedAddress | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteRetryable, setDeleteRetryable] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Failure | null>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const focusAddButton = useRef(false);
 
@@ -50,7 +54,7 @@ export function AddressBook() {
       await reload();
       setMessage(`${address.label} is now your default address.`);
     } catch (err) {
-      setProblem(err instanceof ApiRequestError ? err.message : 'Could not change the default address.');
+      setProblem(failureOf(err, 'Could not change the default address.', () => void makeDefault(address)));
     }
   }
 
@@ -58,6 +62,7 @@ export function AddressBook() {
     if (!deleting) return;
     setBusy(true);
     setDeleteError(null);
+    setDeleteRetryable(false);
     try {
       await api<void>(`/api/addresses/${deleting.id}`, { method: 'DELETE' });
       const label = deleting.label;
@@ -67,6 +72,7 @@ export function AddressBook() {
       setDeleting(null);
     } catch (err) {
       setDeleteError(err instanceof ApiRequestError ? err.message : 'Could not delete the address. Please try again.');
+      setDeleteRetryable(isTransientError(err));
     } finally {
       setBusy(false);
     }
@@ -107,11 +113,7 @@ export function AddressBook() {
           <div role="status" aria-live="polite" className={styles.statusLine}>
             {message && <p data-testid="address-message">{message}</p>}
           </div>
-          {problem && (
-            <p role="alert" className={styles.problem}>
-              {problem}
-            </p>
-          )}
+          {problem && <ActionError failure={problem} className={styles.problem} />}
 
           {list.length === 0 ? (
             <p data-testid="address-empty">You have no saved addresses yet.</p>
@@ -217,6 +219,7 @@ export function AddressBook() {
           cancelLabel="Keep it"
           busy={busy}
           error={deleteError}
+          errorRetryable={deleteRetryable}
           onConfirm={() => void confirmDelete()}
           onCancel={() => setDeleting(null)}
         >

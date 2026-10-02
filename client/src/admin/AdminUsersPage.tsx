@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { api, ApiRequestError } from '../api/client';
+import { api } from '../api/client';
 import type { AdminUser, ListResponse } from '../api/types';
 import { useAuth } from '../auth/AuthContext';
 import { ErrorState, Spinner } from '../components/Feedback';
@@ -13,6 +13,10 @@ import { formatDate, pluralise } from '../lib/format';
 import { totalPagesOf } from '../lib/pagination';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import styles from './Admin.module.css';
+import { ActionError } from '../components/ActionError';
+import { useToast } from '../components/Toasts';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 /** /admin/users: all accounts with a lock/unlock switch. An admin cannot lock their own account. */
 export function AdminUsersPage() {
@@ -24,7 +28,8 @@ export function AdminUsersPage() {
   const [searchText, setSearchText] = useState(state.q);
   const [updated, setUpdated] = useState<Record<number, AdminUser>>({});
   const [busyId, setBusyId] = useState<number | null>(null);
-  const [rowError, setRowError] = useState<{ id: number; message: string } | null>(null);
+  const [rowError, setRowError] = useState<({ id: number } & Failure) | null>(null);
+  const toast = useToast();
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
@@ -51,8 +56,10 @@ export function AdminUsersPage() {
       const saved = await api<AdminUser>(`/api/admin/users/${user.id}/lock`, { method: 'PATCH', body: { locked } });
       setUpdated((prev) => ({ ...prev, [saved.id]: saved }));
       setNotice(`${saved.email} is now ${saved.locked ? 'locked' : 'unlocked'}.`);
+      toast.success('User updated');
     } catch (err) {
-      setRowError({ id: user.id, message: err instanceof ApiRequestError ? err.message : 'Could not change the account. Please try again.' });
+      setRowError({ id: user.id, ...failureOf(err, 'Could not change the account. Please try again.', () => void setLocked(user, locked)) });
+      toast.error('Could not update user');
     } finally {
       setBusyId(null);
     }
@@ -164,11 +171,7 @@ export function AdminUsersPage() {
                             <span className={`${styles.badge} ${u.locked ? styles.badgeLocked : styles.badgeActive}`}>{u.locked ? 'Locked' : 'Active'}</span>
                           </label>
                           {isMe && <span className={styles.hint}> Your own account</span>}
-                          {rowError?.id === u.id && (
-                            <p role="alert" className={styles.problem} data-testid={`admin-user-error-${u.id}`}>
-                              {rowError.message}
-                            </p>
-                          )}
+                          {rowError?.id === u.id && <ActionError failure={rowError} className={styles.problem} testId={`admin-user-error-${u.id}`} />}
                         </td>
                       </tr>
                     );

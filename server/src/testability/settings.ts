@@ -1,36 +1,10 @@
-/** Runtime test settings held in memory. Reset returns them to neutral values. */
-export interface ChaosSettings {
-  latencyMs: number;
-  jitterMs: number;
-  failureRate: number;
-  paths: string[];
-  status: 500 | 503 | 429;
-  deterministic: boolean;
+/** The active seed scenario, held in memory. Flags live in flags.ts and chaos settings in the chaos engine. */
+let scenario = 'default';
+
+export function getScenario(): string {
+  return scenario;
 }
 
-export const NEUTRAL_CHAOS: ChaosSettings = {
-  latencyMs: 0,
-  jitterMs: 0,
-  failureRate: 0,
-  paths: [],
-  status: 503,
-  deterministic: true,
-};
-
-export interface TestSettings {
-  scenario: string;
-  flags: string[];
-  chaos: ChaosSettings;
-}
-
-const settings: TestSettings = { scenario: 'default', flags: [], chaos: { ...NEUTRAL_CHAOS } };
-
-export function getTestSettings(): Readonly<TestSettings> {
-  return settings;
-}
-
-export function resetTestSettings(scenario: string): void {
-  settings.scenario = scenario;
-  settings.flags = [];
-  settings.chaos = { ...NEUTRAL_CHAOS, paths: [] };
+export function setScenario(next: string): void {
+  scenario = next;
 }

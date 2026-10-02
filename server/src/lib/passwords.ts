@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { f03 } from '../testability/variants';
 
 export const PASSWORD_MIN_LENGTH = 8;
 const BCRYPT_COST = 10;
@@ -9,7 +10,7 @@ const BCRYPT_COST = 10;
  * Returns a message for the first rule that fails, or null when valid.
  */
 export function validatePassword(password: string): string | null {
-  if (password.length < PASSWORD_MIN_LENGTH) return `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`;
+  if (password.length < f03(PASSWORD_MIN_LENGTH)) return `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`;
   if (!/\p{Lu}/u.test(password)) return 'Password must contain at least one uppercase letter.';
   if (!/\d/.test(password)) return 'Password must contain at least one digit.';
   if (!/[^\p{L}\d]/u.test(password)) return 'Password must contain at least one symbol.';

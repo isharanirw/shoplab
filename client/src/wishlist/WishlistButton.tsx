@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ApiRequestError } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { loginPathFor } from '../lib/navigation';
 import { useWishlist } from './WishlistContext';
 import styles from './WishlistButton.module.css';
+import { ActionError } from '../components/ActionError';
+import { useToast } from '../components/Toasts';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 interface WishlistButtonProps {
   productId: number;
@@ -21,7 +24,8 @@ export function WishlistButton({ productId, productName }: WishlistButtonProps) 
   const navigate = useNavigate();
   const location = useLocation();
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<Failure | null>(null);
+  const toast = useToast();
   const saved = wishlist.has(productId);
 
   async function handleClick() {
@@ -35,8 +39,10 @@ export function WishlistButton({ productId, productName }: WishlistButtonProps) 
     try {
       if (saved) await wishlist.remove(productId);
       else await wishlist.add(productId);
+      toast.success(saved ? 'Removed from wishlist' : 'Saved to wishlist');
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : 'Could not update your wishlist.');
+      setError(failureOf(err, 'Could not update your wishlist.', () => void handleClick()));
+      toast.error('Could not update wishlist');
     } finally {
       setBusy(false);
     }
@@ -63,11 +69,7 @@ export function WishlistButton({ productId, productName }: WishlistButtonProps) 
           />
         </svg>
       </button>
-      {error && (
-        <span role="alert" className={styles.error}>
-          {error}
-        </span>
-      )}
+      {error && <ActionError failure={error} className={styles.error} />}
     </>
   );
 }

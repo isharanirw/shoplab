@@ -12,6 +12,7 @@ import { formatDate, formatPrice } from '../lib/format';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import styles from './OrderConfirmationPage.module.css';
 import orderStyles from './Orders.module.css';
+import { isTransientError } from '../lib/failure';
 
 /** /account/orders/:id: one order in full, with Cancel order while it is still Processing. */
 export function OrderDetailPage() {
@@ -59,6 +60,7 @@ function OrderDetail({ initial }: { initial: Order }) {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  const [cancelRetryable, setCancelRetryable] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   useDocumentTitle(`Order ${order.number}`);
 
@@ -69,6 +71,7 @@ function OrderDetail({ initial }: { initial: Order }) {
   async function cancel() {
     setBusy(true);
     setCancelError(null);
+    setCancelRetryable(false);
     try {
       const updated = await api<Order>(`/api/orders/${order.id}/cancel`, { method: 'POST' });
       setOrder(updated);
@@ -84,6 +87,7 @@ function OrderDetail({ initial }: { initial: Order }) {
         }
       }
       setCancelError(err instanceof ApiRequestError ? err.message : 'Could not cancel the order. Please try again.');
+      setCancelRetryable(isTransientError(err));
     } finally {
       setBusy(false);
     }
@@ -236,6 +240,7 @@ function OrderDetail({ initial }: { initial: Order }) {
           cancelLabel="Keep order"
           busy={busy}
           error={cancelError}
+          errorRetryable={cancelRetryable}
           onConfirm={() => void cancel()}
           onCancel={() => setConfirming(false)}
         >

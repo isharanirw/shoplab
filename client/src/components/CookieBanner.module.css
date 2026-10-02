@@ -1,0 +1,39 @@
+.banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 250;
+  background: var(--color-surface);
+  border-top: 2px solid var(--color-primary);
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.15);
+  padding: 0.75rem 1rem;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.text {
+  max-width: 72rem;
+  margin: 0 auto 0.5rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.toggles {
+  max-width: 72rem;
+  margin: 0 auto 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+}
+
+.toggle {
+  display: block;
+  padding: 0.15rem 0;
+}

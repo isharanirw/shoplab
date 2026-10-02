@@ -18,6 +18,10 @@ import {
 import type { ReviewErrors, ReviewField } from '../lib/reviewForm';
 import { useFetch } from '../hooks/useFetch';
 import styles from './Reviews.module.css';
+import { ActionError } from '../components/ActionError';
+import { useToast } from '../components/Toasts';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 interface ReviewComposerProps {
   productId: number;
@@ -89,8 +93,9 @@ function ReviewForm({ productId, onPosted, onNotAllowed }: ReviewFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [errors, setErrors] = useState<ReviewErrors>({});
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Failure | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const toast = useToast();
   const fileInput = useRef<HTMLInputElement>(null);
 
   // The preview is an object URL for the chosen file; release it when the file changes or the form goes away.
@@ -133,8 +138,8 @@ function ReviewForm({ productId, onPosted, onNotAllowed }: ReviewFormProps) {
     fileInput.current?.focus();
   }
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+  async function handleSubmit(event?: FormEvent) {
+    event?.preventDefault();
     setProblem(null);
     const found = validateReviewValues({ rating, title, body }, file);
     setErrors(found);
@@ -152,20 +157,22 @@ function ReviewForm({ productId, onPosted, onNotAllowed }: ReviewFormProps) {
     setSubmitting(true);
     try {
       const review = await api<Review>(`/api/products/${productId}/reviews`, { method: 'POST', formData: form });
+      toast.success('Review posted');
       onPosted(review);
     } catch (err) {
       if (err instanceof ApiRequestError) {
         if (err.status === 403 || err.status === 409) {
-          setProblem(err.message);
+          setProblem({ message: err.message });
           onNotAllowed();
           return;
         }
         const fieldErrors = err.fieldErrors as ReviewErrors & { body?: string };
         if (Object.keys(fieldErrors).length > 0) setErrors(fieldErrors);
-        setProblem(err.message);
+        setProblem(failureOf(err, 'Could not post your review. Please try again.', () => void handleSubmit()));
       } else {
-        setProblem('Could not post your review. Please try again.');
+        setProblem(failureOf(err, 'Could not post your review. Please try again.', () => void handleSubmit()));
       }
+      toast.error('Could not post review');
       setSubmitting(false);
     }
   }
@@ -270,11 +277,7 @@ function ReviewForm({ productId, onPosted, onNotAllowed }: ReviewFormProps) {
         )}
       </div>
 
-      {problem && (
-        <p role="alert" className={styles.problem} data-testid="review-problem">
-          {problem}
-        </p>
-      )}
+      {problem && <ActionError failure={problem} className={styles.problem} testId="review-problem" />}
       <button type="submit" className="btn btn-primary" disabled={submitting} data-testid="review-submit">
         Post review
       </button>

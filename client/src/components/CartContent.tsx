@@ -7,10 +7,14 @@ import { CartLineItem } from './CartLineItem';
 import { ClearCartModal } from './ClearCartModal';
 import { Totals } from './Totals';
 import styles from './CartContent.module.css';
+import { ActionError } from './ActionError';
+import type { Failure } from '../lib/failure';
 
 export interface CouponFeedback {
   kind: 'success' | 'error';
   text: string;
+  /** True when the request failed in a way that trying again could fix. */
+  transient?: boolean;
 }
 
 interface CartContentProps {
@@ -23,8 +27,8 @@ interface CartContentProps {
   busy: boolean;
   /** Success text for the last change, announced politely. */
   message: string | null;
-  /** Error text for the last change. */
-  error: string | null;
+  /** The last change that failed. */
+  error: Failure | null;
   onQuantity: (item: CartItem, quantity: number) => void;
   onRemove: (item: CartItem) => void;
   onClear: () => Promise<void>;
@@ -47,13 +51,17 @@ export function CartContent(props: CartContentProps) {
   const itemCount = items.reduce((n, i) => n + i.quantity, 0);
   const blocked = items.some((i) => !i.inStock || i.quantity > i.stock);
 
-  async function handleApply(event: FormEvent) {
+  function handleApply(event: FormEvent) {
     event.preventDefault();
+    void applyCode(code);
+  }
+
+  async function applyCode(value: string) {
     if (couponBusy) return;
     setCouponBusy(true);
     setFeedback(null);
     try {
-      const result = await props.onApplyCoupon(code);
+      const result = await props.onApplyCoupon(value);
       setFeedback(result);
       if (result.kind === 'success') setCode('');
     } finally {
@@ -84,11 +92,7 @@ export function CartContent(props: CartContentProps) {
         <div role="status" className={styles.message} data-testid="cart-message">
           {props.message}
         </div>
-        {props.error && (
-          <p role="alert" className={styles.error} data-testid="cart-error">
-            {props.error}
-          </p>
-        )}
+        {props.error && <ActionError failure={props.error} className={styles.error} testId="cart-error" />}
         <ul className={styles.list} aria-label="Cart items" data-testid="cart-items">
           {items.map((item) => (
             <CartLineItem key={`${item.productId}:${item.variantId ?? 0}`} item={item} busy={busy} onQuantity={props.onQuantity} onRemove={props.onRemove} />
@@ -128,7 +132,7 @@ export function CartContent(props: CartContentProps) {
               <h3 id="coupon-heading" className={styles.couponTitle}>
                 Coupon
               </h3>
-              <form onSubmit={(e) => void handleApply(e)} className={styles.couponForm} noValidate>
+              <form onSubmit={handleApply} className={styles.couponForm} noValidate>
                 <label htmlFor="coupon-code" className={styles.couponLabel}>
                   Coupon code
                 </label>
@@ -148,7 +152,19 @@ export function CartContent(props: CartContentProps) {
                 </div>
               </form>
               <div role="status" aria-live="polite" data-testid="coupon-message">
-                {feedback && <p className={feedback.kind === 'success' ? styles.couponOk : styles.couponError}>{feedback.text}</p>}
+                {feedback && (
+                  <p className={feedback.kind === 'success' ? styles.couponOk : styles.couponError}>
+                    {feedback.text}
+                    {feedback.transient && (
+                      <>
+                        {' '}
+                        <button type="button" className="btn btn-small" onClick={() => void applyCode(code)}>
+                          Retry
+                        </button>
+                      </>
+                    )}
+                  </p>
+                )}
               </div>
               {coupon && (
                 <div className={styles.applied} data-testid="applied-coupon">

@@ -29,6 +29,10 @@ import { formatFileSize, validateImageFile } from '../lib/reviewForm';
 import { CATEGORY_NAMES, TAXONOMY } from '../lib/taxonomy';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import styles from './Admin.module.css';
+import { ActionError } from '../components/ActionError';
+import { useToast } from '../components/Toasts';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 /** /admin/products/new and /admin/products/:id/edit. */
 export function AdminProductFormPage() {
@@ -65,8 +69,9 @@ function ProductForm({ product }: { product: AdminProduct | null }) {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Failure | null>(null);
   const [saving, setSaving] = useState(false);
+  const toast = useToast();
   const headingRef = useRef<HTMLHeadingElement>(null);
   // Changing this remounts the file input, which is how a chosen file is cleared.
   const [fileKey, setFileKey] = useState(0);
@@ -126,8 +131,8 @@ function ProductForm({ product }: { product: AdminProduct | null }) {
     setFileKey((k) => k + 1);
   }
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+  async function handleSubmit(event?: FormEvent) {
+    event?.preventDefault();
     setProblem(null);
     const found = validateProductForm(values, file, hasVariants);
     setErrors(found);
@@ -142,16 +147,18 @@ function ProductForm({ product }: { product: AdminProduct | null }) {
       const saved = editing
         ? await api<AdminProduct>(`/api/admin/products/${product.id}`, { method: 'PATCH', formData: body })
         : await api<AdminProduct>('/api/admin/products', { method: 'POST', formData: body });
+      toast.success('Product saved');
       navigate('/admin/products', { state: { notice: `${editing ? 'Saved' : 'Created'} "${saved.name}" (ID ${saved.id}).` } });
     } catch (err) {
       if (err instanceof ApiRequestError && Object.keys(err.fieldErrors).length > 0) {
         const mapped = formErrorsFromServer(err.fieldErrors);
         setErrors(mapped);
-        setProblem(err.message);
+        setProblem({ message: err.message });
         const firstServer = firstErrorField(mapped);
         if (firstServer) document.getElementById(`product-${firstServer}`)?.focus();
       } else {
-        setProblem(err instanceof ApiRequestError ? err.message : 'Could not save the product. Please try again.');
+        setProblem(failureOf(err, 'Could not save the product. Please try again.', () => void handleSubmit()));
+        toast.error('Could not save product');
       }
       setSaving(false);
     }
@@ -171,11 +178,7 @@ function ProductForm({ product }: { product: AdminProduct | null }) {
       </h1>
 
       <form onSubmit={(e) => void handleSubmit(e)} noValidate className={styles.form} data-testid="admin-product-form">
-        {problem && (
-          <p role="alert" className={styles.alert}>
-            {problem}
-          </p>
-        )}
+        {problem && <ActionError failure={problem} className={styles.alert} />}
         <FormField
           id="product-name"
           label="Name"

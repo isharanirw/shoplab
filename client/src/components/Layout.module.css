@@ -183,3 +183,26 @@
 .footerNav a:hover {
   color: #ffffff;
 }
+
+.topBar {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.25rem 1rem 0;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.shippingTo {
+  margin: 0;
+}
+
+.backToTop {
+  font: inherit;
+  background: none;
+  border: 1px solid #9ca3af;
+  border-radius: var(--radius);
+  color: var(--color-notice-text);
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}

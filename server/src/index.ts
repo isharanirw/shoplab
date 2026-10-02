@@ -5,12 +5,20 @@ import { loadConfig } from './config';
 import { openDatabase } from './db/connection';
 import { seedDatabase } from './db/seed';
 import { clearUploads } from './services/uploads';
+import { initFlagsFromEnv } from './testability/flags';
 
 // Optional local overrides; real environment variables always win.
 const envFile = path.resolve(__dirname, '..', '..', '.env');
 if (fs.existsSync(envFile)) process.loadEnvFile(envFile);
 
 const config = loadConfig();
+let bootFlags: string[];
+try {
+  bootFlags = initFlagsFromEnv(process.env.FLAGS);
+} catch (err) {
+  process.stderr.write(`${(err as Error).message}\n`);
+  process.exit(1);
+}
 const db = openDatabase(config.dbPath);
 const seedStart = Date.now();
 seedDatabase(db, config.seedDir, 'default');
@@ -22,7 +30,7 @@ const app = createApp(ctx);
 const server = app.listen(config.port, () => {
   process.stdout.write(
     `ShopLab ${config.version} listening on port ${config.port} (seeded in ${Date.now() - seedStart} ms, ` +
-      `test key ${config.testApiKey ? 'required' : 'not required'})\n`,
+      `test key ${config.testApiKey ? 'required' : 'not required'}, flags ${bootFlags.length > 0 ? bootFlags.join(',') : 'none'})\n`,
   );
 });
 

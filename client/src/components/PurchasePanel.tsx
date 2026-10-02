@@ -6,6 +6,10 @@ import { clampQuantity, maxQuantity, optionAvailable, purchaseState, variantAxes
 import type { Selection } from '../lib/variants';
 import { StockBadge } from './StockBadge';
 import styles from './PurchasePanel.module.css';
+import { ActionError } from './ActionError';
+import { useToast } from './Toasts';
+import { failureOf } from '../lib/failure';
+import type { Failure } from '../lib/failure';
 
 const SWATCHES: Record<string, string> = {
   Black: '#111827',
@@ -41,7 +45,8 @@ export function PurchasePanel({ product, idPrefix }: PurchasePanelProps) {
   const [quantityText, setQuantityText] = useState('1');
   const cart = useCart();
   const [notice, setNotice] = useState<string | null>(null);
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<Failure | null>(null);
+  const toast = useToast();
   const [adding, setAdding] = useState(false);
 
   const state = purchaseState(product.stock, product.variants, selection);
@@ -79,8 +84,10 @@ export function PurchasePanel({ product, idPrefix }: PurchasePanelProps) {
     try {
       await cart.addItem({ productId: product.id, variantId: state.variant?.id ?? null, quantity }, state.stock);
       setNotice(`Added ${quantity} × ${product.name} to your cart.`);
+      toast.success('Added to cart');
     } catch (err) {
-      setProblem(err instanceof Error ? err.message : 'Could not add that to your cart.');
+      setProblem(failureOf(err, 'Could not add that to your cart.', () => void handleAdd()));
+      toast.error('Could not add to cart');
     } finally {
       setAdding(false);
     }
@@ -220,11 +227,7 @@ export function PurchasePanel({ product, idPrefix }: PurchasePanelProps) {
           </p>
         )}
       </div>
-      {problem && (
-        <p role="alert" className={styles.problem} data-testid="cart-problem">
-          {problem}
-        </p>
-      )}
+      {problem && <ActionError failure={problem} className={styles.problem} testId="cart-problem" />}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { f25 } from '../testability/variants';
 export const REVIEW_TITLE_MIN = 3;
 export const REVIEW_TITLE_MAX = 100;
 export const REVIEW_BODY_MIN = 20;
@@ -29,7 +30,7 @@ export function validateTitle(value: string): string | null {
 export function validateBody(value: string): string | null {
   const body = value.trim();
   if (body === '') return 'Review text is required.';
-  if (body.length < REVIEW_BODY_MIN) return `Review text must be at least ${REVIEW_BODY_MIN} characters.`;
+  if (body.length < f25(REVIEW_BODY_MIN)) return `Review text must be at least ${REVIEW_BODY_MIN} characters.`;
   if (body.length > REVIEW_BODY_MAX) return `Review text must be at most ${REVIEW_BODY_MAX} characters.`;
   return null;
 }

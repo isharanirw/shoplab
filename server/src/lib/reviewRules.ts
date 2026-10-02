@@ -1,3 +1,4 @@
+import { f25 } from '../testability/variants';
 export const REVIEW_TITLE_MIN = 3;
 export const REVIEW_TITLE_MAX = 100;
 export const REVIEW_BODY_MIN = 20;
@@ -29,7 +30,7 @@ export function validateReviewFields(raw: Record<string, string | undefined>): R
 
   const body = (raw.body ?? '').trim();
   if (body === '') fieldErrors.body = 'Review text is required.';
-  else if (body.length < REVIEW_BODY_MIN) fieldErrors.body = `Review text must be at least ${REVIEW_BODY_MIN} characters.`;
+  else if (body.length < f25(REVIEW_BODY_MIN)) fieldErrors.body = `Review text must be at least ${REVIEW_BODY_MIN} characters.`;
   else if (body.length > REVIEW_BODY_MAX) fieldErrors.body = `Review text must be at most ${REVIEW_BODY_MAX} characters.`;
 
   if (Object.keys(fieldErrors).length > 0 || rating === null) return { ok: false, fieldErrors };

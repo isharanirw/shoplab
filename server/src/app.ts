@@ -20,6 +20,8 @@ import { addressesRouter, checkoutRouter, countriesRouter, ordersRouter } from '
 import { healthRouter } from './routes/health';
 import { productsRouter } from './routes/products';
 import { wishlistRouter } from './routes/wishlist';
+import { ChaosEngine, chaosMiddleware } from './testability/chaos';
+import { configRouter } from './testability/publicConfig';
 import { testRouter } from './testability/routes';
 
 export const LOGIN_MAX_FAILURES = 5;
@@ -30,6 +32,7 @@ export function createContext(config: Config, db: Db): AppContext {
     config,
     db,
     loginLimiter: new FailureLimiter(LOGIN_MAX_FAILURES, LOGIN_WINDOW_MS),
+    chaos: new ChaosEngine(),
     startedAt: Date.now(),
   };
 }
@@ -68,6 +71,8 @@ export function createApp(ctx: AppContext): Express {
   // API docs sit outside the JSON API router: they need no session and answer in HTML, YAML and JavaScript.
   app.use('/api/docs', docsRouter(ctx));
 
+  app.use('/api', chaosMiddleware(ctx.chaos));
+
   const api = express.Router();
   api.use(express.json({ limit: '100kb' }));
   api.use(authenticate(ctx));
@@ -85,6 +90,7 @@ export function createApp(ctx: AppContext): Express {
   api.use('/contact', contactRouter(ctx));
   api.use('/geo', geoRouter(ctx));
   api.use('/admin', adminRouter(ctx));
+  api.use('/config', configRouter());
   api.use('/test', testRouter(ctx));
   api.use(apiNotFound);
   app.use('/api', api);
@@ -97,6 +103,14 @@ export function createApp(ctx: AppContext): Express {
       setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
     }),
   );
+
+  // Self-hosted "third-party" scripts: the promo overlay and the analytics script. The site works without them.
+  const scriptOptions = { index: false, maxAge: 0, setHeaders: (res: express.Response) => res.setHeader('Cache-Control', 'no-cache') };
+  app.use('/ads', express.static(path.join(ctx.config.staticDir, 'ads'), scriptOptions));
+  app.use('/analytics', express.static(path.join(ctx.config.staticDir, 'analytics'), scriptOptions));
+  app.post('/analytics/collect', (_req, res) => {
+    res.status(204).end();
+  });
 
   app.use(...clientHandlers(ctx.config.clientDistDir));
   app.use((req, res, next) => {

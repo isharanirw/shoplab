@@ -12,6 +12,7 @@ import type { ShippingMethod } from '../lib/pricing';
 import { priceCart } from './cart';
 import { findAddress, listCountries } from './locations';
 import type { ListResult } from './locations';
+import { f08, f10, f21, f23 } from '../testability/variants';
 
 export interface OrderItemView {
   productId: number;
@@ -132,7 +133,8 @@ function toOrderView(db: Db, row: OrderRow): OrderView {
 
 /** An order of the given user, or null. Other users' orders look the same as missing ones. */
 export function getOrderForUser(db: Db, userId: number, orderId: number): OrderView | null {
-  const row = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(orderId, userId) as OrderRow | undefined;
+  const scope = f08(userId);
+  const row = db.prepare('SELECT * FROM orders WHERE id = ? AND (? IS NULL OR user_id = ?)').get(orderId, scope, scope) as OrderRow | undefined;
   return row ? toOrderView(db, row) : null;
 }
 
@@ -219,6 +221,7 @@ export function placeOrder(db: Db, userId: number, rawBody: unknown, now: Date =
     const number = formatOrderNumber(now, nextSequence(numbers, now));
 
     const couponCode = priced.totals.coupon?.applied ? priced.totals.coupon.code : null;
+    const stored = f23(method, priced.totals.shippingCents, priced.totals.totalCents);
     const info = db
       .prepare(
         `INSERT INTO orders (number, user_id, status, created_at, delivery_date, coupon_code, shipping_method,
@@ -234,9 +237,9 @@ export function placeOrder(db: Db, userId: number, rawBody: unknown, now: Date =
         method,
         priced.totals.subtotalCents,
         priced.totals.discountCents,
-        priced.totals.shippingCents,
+        stored.shippingCents,
         priced.totals.taxCents,
-        priced.totals.totalCents,
+        stored.totalCents,
         payment.last4,
         JSON.stringify(address),
       );
@@ -255,7 +258,7 @@ export function placeOrder(db: Db, userId: number, rawBody: unknown, now: Date =
     }
 
     db.prepare('DELETE FROM cart_items WHERE user_id = ?').run(userId);
-    db.prepare('DELETE FROM carts WHERE user_id = ?').run(userId);
+    if (!f10()) db.prepare('DELETE FROM carts WHERE user_id = ?').run(userId);
     return orderId;
   });
 
@@ -318,6 +321,7 @@ export function listOrdersForUser(db: Db, userId: number, query: OrderListQuery)
  */
 export function applyCancellation(db: Db, orderId: number): void {
   db.prepare("UPDATE orders SET status = 'Cancelled' WHERE id = ?").run(orderId);
+  if (f21()) return;
   const items = db.prepare('SELECT product_id, variant_id, quantity FROM order_items WHERE order_id = ?').all(orderId) as {
     product_id: number;
     variant_id: number | null;
