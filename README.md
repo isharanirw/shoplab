@@ -2,7 +2,7 @@
 
 ShopLab is a deliberately realistic demo online store. It exists as a system under test: a place to practise UI, API and CI test automation against an application you fully control. It has a React front end, a REST API, resettable data and (in later phases) switchable defects and adjustable latency and failures.
 
-Live site: `<live URL placeholder>`
+Live site: https://shoplab-ffm2.onrender.com
 
 > **Demo site. No real payments or personal data.** Everything you enter can be wiped at any time.
 
