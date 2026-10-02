@@ -3,8 +3,67 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 2rem 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.hero p {
+.banner {
+  font-size: 1.25rem;
   max-width: 42rem;
+  margin: 0 0 1.25rem;
+}
+
+.flash {
+  background: #1e3a8a;
+  color: #ffffff;
+  border-radius: var(--radius);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+.flash h2 {
+  margin: 0;
+}
+
+.countdown {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.countdown time {
+  font-variant-numeric: tabular-nums;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.categoryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.categoryLink {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.categoryLink:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }

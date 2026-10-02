@@ -1,0 +1,73 @@
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.stars {
+  color: #b45309;
+  letter-spacing: 0.05em;
+}
+
+.starsEmpty {
+  color: #9ca3af;
+}
+
+.ratingText {
+  color: var(--color-muted);
+}
+
+.noRating {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.badgeIn {
+  background: #dcfce7;
+  color: #14532d;
+  border-color: #86efac;
+}
+
+.badgeLow {
+  background: #fef3c7;
+  color: #78350f;
+  border-color: #fcd34d;
+}
+
+.badgeOut {
+  background: #fee2e2;
+  color: #7f1d1d;
+  border-color: #fca5a5;
+}
+
+.price {
+  font-weight: 600;
+}
+
+.salePrice {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.originalPrice {
+  color: var(--color-muted);
+  font-weight: 400;
+  font-size: 0.9em;
+}

@@ -1,0 +1,195 @@
+.breadcrumb {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 48rem) {
+  .top {
+    grid-template-columns: minmax(0, 26rem) minmax(0, 1fr);
+  }
+}
+
+.main {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.thumbs {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.thumbs li {
+  width: 4.5rem;
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+}
+
+.thumbActive {
+  border-color: var(--color-primary);
+}
+
+.info {
+  min-width: 0;
+}
+
+.title {
+  overflow-wrap: anywhere;
+  margin-bottom: 0.25rem;
+}
+
+.meta {
+  margin: 0 0 0.75rem;
+  color: var(--color-muted);
+}
+
+.price {
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem;
+}
+
+.rating {
+  margin: 0 0 1rem;
+}
+
+.linkButton {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tabs {
+  margin-top: 2rem;
+}
+
+.tabList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.tab {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--color-primary);
+}
+
+.tabActive {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-top: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 1.25rem;
+}
+
+.specs {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 34rem;
+}
+
+.specs th,
+.specs td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.specs th {
+  width: 40%;
+}
+
+.summary {
+  margin-bottom: 0.5rem;
+}
+
+.distribution {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.sortRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.reviews {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.review {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.review:first-child {
+  padding-top: 0;
+}
+
+.reviewHead {
+  margin: 0 0 0.15rem;
+}
+
+.reviewTitle {
+  font-size: 1rem;
+  margin: 0 0 0.15rem;
+}
+
+.reviewMeta {
+  margin: 0 0 0.35rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.review p:last-child {
+  margin-bottom: 0;
+}

@@ -8,7 +8,33 @@ Live site: https://shoplab-ffm2.onrender.com
 
 ## Status
 
-Phase 1 (foundation) is complete: project scaffold, database and seed data, authentication, health check, reset endpoint, and CI. Later phases add the catalogue, cart and checkout, account features, admin, and the testability layer.
+Phase 1 (foundation) and Phase 2 (catalogue) are complete. Phase 1 covers the scaffold, database and seed data, authentication, health check, reset endpoint and CI. Phase 2 adds the product listing with search, filters, sorting and pagination, the product detail page, quick view, and a basic wishlist. The cart is not built yet: "Add to cart" buttons follow the real enabled/disabled rules but do nothing. Later phases add the cart and checkout, account features, admin, and the testability layer.
+
+## Routes
+
+| Route | What it shows |
+| --- | --- |
+| `/` | Home: hero banner, flash-sale countdown, category links, featured products |
+| `/products` | Listing: search (`q`), `category`, `subcategory`, `minPrice`, `maxPrice`, `inStock=true`, `rating`, `sort`, `page` all live in the query string |
+| `/products/:id` | Product detail with gallery, options, quantity, and Description / Specs / Reviews tabs |
+| `/wishlist` | The logged-in user's wishlist (login required) |
+| `/login`, `/register`, `/account` | Accounts (Phase 1) |
+
+## API endpoints
+
+Lists return `{ data, page, pageSize, total }`; errors use the shape described below. Full rules (what search matches, what "in stock" and "rating" mean, sort order, paging past the end) are in [docs/BEHAVIOUR.md](docs/BEHAVIOUR.md).
+
+| Endpoint | Access | Purpose |
+| --- | --- | --- |
+| `GET /api/products` | Public | List with `q`, `category` (repeatable), `subcategory`, `minPrice`, `maxPrice` (dollars), `inStock`, `rating`, `featured`, `sort` (`price_asc`, `price_desc`, `rating`, `newest`), `page`, `pageSize` (default 12, max 50) |
+| `GET /api/products/suggest?q=` | Public | Up to 5 name suggestions; empty list for fewer than 2 characters |
+| `GET /api/products/{id}` | Public | Detail with variants, stock per variant and a rating summary |
+| `GET /api/products/{id}/reviews` | Public | Reviews, 5 per page, `sort` = `newest`, `highest` or `lowest` |
+| `GET /api/categories` | Public | Categories with subcategories and product counts |
+| `GET /api/promotions` | Public | Home banner text (fixed value) |
+| `GET /api/wishlist` | User | The user's wishlist |
+| `POST /api/wishlist` | User | Add `{"productId": 5}` (201, or 200 if already there) |
+| `DELETE /api/wishlist/{productId}` | User | Remove an item (204, or 404 if it was not there) |
 
 ## Run it locally
 
