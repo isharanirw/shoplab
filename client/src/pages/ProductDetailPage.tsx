@@ -72,7 +72,8 @@ function ProductView({ product: initialProduct }: { product: ProductDetail }) {
   const [imageIndex, setImageIndex] = useState(0);
   // A link ending in #reviews (from an order) opens the Reviews tab directly.
   const [tab, setTab] = useState<TabId>(location.hash === '#reviews' ? 'reviews' : 'description');
-  const count = Math.max(product.imageCount, 1);
+  // An uploaded image replaces the generated gallery: the product then has exactly one picture.
+  const count = product.imagePath ? 1 : Math.max(product.imageCount, 1);
 
   useEffect(() => {
     if (location.hash === '#reviews') document.getElementById('tab-reviews')?.scrollIntoView({ block: 'start' });
@@ -111,7 +112,7 @@ function ProductView({ product: initialProduct }: { product: ProductDetail }) {
       <div className={styles.top}>
         <div className={styles.gallery}>
           <div className={styles.main} data-testid="gallery-main">
-            <ProductImage key={imageIndex} productId={product.id} name={product.name} index={imageIndex} total={count} />
+            <ProductImage key={imageIndex} productId={product.id} name={product.name} index={imageIndex} total={count} imagePath={product.imagePath} />
           </div>
           <ul className={styles.thumbs} aria-label="Product images">
             {Array.from({ length: count }, (_, i) => (
@@ -124,7 +125,7 @@ function ProductView({ product: initialProduct }: { product: ProductDetail }) {
                   onClick={() => setImageIndex(i)}
                   data-testid={`gallery-thumb-${i + 1}`}
                 >
-                  <ProductImage productId={product.id} name={product.name} index={i} total={count} decorative />
+                  <ProductImage productId={product.id} name={product.name} index={i} total={count} imagePath={product.imagePath} decorative />
                 </button>
               </li>
             ))}

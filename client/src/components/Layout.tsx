@@ -57,6 +57,11 @@ export function Layout() {
               </NavLink>
               {!loading && user && (
                 <>
+                  {user.role === 'admin' && (
+                    <NavLink to="/admin" className={styles.navLink} data-testid="admin-link">
+                      Admin
+                    </NavLink>
+                  )}
                   <NavLink to="/wishlist" className={styles.navLink}>
                     Wishlist
                   </NavLink>
