@@ -7,6 +7,7 @@ import { ApiError } from '../lib/errors';
 import { hashPassword, validatePassword } from '../lib/passwords';
 import { normaliseEmail, validateEmail } from '../lib/validation';
 import { requireTestKey } from '../middleware/testKey';
+import { clearUploads } from '../services/uploads';
 import { getTestSettings, resetTestSettings } from './settings';
 
 function bodyOf(req: Request): Record<string, unknown> {
@@ -25,6 +26,7 @@ export function testRouter(ctx: AppContext): Router {
       });
     }
     seedDatabase(ctx.db, ctx.config.seedDir, scenario);
+    clearUploads(ctx.config.uploadsDir);
     ctx.loginLimiter.clearAll();
     resetTestSettings(scenario);
     res.status(204).end();

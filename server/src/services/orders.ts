@@ -4,11 +4,14 @@ import type { AddressInput } from '../lib/address';
 import { validateDeliveryDate } from '../lib/delivery';
 import { ApiError } from '../lib/errors';
 import { formatOrderNumber, nextSequence, orderNumberPrefix } from '../lib/orderNumber';
+import { ORDER_SORT_SQL } from '../lib/orderQuery';
+import type { OrderListQuery } from '../lib/orderQuery';
 import { parsePaymentToken } from '../lib/payment';
 import { isShippingMethod } from '../lib/pricing';
 import type { ShippingMethod } from '../lib/pricing';
 import { priceCart } from './cart';
 import { findAddress, listCountries } from './locations';
+import type { ListResult } from './locations';
 
 export interface OrderItemView {
   productId: number;
@@ -260,4 +263,81 @@ export function placeOrder(db: Db, userId: number, rawBody: unknown, now: Date =
   const order = getOrderForUser(db, userId, orderId);
   if (!order) throw new ApiError('INTERNAL_ERROR', 'The order was saved but could not be loaded.');
   return { order };
+}
+
+export interface OrderSummary {
+  id: number;
+  number: string;
+  status: string;
+  createdAt: string;
+  deliveryDate: string;
+  itemCount: number;
+  totalCents: number;
+}
+
+/** The user's own orders, filtered by status, sorted and paged. A page past the end is an empty list. */
+export function listOrdersForUser(db: Db, userId: number, query: OrderListQuery): ListResult<OrderSummary> {
+  const where = query.status ? 'o.user_id = ? AND o.status = ?' : 'o.user_id = ?';
+  const params: (string | number)[] = query.status ? [userId, query.status] : [userId];
+  const { n } = db.prepare(`SELECT COUNT(*) AS n FROM orders o WHERE ${where}`).get(...params) as { n: number };
+  const rows = db
+    .prepare(
+      `SELECT o.id, o.number, o.status, o.created_at, o.delivery_date, o.total_cents,
+              (SELECT COALESCE(SUM(quantity), 0) FROM order_items WHERE order_id = o.id) AS item_count
+       FROM orders o WHERE ${where} ORDER BY ${ORDER_SORT_SQL[query.sort]} LIMIT ? OFFSET ?`,
+    )
+    .all(...params, query.pageSize, (query.page - 1) * query.pageSize) as {
+    id: number;
+    number: string;
+    status: string;
+    created_at: string;
+    delivery_date: string;
+    total_cents: number;
+    item_count: number;
+  }[];
+  return {
+    data: rows.map((r) => ({
+      id: r.id,
+      number: r.number,
+      status: r.status,
+      createdAt: r.created_at,
+      deliveryDate: r.delivery_date,
+      itemCount: r.item_count,
+      totalCents: r.total_cents,
+    })),
+    page: query.page,
+    pageSize: query.pageSize,
+    total: n,
+  };
+}
+
+/**
+ * Cancels one of the user's orders. Only a Processing order can be cancelled (409 otherwise); an order that
+ * is not the user's looks like a missing one (404). The status change and the stock restore (product stock,
+ * plus variant stock for lines with a variant) happen in one transaction.
+ */
+export function cancelOrder(db: Db, userId: number, orderId: number): OrderView {
+  const run = db.transaction((): void => {
+    const row = db.prepare('SELECT id, status FROM orders WHERE id = ? AND user_id = ?').get(orderId, userId) as
+      | { id: number; status: string }
+      | undefined;
+    if (!row) throw new ApiError('NOT_FOUND', 'Order not found.');
+    if (row.status !== 'Processing') {
+      throw new ApiError('CONFLICT', `This order is ${row.status} and can no longer be cancelled. Only Processing orders can be cancelled.`);
+    }
+    db.prepare("UPDATE orders SET status = 'Cancelled' WHERE id = ?").run(orderId);
+    const items = db.prepare('SELECT product_id, variant_id, quantity FROM order_items WHERE order_id = ?').all(orderId) as {
+      product_id: number;
+      variant_id: number | null;
+      quantity: number;
+    }[];
+    const giveProductStock = db.prepare('UPDATE products SET stock = stock + ? WHERE id = ?');
+    const giveVariantStock = db.prepare('UPDATE product_variants SET stock = stock + ? WHERE id = ?');
+    for (const item of items) {
+      if (item.variant_id !== null) giveVariantStock.run(item.quantity, item.variant_id);
+      giveProductStock.run(item.quantity, item.product_id);
+    }
+  });
+  run();
+  return getOrderForUser(db, userId, orderId)!;
 }

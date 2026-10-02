@@ -4,6 +4,7 @@ import { createApp, createContext } from './app';
 import { loadConfig } from './config';
 import { openDatabase } from './db/connection';
 import { seedDatabase } from './db/seed';
+import { clearUploads } from './services/uploads';
 
 // Optional local overrides; real environment variables always win.
 const envFile = path.resolve(__dirname, '..', '..', '.env');
@@ -13,6 +14,7 @@ const config = loadConfig();
 const db = openDatabase(config.dbPath);
 const seedStart = Date.now();
 seedDatabase(db, config.seedDir, 'default');
+clearUploads(config.uploadsDir); // the database starts fresh on every boot, so stale review images go too
 
 const ctx = createContext(config, db);
 const app = createApp(ctx);

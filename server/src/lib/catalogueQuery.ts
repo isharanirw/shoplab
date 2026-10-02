@@ -43,7 +43,7 @@ type Raw = Record<string, unknown>;
 type Errors = Record<string, string>;
 
 /** Returns the single string value for a key, or undefined when absent or empty. */
-function single(raw: Raw, key: string, errors: Errors): string | undefined {
+export function single(raw: Raw, key: string, errors: Errors): string | undefined {
   const value = raw[key];
   if (value === undefined) return undefined;
   if (Array.isArray(value)) {
@@ -57,7 +57,7 @@ function single(raw: Raw, key: string, errors: Errors): string | undefined {
   return value === '' ? undefined : value;
 }
 
-function parseInteger(raw: Raw, key: string, errors: Errors, min: number, max: number): number | undefined {
+export function parseInteger(raw: Raw, key: string, errors: Errors, min: number, max: number): number | undefined {
   const value = single(raw, key, errors);
   if (value === undefined) return undefined;
   if (!/^\d{1,9}$/.test(value)) {
@@ -93,7 +93,7 @@ function parseBoolean(raw: Raw, key: string, errors: Errors): boolean {
   return false;
 }
 
-function parseChoice<T extends string>(raw: Raw, key: string, errors: Errors, allowed: readonly T[]): T | undefined {
+export function parseChoice<T extends string>(raw: Raw, key: string, errors: Errors, allowed: readonly T[]): T | undefined {
   const value = single(raw, key, errors);
   if (value === undefined) return undefined;
   if ((allowed as readonly string[]).includes(value)) return value as T;
@@ -101,13 +101,13 @@ function parseChoice<T extends string>(raw: Raw, key: string, errors: Errors, al
   return undefined;
 }
 
-function parsePaging(raw: Raw, errors: Errors, defaultSize: number): { page: number; pageSize: number } {
+export function parsePaging(raw: Raw, errors: Errors, defaultSize: number): { page: number; pageSize: number } {
   const page = parseInteger(raw, 'page', errors, 1, 1_000_000) ?? 1;
   const pageSize = parseInteger(raw, 'pageSize', errors, 1, MAX_PAGE_SIZE) ?? defaultSize;
   return { page, pageSize };
 }
 
-function fail(errors: Errors): never {
+export function fail(errors: Errors): never {
   throw new ApiError('VALIDATION_ERROR', 'One or more query parameters are invalid.', { fieldErrors: errors });
 }
 

@@ -16,6 +16,7 @@ export const TABLES_IN_CREATE_ORDER = [
   'cart_items',
   'orders',
   'order_items',
+  'contact_messages',
 ] as const;
 
 const SCHEMA = `
@@ -163,6 +164,14 @@ CREATE TABLE IF NOT EXISTS order_items (
   variant_label    TEXT,
   unit_price_cents INTEGER NOT NULL,
   quantity         INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id         INTEGER PRIMARY KEY,
+  user_id    INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  topic      TEXT NOT NULL,
+  message    TEXT NOT NULL,
+  created_at TEXT NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
