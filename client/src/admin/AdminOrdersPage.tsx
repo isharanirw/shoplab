@@ -119,7 +119,7 @@ export function AdminOrdersPage() {
                     <th scope="col" className={`${styles.right} ${styles.hideNarrow}`}>
                       Items
                     </th>
-                    <th scope="col" className={styles.right}>
+                    <th scope="col" className={`${styles.right} ${styles.hideNarrow}`}>
                       Total
                     </th>
                     <th scope="col">Status</th>
@@ -130,14 +130,16 @@ export function AdminOrdersPage() {
                     const o = updated[original.id] ?? original;
                     return (
                       <tr key={o.id} data-testid={`admin-order-row-${o.id}`}>
-                        <th scope="row">{o.number}</th>
+                        <th scope="row" className={styles.orderNumber}>
+                          {o.number}
+                        </th>
                         <td>
                           {o.customer.name}
                           <span className={styles.subline}>{o.customer.email}</span>
                         </td>
                         <td className={styles.hideNarrow}>{formatDate(o.createdAt)}</td>
                         <td className={`${styles.right} ${styles.hideNarrow}`}>{o.itemCount}</td>
-                        <td className={styles.right}>{formatPrice(o.totalCents)}</td>
+                        <td className={`${styles.right} ${styles.hideNarrow}`}>{formatPrice(o.totalCents)}</td>
                         <td>
                           <OrderStatusBadge status={o.status} />
                           <div>

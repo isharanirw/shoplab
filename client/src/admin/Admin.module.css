@@ -308,6 +308,16 @@
 }
 
 @media (max-width: 40rem) {
+  .orderNumber {
+    white-space: nowrap;
+    font-size: 0.8rem;
+  }
+
+  .subline {
+    font-size: 0.8rem;
+    word-break: break-all;
+  }
+
   .table th,
   .table td {
     padding: 0.5rem 0.45rem;

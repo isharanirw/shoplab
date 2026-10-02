@@ -8,7 +8,7 @@ Live site: https://shoplab-ffm2.onrender.com
 
 ## Status
 
-Phases 1 to 4 are complete: foundation (scaffold, database and seed data, authentication, health check, reset endpoint, CI), the catalogue (listing, search, filters, detail page, quick view, wishlist basics), cart and checkout (cart, coupons, pricing, four-step checkout with a payment iframe, orders and confirmation) and account and engagement (address book, order history with cancel, reviews with image upload, wishlist drag and drop, contact form). Later phases add admin and the testability layer.
+Phases 1 to 5 are complete. Phase 5 added the admin panel (products, orders, users), the remaining API endpoints, `docs/openapi.yaml` and Swagger UI at `/api/docs`. Phases 1 to 4: foundation (scaffold, database and seed data, authentication, health check, reset endpoint, CI), the catalogue (listing, search, filters, detail page, quick view, wishlist basics), cart and checkout (cart, coupons, pricing, four-step checkout with a payment iframe, orders and confirmation) and account and engagement (address book, order history with cancel, reviews with image upload, wishlist drag and drop, contact form). Later phases add the testability layer (defect flags, chaos mode) and polish.
 
 ## Routes
 
@@ -28,6 +28,12 @@ Phases 1 to 4 are complete: foundation (scaffold, database and seed data, authen
 | `/orders/:id/confirmation` | Confirmation page after placing an order (login required, own orders only) |
 | `/payment-frame` | The card form that checkout embeds in an `<iframe>` (same origin) |
 | `/terms` | Static terms and conditions (checkout links to it in a new tab) |
+| `/admin` | Admin overview (admins only: logged out goes to `/login?next=/admin`, a customer sees a 403 page) |
+| `/admin/products` | Searchable, paginated product table (`q`, `active`, `page` in the query string); delete with a confirm modal |
+| `/admin/products/new`, `/admin/products/:id/edit` | Product form: name, category, subcategory, description, price, sale price, stock, image upload, active |
+| `/admin/orders` | All orders, newest first, status filter and a status dropdown per order |
+| `/admin/users` | All users with a lock / unlock switch |
+| `/api/docs` | Swagger UI for the whole API (bundled, no external requests); the raw spec is at `/api/docs/openapi.yaml` and in `docs/openapi.yaml` |
 
 ## API endpoints
 
@@ -66,6 +72,17 @@ Lists return `{ data, page, pageSize, total }`; errors use the shape described b
 | `DELETE /api/addresses/{id}` | User | Delete (204); deleting the default promotes the earliest remaining address |
 | `PATCH /api/auth/me` | User | Change the display name `{"name"}` |
 | `POST /api/contact` | Public | `{topic, message, consent}`; stored in the database, no email is sent (201) |
+| `GET /api/geo` | Public | Detected shipping country: always Sweden unless `?country=US` (or SE, IN) overrides it; 400 for an unknown code |
+| `GET /api/admin/products`, `GET /api/admin/products/{id}` | Admin | All products incl. inactive: `q`, `active`, `page`, `pageSize` (default 10) / one product |
+| `POST /api/admin/products` | Admin | Create (201). JSON, or multipart with an `image`. IDs continue from 61. 400 with `fieldErrors`; 413 image over 2 MB |
+| `PATCH /api/admin/products/{id}` | Admin | Change any fields (`active: false` hides it from the store; `removeImage: true` drops the image) |
+| `DELETE /api/admin/products/{id}` | Admin | Hard delete (204). Order history keeps its own copy of the lines |
+| `GET /api/admin/orders` | Admin | Every order, newest first: `status`, `page`, `pageSize` |
+| `PATCH /api/admin/orders/{id}/status` | Admin | `{"status"}`. Forward only (Processing, Shipped, Delivered) or Cancelled from Processing or Shipped (returns stock); 409 otherwise |
+| `GET /api/admin/users` | Admin | Users: `q`, `page`, `pageSize` |
+| `PATCH /api/admin/users/{id}/lock` | Admin | `{"locked": true}`. Ends the user's sessions; 409 when locking yourself |
+
+Every `/api/admin/*` route is 401 without a login and 403 for a customer. The full, machine-readable description of every endpoint (parameters, bodies, schemas, status codes) is [docs/openapi.yaml](docs/openapi.yaml); run the app and open `/api/docs` for Swagger UI with a Try it out button. A test (`server/src/openapi.contract.test.ts`) keeps the file in step with the real responses.
 
 ## Cart, coupons and test cards
 
@@ -101,7 +118,7 @@ Then open http://localhost:3000. For development with hot reload, run `npm run d
 
 Other scripts: `npm run seed`, `npm run lint`, `npm run typecheck`, `npm test`. Copy `.env.example` to `.env` to change the port, database path, uploads directory or test key.
 
-Review images are saved in `uploads/` (git-ignored, served at `/uploads/reviews/...`). `POST /api/test/reset` deletes them together with the reviews people wrote, so the data matches the seed again. On the free Render tier the disk is ephemeral anyway.
+Review images are saved in `uploads/` (git-ignored, served at `/uploads/reviews/...`); product images uploaded in the admin panel go to `uploads/products/...`. `POST /api/test/reset` deletes both kinds together with the reviews and products people added, so the data matches the seed again. On the free Render tier the disk is ephemeral anyway.
 
 ## Demo accounts
 
@@ -132,6 +149,8 @@ curl -X POST http://localhost:3000/api/test/reset \
   -H "Content-Type: application/json" -H "X-Test-Key: $TEST_API_KEY" \
   -d '{"scenario": "low-stock"}'
 ```
+
+A typical test setup: reset, create a throwaway admin with `POST /api/test/users` (`{"email": "qa-admin@shoplab.test", "password": "Qa@12345", "role": "admin"}`), log in with `POST /api/auth/login` to get a `token`, then call `/api/admin/*` with `Authorization: Bearer <token>`. Another reset removes the extra user, uploaded images and any admin changes. `X-Test-Key` is only for `/api/test/*`; the admin API uses the normal login.
 
 The API uses one error shape, `{"error": {"code", "message", "fieldErrors"}}`, and accepts either the httpOnly session cookie or `Authorization: Bearer <token>` (the token is returned by `POST /api/auth/login`). Behaviour details are in [docs/BEHAVIOUR.md](docs/BEHAVIOUR.md); technical decisions are in [docs/DECISIONS.md](docs/DECISIONS.md).
 

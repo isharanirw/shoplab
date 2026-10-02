@@ -123,7 +123,9 @@ export function AdminUsersPage() {
                     <th scope="col" className={styles.hideNarrow}>
                       ID
                     </th>
-                    <th scope="col">Name</th>
+                    <th scope="col" className={styles.hideNarrow}>
+                      Name
+                    </th>
                     <th scope="col">Email</th>
                     <th scope="col" className={styles.hideNarrow}>
                       Role
@@ -141,7 +143,7 @@ export function AdminUsersPage() {
                     return (
                       <tr key={u.id} data-testid={`admin-user-row-${u.id}`}>
                         <td className={styles.hideNarrow}>{u.id}</td>
-                        <th scope="row">
+                        <th scope="row" className={styles.hideNarrow}>
                           {u.name}
                           {isMe ? ' (you)' : ''}
                         </th>

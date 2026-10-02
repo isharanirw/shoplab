@@ -170,7 +170,9 @@ export function AdminProductsPage() {
                 <caption className="visually-hidden">Products</caption>
                 <thead>
                   <tr>
-                    <th scope="col">ID</th>
+                    <th scope="col" className={styles.hideNarrow}>
+                      ID
+                    </th>
                     <th scope="col" className={styles.hideNarrow}>
                       Image
                     </th>
@@ -181,7 +183,7 @@ export function AdminProductsPage() {
                     <th scope="col" className={styles.right}>
                       Price
                     </th>
-                    <th scope="col" className={styles.right}>
+                    <th scope="col" className={`${styles.right} ${styles.hideNarrow}`}>
                       Stock
                     </th>
                     <th scope="col">Status</th>
@@ -191,7 +193,7 @@ export function AdminProductsPage() {
                 <tbody>
                   {data.data.map((p) => (
                     <tr key={p.id} data-testid={`admin-product-row-${p.id}`}>
-                      <td>{p.id}</td>
+                      <td className={styles.hideNarrow}>{p.id}</td>
                       <td className={styles.hideNarrow}>
                         <div className={styles.thumb}>
                           <ProductImage productId={p.id} name={p.name} imagePath={p.imagePath} decorative />
@@ -205,7 +207,7 @@ export function AdminProductsPage() {
                         <span className={styles.priceNow}>{formatPrice(p.salePriceCents ?? p.priceCents)}</span>
                         {p.salePriceCents !== null && <span className={styles.priceWas}>{formatPrice(p.priceCents)}</span>}
                       </td>
-                      <td className={styles.right}>{p.stock}</td>
+                      <td className={`${styles.right} ${styles.hideNarrow}`}>{p.stock}</td>
                       <td>
                         <span className={`${styles.badge} ${p.active ? styles.badgeActive : styles.badgeInactive}`}>
                           {p.active ? 'Active' : 'Inactive'}
