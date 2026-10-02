@@ -2,6 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { Db } from './connection';
 
+/** The seed catalogue uses IDs 1 to 60; products created later continue from 61. */
+export const SEED_LAST_PRODUCT_ID = 60;
+
 export const SCENARIOS = ['default', 'empty-store', 'low-stock', 'many-orders'] as const;
 export type Scenario = (typeof SCENARIOS)[number];
 
@@ -91,6 +94,9 @@ export function seedDatabase(db: Db, seedDir: string, scenario: Scenario = 'defa
   const data = loadSeedData(seedDir);
   const run = db.transaction(() => {
     for (const table of CLEAR_ORDER) db.exec(`DELETE FROM ${table}`);
+    // Products created by an admin always get IDs from 61 up, in every scenario, and an ID is never reused.
+    db.exec("DELETE FROM sqlite_sequence WHERE name = 'products'");
+    db.prepare("INSERT INTO sqlite_sequence (name, seq) VALUES ('products', ?)").run(SEED_LAST_PRODUCT_ID);
 
     const insUser = db.prepare(
       'INSERT INTO users (id, name, email, password_hash, role, locked, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',

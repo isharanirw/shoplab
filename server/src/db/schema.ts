@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS coupons (
 );
 
 CREATE TABLE IF NOT EXISTS products (
-  id               INTEGER PRIMARY KEY,
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
   name             TEXT NOT NULL,
   category         TEXT NOT NULL,
   subcategory      TEXT NOT NULL,
@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS products (
   featured         INTEGER NOT NULL DEFAULT 0,
   active           INTEGER NOT NULL DEFAULT 1,
   image_count      INTEGER NOT NULL DEFAULT 1,
+  image_path       TEXT,
   created_at       TEXT NOT NULL
 );
 

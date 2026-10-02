@@ -49,3 +49,10 @@ export const requireAuth: RequestHandler = (req, _res, next) => {
   if (!req.user) throw new ApiError('UNAUTHENTICATED', 'You need to log in to do that.');
   next();
 };
+
+/** Admin-only routes: 401 without a session, 403 for a logged-in customer. Use after (or instead of) requireAuth. */
+export const requireAdmin: RequestHandler = (req, _res, next) => {
+  if (!req.user) throw new ApiError('UNAUTHENTICATED', 'You need to log in to do that.');
+  if (req.user.role !== 'admin') throw new ApiError('FORBIDDEN', 'You do not have permission to do that.');
+  next();
+};

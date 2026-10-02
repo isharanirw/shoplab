@@ -312,9 +312,28 @@ export function listOrdersForUser(db: Db, userId: number, query: OrderListQuery)
 }
 
 /**
+ * Marks an order Cancelled and gives its stock back: product stock goes up by the quantities and, for a line
+ * with a variant, the variant stock too (mirroring what placing the order took). Call inside a transaction.
+ * Shared by the customer cancel and the admin status change, so both have the same stock effect.
+ */
+export function applyCancellation(db: Db, orderId: number): void {
+  db.prepare("UPDATE orders SET status = 'Cancelled' WHERE id = ?").run(orderId);
+  const items = db.prepare('SELECT product_id, variant_id, quantity FROM order_items WHERE order_id = ?').all(orderId) as {
+    product_id: number;
+    variant_id: number | null;
+    quantity: number;
+  }[];
+  const giveProductStock = db.prepare('UPDATE products SET stock = stock + ? WHERE id = ?');
+  const giveVariantStock = db.prepare('UPDATE product_variants SET stock = stock + ? WHERE id = ?');
+  for (const item of items) {
+    if (item.variant_id !== null) giveVariantStock.run(item.quantity, item.variant_id);
+    giveProductStock.run(item.quantity, item.product_id);
+  }
+}
+
+/**
  * Cancels one of the user's orders. Only a Processing order can be cancelled (409 otherwise); an order that
- * is not the user's looks like a missing one (404). The status change and the stock restore (product stock,
- * plus variant stock for lines with a variant) happen in one transaction.
+ * is not the user's looks like a missing one (404). The status change and the stock restore happen in one transaction.
  */
 export function cancelOrder(db: Db, userId: number, orderId: number): OrderView {
   const run = db.transaction((): void => {
@@ -325,18 +344,7 @@ export function cancelOrder(db: Db, userId: number, orderId: number): OrderView 
     if (row.status !== 'Processing') {
       throw new ApiError('CONFLICT', `This order is ${row.status} and can no longer be cancelled. Only Processing orders can be cancelled.`);
     }
-    db.prepare("UPDATE orders SET status = 'Cancelled' WHERE id = ?").run(orderId);
-    const items = db.prepare('SELECT product_id, variant_id, quantity FROM order_items WHERE order_id = ?').all(orderId) as {
-      product_id: number;
-      variant_id: number | null;
-      quantity: number;
-    }[];
-    const giveProductStock = db.prepare('UPDATE products SET stock = stock + ? WHERE id = ?');
-    const giveVariantStock = db.prepare('UPDATE product_variants SET stock = stock + ? WHERE id = ?');
-    for (const item of items) {
-      if (item.variant_id !== null) giveVariantStock.run(item.quantity, item.variant_id);
-      giveProductStock.run(item.quantity, item.product_id);
-    }
+    applyCancellation(db, orderId);
   });
   run();
   return getOrderForUser(db, userId, orderId)!;

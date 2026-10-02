@@ -1,28 +1,11 @@
 import { Router } from 'express';
-import type { Request } from 'express';
 import type { AppContext } from '../context';
 import { parseIdParam, parseProductQuery, parseReviewQuery, parseSuggestQuery } from '../lib/catalogueQuery';
 import { ApiError } from '../lib/errors';
-import { MAX_IMAGE_BYTES } from '../lib/imageUpload';
-import { boundaryOf, parseMultipart, readRawBody } from '../lib/multipart';
-import type { MultipartBody } from '../lib/multipart';
 import { requireAuth } from '../middleware/auth';
 import { categoryInfo, getProduct, listProducts, listReviews, suggestProducts } from '../services/catalogue';
 import { postReview, productExists, reviewEligibility } from '../services/reviews';
-
-/** Room for the text fields and multipart framing on top of the largest allowed image. */
-const MULTIPART_OVERHEAD_BYTES = 64 * 1024;
-
-async function readReviewForm(req: Request): Promise<MultipartBody> {
-  const boundary = boundaryOf(req.header('content-type'));
-  if (!boundary) throw new ApiError('VALIDATION_ERROR', 'Send the review as multipart/form-data.');
-  const { tooLarge, body } = await readRawBody(req, MAX_IMAGE_BYTES + MULTIPART_OVERHEAD_BYTES);
-  if (tooLarge) {
-    const message = 'The upload is too large. The image must be 2 MB or smaller.';
-    throw new ApiError('PAYLOAD_TOO_LARGE', message, { fieldErrors: { image: message } });
-  }
-  return parseMultipart(body, boundary);
-}
+import { imageFileOf, readImageForm } from './imageForm';
 
 export function productsRouter(ctx: AppContext): Router {
   const router = Router();
@@ -64,17 +47,13 @@ export function productsRouter(ctx: AppContext): Router {
   router.post('/:id/reviews', requireAuth, async (req, res) => {
     const id = parseIdParam(req.params.id);
     if (!productExists(ctx.db, id)) throw new ApiError('NOT_FOUND', 'Product not found.');
-    const form = await readReviewForm(req);
-    const files = form.files.filter((f) => f.field === 'image' && !(f.filename === '' && f.data.length === 0));
-    if (files.length > 1) {
-      throw new ApiError('VALIDATION_ERROR', 'Send at most one image.', { fieldErrors: { image: 'Send at most one image.' } });
-    }
+    const form = await readImageForm(req, 'Send the review as multipart/form-data.');
     const review = postReview(
       ctx.db,
       ctx.config.uploadsDir,
       { id: req.user!.id, name: req.user!.name },
       id,
-      { fields: form.fields, image: files[0]?.data ?? null },
+      { fields: form.fields, image: imageFileOf(form) },
     );
     res.status(201).json(review);
   });
