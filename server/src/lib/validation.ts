@@ -1,4 +1,5 @@
 import { validatePassword } from './passwords';
+import { f14 } from '../testability/variants';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -9,7 +10,7 @@ export function normaliseEmail(email: string): string {
 export function validateEmail(email: string): string | null {
   const e = email.trim();
   if (e.length === 0) return 'Email is required.';
-  if (e.length > 254 || !EMAIL_RE.test(e)) return 'Enter a valid email address.';
+  if (e.length > 254 || !f14(EMAIL_RE).test(e)) return 'Enter a valid email address.';
   return null;
 }
 

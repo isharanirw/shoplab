@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import type { AuthUser } from '../context';
 import type { Db } from '../db/connection';
+import { f17 } from '../testability/variants';
 
 export const SESSION_TTL_SHORT_MS = 60 * 60 * 1000; // 1 hour
 export const SESSION_TTL_LONG_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -15,7 +16,7 @@ export interface CreatedSession {
 
 export function createSession(db: Db, userId: number, rememberMe: boolean, now = Date.now()): CreatedSession {
   const token = randomBytes(32).toString('hex');
-  const ttlMs = rememberMe ? SESSION_TTL_LONG_MS : SESSION_TTL_SHORT_MS;
+  const ttlMs = f17(rememberMe) ? SESSION_TTL_LONG_MS : SESSION_TTL_SHORT_MS;
   const expiresAt = new Date(now + ttlMs).toISOString();
   db.prepare('INSERT INTO sessions (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)').run(
     hashToken(token),

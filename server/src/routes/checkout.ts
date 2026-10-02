@@ -9,6 +9,7 @@ import { createAddress, deleteAddress, updateAddress } from '../services/address
 import { cancelOrder, getOrderForUser, listOrdersForUser, placeOrder } from '../services/orders';
 import { quoteCheckout } from '../services/quote';
 import { findAddress, listAddresses, listCountries } from '../services/locations';
+import { f09 } from '../testability/variants';
 
 export function checkoutRouter(ctx: AppContext): Router {
   const router = Router();
@@ -49,7 +50,7 @@ export function ordersRouter(ctx: AppContext): Router {
 export function countriesRouter(ctx: AppContext): Router {
   const router = Router();
   router.get('/', (_req, res) => {
-    const data = listCountries(ctx.db);
+    const data = listCountries(ctx.db).map((c) => ({ ...c, postalPattern: f09(c.postalPattern) }));
     res.json({ data, page: 1, pageSize: data.length, total: data.length });
   });
   return router;

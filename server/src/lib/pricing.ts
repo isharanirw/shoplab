@@ -1,3 +1,5 @@
+import { f02, f07, f13 } from '../testability/variants';
+
 export type ShippingMethod = 'standard' | 'express';
 export const SHIPPING_METHODS: readonly ShippingMethod[] = ['standard', 'express'];
 
@@ -57,7 +59,7 @@ export function checkCoupon(coupon: CouponRule, ctx: CouponContext): CouponCheck
   if (coupon.oncePerAccount && ctx.usedByAccount) {
     return { ok: false, reason: 'already_used', message: `${coupon.code} has already been used on this account.` };
   }
-  if (ctx.subtotalCents < coupon.minSubtotalCents) {
+  if (f13(ctx.subtotalCents, coupon.minSubtotalCents)) {
     return {
       ok: false,
       reason: 'below_minimum',
@@ -139,12 +141,12 @@ export function computeTotals(input: PricingInput): Totals {
     if (input.shippingMethod === 'express') {
       shippingCents = EXPRESS_SHIPPING_CENTS;
     } else {
-      const free = waiveStandardShipping || afterDiscount >= FREE_SHIPPING_THRESHOLD_CENTS;
+      const free = waiveStandardShipping || f02(afterDiscount, subtotalCents) >= FREE_SHIPPING_THRESHOLD_CENTS;
       shippingCents = free ? 0 : STANDARD_SHIPPING_CENTS;
     }
   }
 
-  const taxCents = percentOf(afterDiscount, TAX_PERCENT);
+  const taxCents = f07(afterDiscount, TAX_PERCENT, percentOf(afterDiscount, TAX_PERCENT));
   return {
     subtotalCents,
     discountCents,

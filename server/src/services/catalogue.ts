@@ -1,5 +1,6 @@
 import type { Db } from '../db/connection';
 import type { CategoryInfo, ProductQuery, ReviewQuery } from '../lib/catalogueQuery';
+import { f01, f11, f20 } from '../testability/variants';
 
 export interface ListResult<T> {
   data: T[];
@@ -176,7 +177,7 @@ export function listProducts(db: Db, query: ProductQuery): ListResult<ProductSum
   const params: (string | number)[] = [];
 
   if (query.q !== '') {
-    where.push('instr(lower(p.name), lower(?)) > 0');
+    where.push(`${f11('p.name', '?')} > 0`);
     params.push(query.q);
   }
   if (query.categories.length > 0) {
@@ -192,7 +193,7 @@ export function listProducts(db: Db, query: ProductQuery): ListResult<ProductSum
     params.push(query.minPriceCents);
   }
   if (query.maxPriceCents !== null) {
-    where.push(`${EFFECTIVE_PRICE} <= ?`);
+    where.push(`${EFFECTIVE_PRICE} ${f01('<=')} ?`);
     params.push(query.maxPriceCents);
   }
   if (query.inStock) where.push('p.stock > 0');
@@ -270,7 +271,7 @@ export function listReviews(db: Db, productId: number, query: ReviewQuery): List
       `SELECT id, author_name, rating, title, body, image_path, created_at FROM reviews
        WHERE product_id = ? ORDER BY ${REVIEW_ORDER[query.sort]} LIMIT ? OFFSET ?`,
     )
-    .all(productId, query.pageSize, (query.page - 1) * query.pageSize) as {
+    .all(productId, query.pageSize, f20((query.page - 1) * query.pageSize)) as {
     id: number;
     author_name: string;
     rating: number;

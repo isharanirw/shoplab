@@ -8,7 +8,9 @@ import { hashPassword, validatePassword } from '../lib/passwords';
 import { normaliseEmail, validateEmail } from '../lib/validation';
 import { requireTestKey } from '../middleware/testKey';
 import { clearUploads } from '../services/uploads';
-import { getTestSettings, resetTestSettings } from './settings';
+import { parseChaosRequest } from './chaos';
+import { FLAG_IDS, activeFlags, nextFlags, parseFlagRequest, setActiveFlags } from './flags';
+import { getScenario, setScenario } from './settings';
 
 function bodyOf(req: Request): Record<string, unknown> {
   return req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? (req.body as Record<string, unknown>) : {};
@@ -28,7 +30,8 @@ export function testRouter(ctx: AppContext): Router {
     seedDatabase(ctx.db, ctx.config.seedDir, scenario);
     clearUploads(ctx.config.uploadsDir);
     ctx.loginLimiter.clearAll();
-    resetTestSettings(scenario);
+    setScenario(scenario);
+    ctx.chaos.reset();
     res.status(204).end();
   });
 
@@ -67,13 +70,26 @@ export function testRouter(ctx: AppContext): Router {
     for (const table of TABLES_IN_CREATE_ORDER) {
       counts[table] = (ctx.db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get() as { n: number }).n;
     }
-    const settings = getTestSettings();
     res.json({
-      scenario: settings.scenario,
+      scenario: getScenario(),
       counts,
-      flags: settings.flags,
-      latency: settings.chaos,
+      flags: activeFlags(),
+      latency: ctx.chaos.current,
     });
+  });
+
+  router.get('/flags', (_req, res) => {
+    res.json({ flags: activeFlags(), available: [...FLAG_IDS] });
+  });
+
+  router.post('/flags', (req, res) => {
+    setActiveFlags(nextFlags(activeFlags(), parseFlagRequest(bodyOf(req))));
+    res.json({ flags: activeFlags(), available: [...FLAG_IDS] });
+  });
+
+  router.post('/chaos', (req, res) => {
+    ctx.chaos.configure(parseChaosRequest(bodyOf(req)));
+    res.json(ctx.chaos.current);
   });
 
   return router;
