@@ -1,0 +1,110 @@
+.notice {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+
+.notice p {
+  margin: 0;
+}
+
+.form {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin: 1rem 0 1.5rem;
+  max-width: 36rem;
+}
+
+.formHeading {
+  font-size: 1.1rem;
+}
+
+.ratingSet {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1rem;
+  min-width: 0;
+}
+
+.legend {
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: 0.25rem;
+}
+
+.ratingRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.ratingOption {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ratingOption input {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.hint {
+  margin: 0.25rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.error {
+  margin: 0.25rem 0 0;
+  color: var(--color-danger);
+  font-size: 0.9rem;
+}
+
+.problem {
+  color: var(--color-danger);
+  margin: 0 0 0.75rem;
+}
+
+.fileField {
+  margin-bottom: 1rem;
+}
+
+.fileLabel {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+}
+
+.previewImage {
+  width: 6rem;
+  height: 6rem;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.fileName {
+  margin: 0 0 0.4rem;
+  overflow-wrap: anywhere;
+}
+
+.reviewImage {
+  max-width: 14rem;
+  max-height: 14rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  display: block;
+}

@@ -195,3 +195,18 @@ export interface Order {
   address: OrderAddress;
   items: OrderItem[];
 }
+
+export interface OrderSummary {
+  id: number;
+  number: string;
+  status: string;
+  createdAt: string;
+  deliveryDate: string;
+  itemCount: number;
+  totalCents: number;
+}
+
+export interface ReviewEligibility {
+  eligible: boolean;
+  reason: 'login_required' | 'not_purchased' | 'already_reviewed' | null;
+}

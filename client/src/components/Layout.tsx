@@ -94,6 +94,11 @@ export function Layout() {
           <Outlet />
         </main>
         <footer className={styles.footer}>
+          <nav aria-label="Footer" className={styles.footerNav}>
+            <Link to="/contact" data-testid="footer-contact-link">
+              Contact us
+            </Link>
+          </nav>
           <p data-testid="demo-notice">Demo site. No real payments or personal data.</p>
         </footer>
       </div>

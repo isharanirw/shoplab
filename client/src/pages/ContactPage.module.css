@@ -1,0 +1,29 @@
+.page {
+  max-width: 36rem;
+}
+
+.intro {
+  color: var(--color-muted);
+}
+
+.form,
+.success {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.success {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.success:focus {
+  outline: none;
+}
+
+.problem {
+  color: var(--color-danger);
+  margin: 0 0 0.75rem;
+}

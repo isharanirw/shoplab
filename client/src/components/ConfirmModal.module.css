@@ -1,0 +1,32 @@
+.body {
+  max-width: 28rem;
+}
+
+.title {
+  font-size: 1.25rem;
+}
+
+.error {
+  color: var(--color-danger);
+  margin: 0.75rem 0 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.actions .danger {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #ffffff;
+}
+
+.actions .danger:hover:not(:disabled):not([aria-disabled='true']) {
+  background: #991b1b;
+  border-color: #991b1b;
+  color: #ffffff;
+}

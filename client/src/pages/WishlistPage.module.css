@@ -11,10 +11,123 @@
   color: var(--color-danger);
 }
 
+.help {
+  color: var(--color-muted);
+  margin-top: 0;
+}
+
 .empty {
   background: var(--color-surface);
   border: 1px dashed var(--color-border);
   border-radius: var(--radius);
   padding: 2rem 1.5rem;
   text-align: center;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto 5rem 1fr;
+  grid-template-areas:
+    'handle thumb info'
+    'actions actions actions';
+  gap: 0.5rem 0.75rem;
+  align-items: start;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  cursor: grab;
+}
+
+.dragging {
+  opacity: 0.45;
+}
+
+.dropTarget {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px #bfdbfe;
+}
+
+.handle {
+  grid-area: handle;
+  align-self: center;
+  color: var(--color-muted);
+  letter-spacing: -0.15em;
+  font-weight: 700;
+  user-select: none;
+}
+
+.thumb {
+  grid-area: thumb;
+  display: block;
+}
+
+.info {
+  grid-area: info;
+  min-width: 0;
+}
+
+.name {
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.name a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.name a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.meta {
+  margin: 0 0 0.25rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.actions {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.moveButtons {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.reason {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
+@media (min-width: 48rem) {
+  .item {
+    grid-template-columns: auto 6rem 1fr auto;
+    grid-template-areas: 'handle thumb info actions';
+    align-items: center;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .moveButtons {
+    justify-content: space-between;
+  }
 }

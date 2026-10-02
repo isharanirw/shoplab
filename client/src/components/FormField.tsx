@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, SelectHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import styles from './FormField.module.css';
 
 interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -26,6 +26,44 @@ export function FormField({ id, label, error, hint, ...inputProps }: FormFieldPr
         {...inputProps}
       />
       {hint && !error && (
+        <p id={hintId} className={styles.hint}>
+          {hint}
+        </p>
+      )}
+      {error && (
+        <p id={errorId} className={styles.error} data-testid={`${id}-error`}>
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+interface TextAreaFieldProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  id: string;
+  label: string;
+  error?: string | null;
+  hint?: string;
+}
+
+/** A label tied to a textarea, with the same hint and error wiring as FormField. */
+export function TextAreaField({ id, label, error, hint, ...areaProps }: TextAreaFieldProps) {
+  const errorId = `${id}-error`;
+  const hintId = `${id}-hint`;
+  const describedBy = [error ? errorId : null, hint ? hintId : null].filter(Boolean).join(' ') || undefined;
+  return (
+    <div className={styles.field}>
+      <label htmlFor={id} className={styles.label}>
+        {label}
+      </label>
+      <textarea
+        id={id}
+        className={error ? `${styles.input} ${styles.textarea} ${styles.inputInvalid}` : `${styles.input} ${styles.textarea}`}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy}
+        {...areaProps}
+      />
+      {hint && (
         <p id={hintId} className={styles.hint}>
           {hint}
         </p>
