@@ -41,7 +41,7 @@ export function ProductCard({ product, onQuickView, showWishlistButton = true }:
   return (
     <article className={styles.card} data-testid={`product-card-${product.id}`} aria-labelledby={nameId}>
       <Link to={`/products/${product.id}`} className={styles.imageLink} tabIndex={-1} aria-hidden="true">
-        <ProductImage productId={product.id} name={product.name} decorative />
+        <ProductImage productId={product.id} name={product.name} imagePath={product.imagePath} decorative />
       </Link>
       <div className={styles.body}>
         <h3 id={nameId} className={styles.name}>

@@ -12,6 +12,7 @@ export interface CartItemView {
   name: string;
   category: string;
   imageCount: number;
+  imagePath: string | null;
   variantLabel: string | null;
   unitPriceCents: number;
   regularPriceCents: number;
@@ -52,6 +53,7 @@ interface LineRow {
   name: string;
   category: string;
   image_count: number;
+  image_path: string | null;
   active: number;
   price_cents: number;
   sale_price_cents: number | null;
@@ -79,7 +81,7 @@ export function variantLabel(size: string | null, colour: string | null): string
 export function loadCartLines(db: Db, userId: number): CartItemView[] {
   const rows = db
     .prepare(
-      `SELECT ci.id, ci.product_id, ci.variant_id, ci.quantity, p.name, p.category, p.image_count, p.active,
+      `SELECT ci.id, ci.product_id, ci.variant_id, ci.quantity, p.name, p.category, p.image_count, p.image_path, p.active,
               p.price_cents, p.sale_price_cents, p.stock AS product_stock, v.size, v.colour, v.stock AS variant_stock
        FROM cart_items ci
        JOIN products p ON p.id = ci.product_id
@@ -98,6 +100,7 @@ export function loadCartLines(db: Db, userId: number): CartItemView[] {
       name: row.name,
       category: row.category,
       imageCount: row.image_count,
+      imagePath: row.image_path,
       variantLabel: variantLabel(row.size, row.colour),
       unitPriceCents: unit,
       regularPriceCents: row.price_cents,
@@ -271,7 +274,7 @@ export function addItem(db: Db, userId: number, input: AddItemInput, now: Date =
 function ownedItem(db: Db, userId: number, itemId: number): LineRow {
   const rows = db
     .prepare(
-      `SELECT ci.id, ci.product_id, ci.variant_id, ci.quantity, p.name, p.category, p.image_count, p.active,
+      `SELECT ci.id, ci.product_id, ci.variant_id, ci.quantity, p.name, p.category, p.image_count, p.image_path, p.active,
               p.price_cents, p.sale_price_cents, p.stock AS product_stock, v.size, v.colour, v.stock AS variant_stock
        FROM cart_items ci
        JOIN products p ON p.id = ci.product_id

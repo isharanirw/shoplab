@@ -44,7 +44,7 @@ export function QuickView({ productId, productName, onClose }: QuickViewProps) {
       {result.status === 'success' && (
         <div className={styles.layout} data-testid="quick-view">
           <div className={styles.image}>
-            <ProductImage productId={result.data.id} name={result.data.name} />
+            <ProductImage productId={result.data.id} name={result.data.name} imagePath={result.data.imagePath} />
           </div>
           <div className={styles.info}>
             <h2 id={titleId} className={styles.title}>

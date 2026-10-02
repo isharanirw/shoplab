@@ -13,6 +13,9 @@ import { authRouter } from './routes/auth';
 import { cartRouter } from './routes/cart';
 import { contactRouter } from './routes/contact';
 import { categoriesRouter, promotionsRouter } from './routes/catalogue';
+import { adminRouter } from './routes/admin';
+import { docsRouter } from './routes/docs';
+import { geoRouter } from './routes/geo';
 import { addressesRouter, checkoutRouter, countriesRouter, ordersRouter } from './routes/checkout';
 import { healthRouter } from './routes/health';
 import { productsRouter } from './routes/products';
@@ -62,6 +65,9 @@ export function createApp(ctx: AppContext): Express {
     next();
   });
 
+  // API docs sit outside the JSON API router: they need no session and answer in HTML, YAML and JavaScript.
+  app.use('/api/docs', docsRouter(ctx));
+
   const api = express.Router();
   api.use(express.json({ limit: '100kb' }));
   api.use(authenticate(ctx));
@@ -77,6 +83,8 @@ export function createApp(ctx: AppContext): Express {
   api.use('/countries', countriesRouter(ctx));
   api.use('/addresses', addressesRouter(ctx));
   api.use('/contact', contactRouter(ctx));
+  api.use('/geo', geoRouter(ctx));
+  api.use('/admin', adminRouter(ctx));
   api.use('/test', testRouter(ctx));
   api.use(apiNotFound);
   app.use('/api', api);

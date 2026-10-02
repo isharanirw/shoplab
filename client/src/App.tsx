@@ -1,4 +1,11 @@
 import { Route, Routes } from 'react-router-dom';
+import { AdminHomePage } from './admin/AdminHomePage';
+import { AdminLayout } from './admin/AdminLayout';
+import { AdminOrdersPage } from './admin/AdminOrdersPage';
+import { AdminProductFormPage } from './admin/AdminProductFormPage';
+import { AdminProductsPage } from './admin/AdminProductsPage';
+import { AdminUsersPage } from './admin/AdminUsersPage';
+import { AdminRoute } from './auth/AdminRoute';
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { Layout } from './components/Layout';
 import { AccountPage } from './pages/AccountPage';
@@ -38,6 +45,16 @@ export function App() {
           <Route path="wishlist" element={<WishlistPage />} />
           <Route path="checkout" element={<CheckoutPage />} />
           <Route path="orders/:id/confirmation" element={<OrderConfirmationPage />} />
+        </Route>
+        <Route path="admin" element={<AdminRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route index element={<AdminHomePage />} />
+            <Route path="products" element={<AdminProductsPage />} />
+            <Route path="products/new" element={<AdminProductFormPage />} />
+            <Route path="products/:id/edit" element={<AdminProductFormPage />} />
+            <Route path="orders" element={<AdminOrdersPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
+          </Route>
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>

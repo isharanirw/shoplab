@@ -22,6 +22,8 @@ export interface ProductSummary {
   hasVariants: boolean;
   featured: boolean;
   imageCount: number;
+  /** URL path of an image uploaded by an admin; null means the generated placeholder is shown. */
+  imagePath: string | null;
   rating: RatingSummary;
   createdAt: string;
 }
@@ -76,6 +78,7 @@ export interface CartItem {
   name: string;
   category: string;
   imageCount: number;
+  imagePath: string | null;
   variantLabel: string | null;
   unitPriceCents: number;
   regularPriceCents: number;
@@ -209,4 +212,41 @@ export interface OrderSummary {
 export interface ReviewEligibility {
   eligible: boolean;
   reason: 'login_required' | 'not_purchased' | 'already_reviewed' | null;
+}
+
+export interface AdminProduct {
+  id: number;
+  name: string;
+  category: string;
+  subcategory: string;
+  description: string;
+  priceCents: number;
+  salePriceCents: number | null;
+  stock: number;
+  active: boolean;
+  featured: boolean;
+  hasVariants: boolean;
+  imageCount: number;
+  imagePath: string | null;
+  createdAt: string;
+}
+
+export interface AdminOrder {
+  id: number;
+  number: string;
+  status: string;
+  createdAt: string;
+  deliveryDate: string;
+  itemCount: number;
+  totalCents: number;
+  customer: { id: number; name: string; email: string };
+}
+
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  role: 'customer' | 'admin';
+  locked: boolean;
+  createdAt: string;
 }

@@ -1,0 +1,2009 @@
+openapi: 3.1.0
+info:
+  title: ShopLab API
+  version: 0.1.0
+  summary: The JSON API behind the ShopLab demo store.
+  description: |
+    ShopLab is a demo online store built as a test target. Everything the web UI does goes through this API.
+
+    **Demo site. No real payments or personal data.** Data can be wiped at any time (`POST /api/test/reset`).
+
+    ## Conventions
+    - Errors always use one shape: `{"error": {"code", "message", "fieldErrors"?}}` (schema `Error`). `fieldErrors` maps a field name to a message.
+    - Lists use `{"data": [], "page", "pageSize", "total"}`. A page past the end is `200` with an empty `data` and the real `total`.
+    - Money is always an integer number of cents (`priceCents`, `totalCents`, ...). Only the product list price filters (`minPrice`, `maxPrice`) are in dollars.
+    - Timestamps are ISO-8601 UTC strings. Dates are `YYYY-MM-DD`.
+    - Status codes: 400 validation, 401 not logged in, 402 payment declined, 403 forbidden, 404 not found, 409 conflict (such as insufficient stock), 413 upload too large, 423 locked account, 429 rate limited.
+
+    ## Authentication
+    `POST /api/auth/login` sets an httpOnly cookie (`shoplab_session`) and also returns the same value as `token`. Send either the cookie or `Authorization: Bearer <token>`; if both are sent the bearer token is used.
+    Endpoints under `/api/admin/*` need an admin account: `401` when not logged in, `403` for a customer.
+    Endpoints under `/api/test/*` need the `X-Test-Key` header when the server was started with `TEST_API_KEY` (a missing or wrong key is `401`); locally the key is optional.
+
+    Demo accounts: `customer1@shoplab.test` / `Test@1234`, `customer2@shoplab.test` / `Test@1234`, `locked@shoplab.test` / `Test@1234` (login refused with 423), `admin@shoplab.test` / `Admin@1234`.
+
+    Behaviour details and the reasoning behind each rule are in `docs/BEHAVIOUR.md`.
+  license:
+    name: MIT
+servers:
+  - url: /
+    description: This server
+tags:
+  - name: Auth
+  - name: Catalogue
+  - name: Reviews
+  - name: Wishlist
+  - name: Cart
+  - name: Checkout and orders
+  - name: Account
+  - name: Store info
+  - name: Admin
+    description: Admin accounts only. 401 when not logged in, 403 for a customer.
+  - name: Test
+    description: Setup helpers for automated tests. Protected by X-Test-Key when TEST_API_KEY is set.
+  - name: Docs
+security: []
+
+paths:
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      operationId: register
+      summary: Create an account
+      description: Creates a customer account, logs it in (sets the session cookie) and returns the token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterRequest' }
+      responses:
+        '201':
+          description: Account created and logged in.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/SetSessionCookie' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthSession' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      operationId: login
+      summary: Log in
+      description: |
+        Sets an httpOnly cookie and returns the token. A wrong password or unknown email is `401 INVALID_CREDENTIALS`.
+        The locked account answers `423 ACCOUNT_LOCKED` only when the password is right. After 5 failed attempts within
+        60 seconds for the same client and email the next attempt is `429` with a `Retry-After` header.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: Logged in.
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/SetSessionCookie' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthSession' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/InvalidCredentials' }
+        '423':
+          description: The account is locked.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '429':
+          description: Too many failed attempts.
+          headers:
+            Retry-After:
+              description: Seconds to wait before trying again.
+              schema: { type: integer }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logout
+      summary: End the session
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      responses:
+        '204': { description: Logged out. }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      operationId: getMe
+      summary: The current user
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      responses:
+        '200':
+          description: The logged-in user.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserResponse' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+    patch:
+      tags: [Auth]
+      operationId: updateMe
+      summary: Change the display name
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 2, maxLength: 60 }
+      responses:
+        '200':
+          description: The updated user.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserResponse' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/products:
+    get:
+      tags: [Catalogue]
+      operationId: listProducts
+      summary: Search and list products
+      description: |
+        Only active products are listed. `q` is a case-insensitive substring match on the name. Prices in the filters are
+        dollars (`10` or `10.50`) and apply to the price a customer pays (the sale price when there is one).
+        Unknown parameters are ignored; invalid values are a 400 with one `fieldErrors` entry per parameter.
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 100 } }
+        - name: category
+          in: query
+          description: A category name. Repeat the parameter or comma separate to match several.
+          style: form
+          explode: true
+          schema:
+            type: array
+            items: { type: string }
+        - { name: subcategory, in: query, schema: { type: string } }
+        - { name: minPrice, in: query, description: Dollars, schema: { type: string, example: '10.50' } }
+        - { name: maxPrice, in: query, description: Dollars, schema: { type: string, example: '99' } }
+        - { name: inStock, in: query, schema: { type: boolean } }
+        - { name: rating, in: query, description: Minimum rounded average rating, schema: { type: integer, minimum: 1, maximum: 5 } }
+        - { name: featured, in: query, schema: { type: boolean } }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [price_asc, price_desc, rating, newest] }
+        - { $ref: '#/components/parameters/Page' }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 12 }
+      responses:
+        '200':
+          description: A page of products.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProductList' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+
+  /api/products/suggest:
+    get:
+      tags: [Catalogue]
+      operationId: suggestProducts
+      summary: Autocomplete suggestions
+      description: Up to 5 active products whose name contains the text (names that start with it first). Fewer than 2 characters is a 200 with an empty list.
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 100 } }
+      responses:
+        '200':
+          description: Suggestions. `total` is the full match count.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SuggestionList' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+
+  /api/products/{id}:
+    get:
+      tags: [Catalogue]
+      operationId: getProduct
+      summary: Product detail
+      description: An inactive product is a 404, the same as an unknown one.
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      responses:
+        '200':
+          description: The product with variants and stock.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProductDetail' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/products/{id}/reviews:
+    get:
+      tags: [Reviews]
+      operationId: listReviews
+      summary: Reviews of a product
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [newest, highest, lowest], default: newest }
+        - { $ref: '#/components/parameters/Page' }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 5 }
+      responses:
+        '200':
+          description: A page of reviews.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ReviewList' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [Reviews]
+      operationId: createReview
+      summary: Add a review
+      description: |
+        Only a customer with a non-cancelled order containing the product can review it, once. Send `multipart/form-data`.
+        Order of checks: login (401), unknown product (404), body size (413), not a buyer (403), already reviewed (409), image too
+        large (413), then field and image content problems (400, all together in `fieldErrors`).
+        The image type is decided from the file's first bytes (PNG or JPEG), not from its name or declared type.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [rating, title, body]
+              properties:
+                rating: { type: integer, minimum: 1, maximum: 5 }
+                title: { type: string, minLength: 3, maxLength: 100 }
+                body: { type: string, minLength: 20, maxLength: 2000 }
+                image:
+                  type: string
+                  format: binary
+                  description: Optional PNG or JPEG, at most 2 MB (2 097 152 bytes).
+            encoding:
+              image:
+                contentType: image/png, image/jpeg
+      responses:
+        '201':
+          description: The new review.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Review' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
+
+  /api/products/{id}/review-eligibility:
+    get:
+      tags: [Reviews]
+      operationId: getReviewEligibility
+      summary: Whether the caller may post a review
+      description: Always 200 for a real product, including for logged-out callers (`login_required`).
+      security: [{}, { cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      responses:
+        '200':
+          description: Eligibility.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ReviewEligibility' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/categories:
+    get:
+      tags: [Catalogue]
+      operationId: listCategories
+      summary: Categories with subcategories and counts of active products
+      responses:
+        '200':
+          description: The categories in storefront order.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/CategoryNode' }
+
+  /api/promotions:
+    get:
+      tags: [Store info]
+      operationId: getPromotions
+      summary: Home banner text
+      description: A fixed value, so tests can rely on it.
+      responses:
+        '200':
+          description: The banner text.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Promotions' }
+
+  /api/geo:
+    get:
+      tags: [Store info]
+      operationId: getGeo
+      summary: Detected shipping country
+      description: |
+        There is no lookup. The answer is always Sweden (`SE`) unless the caller passes `?country=<code>` with one of the
+        supported codes (SE, US, IN; matched ignoring case). An unknown code is a 400.
+      parameters:
+        - name: country
+          in: query
+          description: Override for the detected country.
+          schema: { type: string, example: US }
+      responses:
+        '200':
+          description: The country.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Geo' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+
+  /api/countries:
+    get:
+      tags: [Store info]
+      operationId: listCountries
+      summary: Countries we ship to, with regions and postal rules
+      responses:
+        '200':
+          description: Sweden, the United States and India, sorted by name. Not paged (`pageSize` equals the count).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CountryList' }
+
+  /api/wishlist:
+    get:
+      tags: [Wishlist]
+      operationId: getWishlist
+      summary: The user's wishlist
+      description: In wishlist order. Not paged. Saved products that are no longer sold are not shown.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      responses:
+        '200':
+          description: The wishlist.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WishlistList' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+    post:
+      tags: [Wishlist]
+      operationId: addToWishlist
+      summary: Add a product
+      description: Idempotent. 201 when added, 200 when it was already there.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId]
+              properties:
+                productId: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Already on the wishlist.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WishlistAdded' }
+        '201':
+          description: Added.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WishlistAdded' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/wishlist/order:
+    put:
+      tags: [Wishlist]
+      operationId: reorderWishlist
+      summary: Save the wishlist order
+      description: '`productIds` must list exactly the visible wishlist items, each once. Nothing changes on a 400.'
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productIds]
+              properties:
+                productIds:
+                  type: array
+                  items: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: The wishlist in the new order.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WishlistList' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/wishlist/{productId}:
+    delete:
+      tags: [Wishlist]
+      operationId: removeFromWishlist
+      summary: Remove a product
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { name: productId, in: path, required: true, schema: { type: integer, minimum: 1 } }
+      responses:
+        '204': { description: Removed. }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/cart:
+    get:
+      tags: [Cart]
+      operationId: getCart
+      summary: The current cart with totals
+      description: Totals use Standard shipping; the method is chosen at checkout.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      responses:
+        '200':
+          description: The cart.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+    delete:
+      tags: [Cart]
+      operationId: clearCart
+      summary: Clear the cart and its coupon
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      responses:
+        '200':
+          description: The (now empty) cart.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/cart/items:
+    post:
+      tags: [Cart]
+      operationId: addCartItem
+      summary: Add a product to the cart
+      description: |
+        `variantId` is required for products that have variants and not allowed for products that do not. Quantity is 1 to 10 and a line
+        can never hold more than the stock or 10 (409 with the reason). An unknown or inactive product is a 404. 201 for a new line,
+        200 when it merged into an existing line.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId, quantity]
+              properties:
+                productId: { type: integer, minimum: 1 }
+                variantId: { type: [integer, 'null'], minimum: 1 }
+                quantity: { type: integer, minimum: 1, maximum: 10 }
+      responses:
+        '200':
+          description: Merged into an existing line. Returns the whole cart.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '201':
+          description: A new line was added. Returns the whole cart.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /api/cart/items/{itemId}:
+    patch:
+      tags: [Cart]
+      operationId: updateCartItem
+      summary: Change a line's quantity
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/ItemId' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity: { type: integer, minimum: 1, maximum: 10 }
+      responses:
+        '200':
+          description: The cart.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    delete:
+      tags: [Cart]
+      operationId: removeCartItem
+      summary: Remove a line
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/ItemId' }
+      responses:
+        '200':
+          description: The cart.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/cart/coupon:
+    post:
+      tags: [Cart]
+      operationId: applyCoupon
+      summary: Apply a coupon
+      description: |
+        One coupon at a time (a second, or the same again, is a 409). Codes are matched ignoring case. 400 when the code is unknown,
+        the cart is empty, or the coupon is expired, already used by this account, or below its minimum subtotal.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: { type: string, examples: [SAVE10] }
+      responses:
+        '200':
+          description: The cart with the coupon.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    delete:
+      tags: [Cart]
+      operationId: removeCoupon
+      summary: Remove the coupon
+      description: 200 even when there was none.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      responses:
+        '200':
+          description: The cart.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Cart' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/cart/merge:
+    post:
+      tags: [Cart]
+      operationId: mergeGuestCart
+      summary: Merge a guest cart into the server cart
+      description: Called by the UI right after login. Quantities add up and are capped at min(10, stock); unavailable products are skipped.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [items]
+              properties:
+                items:
+                  type: array
+                  maxItems: 100
+                  items:
+                    type: object
+                    required: [productId, quantity]
+                    properties:
+                      productId: { type: integer, minimum: 1 }
+                      variantId: { type: [integer, 'null'], minimum: 1 }
+                      quantity: { type: integer, minimum: 1, maximum: 10 }
+      responses:
+        '200':
+          description: The merged cart and what was changed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MergeResult' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/checkout/quote:
+    post:
+      tags: [Checkout and orders]
+      operationId: quoteCheckout
+      summary: Totals preview for a shipping method and country
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [shippingMethod, country]
+              properties:
+                shippingMethod: { $ref: '#/components/schemas/ShippingMethod' }
+                country: { type: string, enum: [SE, US, IN] }
+      responses:
+        '200':
+          description: The cart priced for the chosen method.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Quote' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/orders:
+    post:
+      tags: [Checkout and orders]
+      operationId: placeOrder
+      summary: Place an order from the cart
+      description: |
+        Send either `addressId` (a saved address) or `address` (a new one). Checks run in one transaction: validation (400), stock for
+        every line (409, `fieldErrors` keyed `items.<cartItemId>`), then the payment token (402). Any failure changes nothing.
+        On success the order is `Processing`, stock goes down and the cart is cleared.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PlaceOrderRequest' }
+      responses:
+        '201':
+          description: The order.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '402':
+          description: The card was declined (token `tok_declined_0002`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409': { $ref: '#/components/responses/Conflict' }
+    get:
+      tags: [Checkout and orders]
+      operationId: listMyOrders
+      summary: The user's own orders
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/OrderStatus' }
+        - name: sort
+          in: query
+          schema: { type: string, enum: [date_desc, date_asc, total_desc, total_asc], default: date_desc }
+        - { $ref: '#/components/parameters/Page' }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 5 }
+      responses:
+        '200':
+          description: A page of order summaries.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OrderSummaryList' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/orders/{id}:
+    get:
+      tags: [Checkout and orders]
+      operationId: getMyOrder
+      summary: One of the user's own orders
+      description: Someone else's order is a 404, the same as a missing one.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      responses:
+        '200':
+          description: The order.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/orders/{id}/cancel:
+    post:
+      tags: [Checkout and orders]
+      operationId: cancelMyOrder
+      summary: Cancel an order
+      description: Only while `Processing`; any other status is a 409. Stock is given back in the same transaction.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      responses:
+        '200':
+          description: The cancelled order.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /api/addresses:
+    get:
+      tags: [Account]
+      operationId: listAddresses
+      summary: Saved addresses, default first
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      responses:
+        '200':
+          description: The address book. Not paged.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AddressList' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+    post:
+      tags: [Account]
+      operationId: createAddress
+      summary: Add an address
+      description: The first address becomes the default whatever `isDefault` says. At most 10 addresses (the 11th is a 409).
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AddressInput' }
+      responses:
+        '201':
+          description: The saved address.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SavedAddress' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /api/addresses/{id}:
+    get:
+      tags: [Account]
+      operationId: getAddress
+      summary: One saved address
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      responses:
+        '200':
+          description: The address.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SavedAddress' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Account]
+      operationId: updateAddress
+      summary: Change an address
+      description: 'Any of the creation fields. The merged address is validated as a whole. `isDefault: false` on the current default is a 400.'
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AddressPatch' }
+      responses:
+        '200':
+          description: The updated address.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SavedAddress' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Account]
+      operationId: deleteAddress
+      summary: Delete an address
+      description: Deleting the default promotes the earliest remaining address.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      responses:
+        '204': { description: Deleted. }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/contact:
+    post:
+      tags: [Account]
+      operationId: sendContactMessage
+      summary: Send a contact message
+      description: Stored in the database; no email is sent. Open to everyone.
+      security: [{}, { cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [topic, message, consent]
+              properties:
+                topic: { type: string, enum: [order, returns, product, account, feedback, other] }
+                message: { type: string, minLength: 10, maxLength: 1000 }
+                consent: { type: boolean, const: true }
+      responses:
+        '201':
+          description: Stored.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, message]
+                additionalProperties: false
+                properties:
+                  id: { type: integer }
+                  message: { type: string }
+        '400': { $ref: '#/components/responses/ValidationError' }
+
+  /api/health:
+    get:
+      tags: [Store info]
+      operationId: getHealth
+      summary: Status check and warm-up
+      responses:
+        '200':
+          description: The service is up.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Health' }
+
+  /api/admin/products:
+    get:
+      tags: [Admin]
+      operationId: adminListProducts
+      summary: List all products, active or not
+      description: In ID order. `q` is a case-insensitive substring match on the name.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 100 } }
+        - { name: active, in: query, description: Keep only active (true) or only inactive (false) products., schema: { type: boolean } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/AdminPageSize' }
+      responses:
+        '200':
+          description: A page of products.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminProductList' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [Admin]
+      operationId: adminCreateProduct
+      summary: Create a product
+      description: |
+        Send JSON, or `multipart/form-data` to include an image (every value is text in a form; whole numbers and `true`/`false` are read as such,
+        and an empty `salePriceCents` means no sale price). All field problems and an unusable image come back together in `fieldErrors` (400);
+        an image over 2 MB is a 413. New IDs continue after the seed (61, 62, ...) and are never reused. A new product has no variants.
+        Rules: name 2 to 150 characters; category one of the six categories; subcategory one of that category's (default: the first alphabetically);
+        price 1 to 1 000 000 cents; sale price below the price; stock a whole number 0 to 10 000.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdminProductCreate' }
+          multipart/form-data:
+            schema: { $ref: '#/components/schemas/AdminProductForm' }
+      responses:
+        '201':
+          description: The created product.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminProduct' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
+
+  /api/admin/products/{id}:
+    get:
+      tags: [Admin]
+      operationId: adminGetProduct
+      summary: One product, active or not
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      responses:
+        '200':
+          description: The product.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminProduct' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Admin]
+      operationId: adminUpdateProduct
+      summary: Change a product
+      description: |
+        Any subset of the creation fields (JSON or multipart). An empty body is a 400 (`fieldErrors.body`). `salePriceCents: null` removes the sale price.
+        A sale price must stay below the resulting price. A product with variants takes its stock from them, so `stock` is a 400 for it.
+        A new `image` replaces the old file; `removeImage: true` drops it so the placeholder shows again.
+        Setting `active: false` hides the product from the public list, search, suggestions, detail (404), wishlist and new cart lines.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AdminProductPatch' }
+          multipart/form-data:
+            schema: { $ref: '#/components/schemas/AdminProductForm' }
+      responses:
+        '200':
+          description: The updated product.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminProduct' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
+    delete:
+      tags: [Admin]
+      operationId: adminDeleteProduct
+      summary: Delete a product
+      description: |
+        A hard delete. The product, its variants, reviews, cart lines and wishlist entries are removed. Past orders keep their own copy of each
+        line (name, price, quantity), so order history still renders; those lines no longer link to a live product.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      responses:
+        '204': { description: Deleted. }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/admin/orders:
+    get:
+      tags: [Admin]
+      operationId: adminListOrders
+      summary: All customers' orders, newest first
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/OrderStatus' }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/AdminPageSize' }
+      responses:
+        '200':
+          description: A page of orders.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminOrderList' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /api/admin/orders/{id}/status:
+    patch:
+      tags: [Admin]
+      operationId: adminChangeOrderStatus
+      summary: Change an order's status
+      description: |
+        Orders only move forward: Processing to Shipped to Delivered, and Processing or Shipped to Cancelled. Delivered and Cancelled are final.
+        Anything else (skipping a step, going back, the same status again, any change to a Delivered or Cancelled order) is a 409 and changes nothing.
+        Moving to Cancelled gives the stock back exactly as a customer cancel does, in the same transaction.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { $ref: '#/components/schemas/OrderStatus' }
+      responses:
+        '200':
+          description: The updated order.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminOrder' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /api/admin/users:
+    get:
+      tags: [Admin]
+      operationId: adminListUsers
+      summary: List users
+      description: In ID order. `q` matches the name or email, ignoring case.
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 100 } }
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/AdminPageSize' }
+      responses:
+        '200':
+          description: A page of users.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminUserList' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /api/admin/users/{id}/lock:
+    patch:
+      tags: [Admin]
+      operationId: adminLockUser
+      summary: Lock or unlock an account
+      description: |
+        A locked user gets `423` at login. Locking also deletes the user's existing sessions (they get `401` on their next request),
+        and unlocking does not bring them back: the user logs in again. Setting the state a user already has is a 200. An admin cannot
+        lock their own account (409).
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [locked]
+              properties:
+                locked: { type: boolean }
+      responses:
+        '200':
+          description: The updated user.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminUser' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /api/test/reset:
+    post:
+      tags: [Test]
+      operationId: testReset
+      summary: Restore the seed data
+      description: |
+        Deletes every row (including all sessions) and reloads the seed, removes uploaded files (review and product images) and clears
+        the login attempt counters. The body is optional.
+      security: [{ testKey: [] }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scenario: { type: string, enum: [default, empty-store, low-stock, many-orders], default: default }
+      responses:
+        '204': { description: Reset done. }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/test/users:
+    post:
+      tags: [Test]
+      operationId: testCreateUser
+      summary: Create a user directly
+      description: The normal password rules apply. Removed by the next reset.
+      security: [{ testKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+                role: { type: string, enum: [customer, admin], default: customer }
+                name: { type: string }
+                locked: { type: boolean }
+      responses:
+        '201':
+          description: The created user.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user]
+                additionalProperties: false
+                properties:
+                  user:
+                    type: object
+                    required: [id, name, email, role, locked]
+                    additionalProperties: false
+                    properties:
+                      id: { type: integer }
+                      name: { type: string }
+                      email: { type: string }
+                      role: { type: string, enum: [customer, admin] }
+                      locked: { type: boolean }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /api/test/state:
+    get:
+      tags: [Test]
+      operationId: testState
+      summary: Row counts and test settings
+      security: [{ testKey: [] }]
+      responses:
+        '200':
+          description: The current state.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TestState' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+
+  /api/docs:
+    get:
+      tags: [Docs]
+      operationId: swaggerUi
+      summary: Swagger UI
+      description: Served from files bundled with the app; the page makes no request to another site.
+      responses:
+        '200':
+          description: The Swagger UI page.
+          content:
+            text/html:
+              schema: { type: string }
+
+  /api/docs/openapi.yaml:
+    get:
+      tags: [Docs]
+      operationId: getOpenApiDocument
+      summary: This document
+      responses:
+        '200':
+          description: The OpenAPI document as YAML.
+          content:
+            application/yaml:
+              schema: { type: string }
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: shoplab_session
+      description: The httpOnly session cookie set by login or register.
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: The `token` returned by login or register.
+    testKey:
+      type: apiKey
+      in: header
+      name: X-Test-Key
+      description: Required for /api/test/* when the server has TEST_API_KEY set.
+
+  headers:
+    SetSessionCookie:
+      description: The httpOnly, SameSite=Lax `shoplab_session` cookie (Secure over HTTPS).
+      schema: { type: string }
+
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+    ItemId:
+      name: itemId
+      in: path
+      required: true
+      description: A cart line ID.
+      schema: { type: integer, minimum: 1 }
+    Page:
+      name: page
+      in: query
+      description: Starts at 1. A page past the end is a 200 with an empty `data`.
+      schema: { type: integer, minimum: 1, default: 1 }
+    AdminPageSize:
+      name: pageSize
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 50, default: 10 }
+
+  responses:
+    ValidationError:
+      description: Validation failed. `fieldErrors` lists every problem.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthenticated:
+      description: Not logged in (or, for /api/test/*, a missing or wrong X-Test-Key).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    InvalidCredentials:
+      description: Wrong email or password (the same message for both).
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Logged in but not allowed.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Not found.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Conflict:
+      description: The request conflicts with the current state.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    PayloadTooLarge:
+      description: The upload is too large (images are limited to 2 MB). `fieldErrors.image` has the message.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    ErrorCode:
+      type: string
+      enum:
+        - VALIDATION_ERROR
+        - UNAUTHENTICATED
+        - INVALID_CREDENTIALS
+        - PAYMENT_DECLINED
+        - FORBIDDEN
+        - PAYLOAD_TOO_LARGE
+        - NOT_FOUND
+        - CONFLICT
+        - ACCOUNT_LOCKED
+        - RATE_LIMITED
+        - INTERNAL_ERROR
+    Error:
+      type: object
+      required: [error]
+      additionalProperties: false
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          additionalProperties: false
+          properties:
+            code: { $ref: '#/components/schemas/ErrorCode' }
+            message: { type: string }
+            fieldErrors:
+              type: object
+              description: Field name to message. Keys can be nested names such as `address.postalCode` or `items.<cartItemId>`.
+              additionalProperties: { type: string }
+    ListMeta:
+      type: object
+      required: [page, pageSize, total]
+      properties:
+        page: { type: integer, minimum: 1 }
+        pageSize: { type: integer, minimum: 0 }
+        total: { type: integer, minimum: 0 }
+
+    User:
+      type: object
+      required: [id, name, email, role]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [customer, admin] }
+    UserResponse:
+      type: object
+      required: [user]
+      additionalProperties: false
+      properties:
+        user: { $ref: '#/components/schemas/User' }
+    AuthSession:
+      type: object
+      required: [token, user, expiresAt]
+      additionalProperties: false
+      properties:
+        token: { type: string, description: The same value as the session cookie. }
+        user: { $ref: '#/components/schemas/User' }
+        expiresAt: { type: string, format: date-time }
+    RegisterRequest:
+      type: object
+      required: [name, email, password, confirmPassword, acceptTerms]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 60 }
+        email: { type: string, maxLength: 254 }
+        password: { type: string, description: At least 8 characters with an uppercase letter, a digit and a symbol. }
+        confirmPassword: { type: string }
+        acceptTerms: { type: boolean, const: true }
+        rememberMe: { type: boolean, description: Session lasts 7 days instead of 1 hour. }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string }
+        password: { type: string }
+        rememberMe: { type: boolean }
+
+    Rating:
+      type: object
+      required: [average, count]
+      additionalProperties: false
+      properties:
+        average: { type: [number, 'null'], description: Average rounded half up to one decimal; null with no reviews. }
+        count: { type: integer }
+    ProductSummary:
+      allOf:
+        - $ref: '#/components/schemas/ProductSummaryFields'
+      unevaluatedProperties: false
+    ProductSummaryFields:
+      type: object
+      description: The fields of a product in lists. Used on its own as ProductSummary and extended by ProductDetail and WishlistItem.
+      required: [id, name, category, subcategory, priceCents, salePriceCents, stock, inStock, hasVariants, featured, imageCount, imagePath, rating, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        category: { type: string }
+        subcategory: { type: string }
+        priceCents: { type: integer }
+        salePriceCents: { type: [integer, 'null'] }
+        stock: { type: integer, minimum: 0 }
+        inStock: { type: boolean }
+        hasVariants: { type: boolean }
+        featured: { type: boolean }
+        imageCount: { type: integer }
+        imagePath:
+          type: [string, 'null']
+          description: URL path of an image uploaded by an admin; null means the generated placeholder is used.
+        rating: { $ref: '#/components/schemas/Rating' }
+        createdAt: { type: string, format: date-time }
+    Variant:
+      type: object
+      required: [id, size, colour, stock]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        size: { type: [string, 'null'] }
+        colour: { type: [string, 'null'] }
+        stock: { type: integer, minimum: 0 }
+    ProductDetail:
+      allOf:
+        - $ref: '#/components/schemas/ProductSummaryFields'
+        - type: object
+          required: [description, specs, variants, ratingDistribution]
+          properties:
+            description: { type: string }
+            specs:
+              type: array
+              items:
+                type: object
+                required: [label, value]
+                additionalProperties: false
+                properties:
+                  label: { type: string }
+                  value: { type: string }
+            variants:
+              type: array
+              items: { $ref: '#/components/schemas/Variant' }
+            ratingDistribution:
+              type: object
+              required: ['1', '2', '3', '4', '5']
+              additionalProperties: false
+              properties:
+                '1': { type: integer }
+                '2': { type: integer }
+                '3': { type: integer }
+                '4': { type: integer }
+                '5': { type: integer }
+      unevaluatedProperties: false
+    ProductList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/ProductSummary' }
+      unevaluatedProperties: false
+    Suggestion:
+      type: object
+      required: [id, name, category]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        category: { type: string }
+    SuggestionList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              maxItems: 5
+              items: { $ref: '#/components/schemas/Suggestion' }
+      unevaluatedProperties: false
+    Review:
+      type: object
+      required: [id, authorName, rating, title, body, imagePath, createdAt]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        authorName: { type: string }
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        title: { type: string }
+        body: { type: string }
+        imagePath: { type: [string, 'null'], description: URL path of the uploaded image, if any. }
+        createdAt: { type: string, format: date-time }
+    ReviewList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/Review' }
+      unevaluatedProperties: false
+    ReviewEligibility:
+      type: object
+      required: [eligible, reason]
+      additionalProperties: false
+      properties:
+        eligible: { type: boolean }
+        reason:
+          type: [string, 'null']
+          enum: [login_required, not_purchased, already_reviewed, null]
+    CategoryNode:
+      type: object
+      required: [name, productCount, subcategories]
+      additionalProperties: false
+      properties:
+        name: { type: string }
+        productCount: { type: integer }
+        subcategories:
+          type: array
+          items:
+            type: object
+            required: [name, productCount]
+            additionalProperties: false
+            properties:
+              name: { type: string }
+              productCount: { type: integer }
+    Promotions:
+      type: object
+      required: [bannerText, flashSaleLabel]
+      additionalProperties: false
+      properties:
+        bannerText: { type: string }
+        flashSaleLabel: { type: string }
+    Geo:
+      type: object
+      required: [countryCode, countryName]
+      additionalProperties: false
+      properties:
+        countryCode: { type: string, examples: [SE] }
+        countryName: { type: string, examples: [Sweden] }
+    Health:
+      type: object
+      required: [status, version, uptimeSeconds]
+      additionalProperties: false
+      properties:
+        status: { type: string, const: ok }
+        version: { type: string }
+        uptimeSeconds: { type: integer, minimum: 0 }
+
+    Region:
+      type: object
+      required: [code, name]
+      additionalProperties: false
+      properties:
+        code: { type: string }
+        name: { type: string }
+    Country:
+      type: object
+      required: [code, name, postalPattern, postalHint, regions]
+      additionalProperties: false
+      properties:
+        code: { type: string }
+        name: { type: string }
+        postalPattern: { type: string, description: A regular expression. }
+        postalHint: { type: string }
+        regions:
+          type: array
+          items: { $ref: '#/components/schemas/Region' }
+    CountryList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/Country' }
+      unevaluatedProperties: false
+
+    WishlistItem:
+      allOf:
+        - $ref: '#/components/schemas/ProductSummaryFields'
+        - type: object
+          required: [position, addedAt]
+          properties:
+            position: { type: integer, minimum: 1 }
+            addedAt: { type: string, format: date-time }
+      unevaluatedProperties: false
+    WishlistList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/WishlistItem' }
+      unevaluatedProperties: false
+    WishlistAdded:
+      type: object
+      required: [productId]
+      additionalProperties: false
+      properties:
+        productId: { type: integer }
+
+    ShippingMethod:
+      type: string
+      enum: [standard, express]
+    CartItem:
+      type: object
+      required: [id, productId, variantId, name, category, imageCount, imagePath, variantLabel, unitPriceCents, regularPriceCents, onSale, quantity, lineTotalCents, stock, maxQuantity, inStock]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        productId: { type: integer }
+        variantId: { type: [integer, 'null'] }
+        name: { type: string }
+        category: { type: string }
+        imageCount: { type: integer }
+        imagePath: { type: [string, 'null'] }
+        variantLabel: { type: [string, 'null'] }
+        unitPriceCents: { type: integer }
+        regularPriceCents: { type: integer }
+        onSale: { type: boolean }
+        quantity: { type: integer, minimum: 1, maximum: 10 }
+        lineTotalCents: { type: integer }
+        stock: { type: integer, minimum: 0, description: Units available now (0 for an inactive product). }
+        maxQuantity: { type: integer, minimum: 0 }
+        inStock: { type: boolean }
+    CartCoupon:
+      type: object
+      required: [code, description, applied, reason, message]
+      additionalProperties: false
+      properties:
+        code: { type: string }
+        description: { type: string }
+        applied: { type: boolean, description: False when the coupon is attached but does not qualify right now. }
+        reason:
+          type: [string, 'null']
+          enum: [expired, below_minimum, already_used, null]
+        message: { type: [string, 'null'] }
+    CartTotals:
+      type: object
+      required: [subtotalCents, discountCents, shippingMethod, shippingCents, taxCents, totalCents]
+      additionalProperties: false
+      properties:
+        subtotalCents: { type: integer }
+        discountCents: { type: integer }
+        shippingMethod: { $ref: '#/components/schemas/ShippingMethod' }
+        shippingCents: { type: integer }
+        taxCents: { type: integer }
+        totalCents: { type: integer }
+    Cart:
+      allOf:
+        - $ref: '#/components/schemas/CartFields'
+      unevaluatedProperties: false
+    CartFields:
+      type: object
+      description: The cart. Used on its own as Cart and extended by Quote.
+      required: [items, itemCount, coupon, totals]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/CartItem' }
+        itemCount: { type: integer, minimum: 0, description: Sum of the quantities (the header badge). }
+        coupon:
+          oneOf:
+            - $ref: '#/components/schemas/CartCoupon'
+            - type: 'null'
+        totals: { $ref: '#/components/schemas/CartTotals' }
+    MergeAdjustment:
+      type: object
+      required: [productId, variantId, name, requested, resulting, reason]
+      additionalProperties: false
+      properties:
+        productId: { type: integer }
+        variantId: { type: [integer, 'null'] }
+        name: { type: string }
+        requested: { type: integer }
+        resulting: { type: integer }
+        reason: { type: string, enum: [unavailable, out_of_stock, capped] }
+    MergeResult:
+      type: object
+      required: [cart, adjustments]
+      additionalProperties: false
+      properties:
+        cart: { $ref: '#/components/schemas/Cart' }
+        adjustments:
+          type: array
+          items: { $ref: '#/components/schemas/MergeAdjustment' }
+    Quote:
+      allOf:
+        - $ref: '#/components/schemas/CartFields'
+        - type: object
+          required: [shippingMethod, country, deliveryWindow]
+          properties:
+            shippingMethod: { $ref: '#/components/schemas/ShippingMethod' }
+            country: { type: string }
+            deliveryWindow:
+              type: object
+              required: [earliest, latest]
+              additionalProperties: false
+              properties:
+                earliest: { type: string, format: date }
+                latest: { type: string, format: date }
+      unevaluatedProperties: false
+
+    OrderStatus:
+      type: string
+      enum: [Processing, Shipped, Delivered, Cancelled]
+    AddressFields:
+      type: object
+      properties:
+        firstName: { type: string, minLength: 1, maxLength: 60 }
+        lastName: { type: string, minLength: 1, maxLength: 60 }
+        street: { type: string, minLength: 3, maxLength: 100 }
+        city: { type: string, maxLength: 60 }
+        countryCode: { type: string, enum: [SE, US, IN] }
+        regionCode: { type: string, description: A region of the chosen country (see /api/countries). }
+        postalCode: { type: string, description: 5 digits for SE and US, 6 for IN. }
+        phone: { type: string, description: 7 to 15 digits; digits, spaces, + - and parentheses allowed. }
+    AddressInput:
+      allOf:
+        - $ref: '#/components/schemas/AddressFields'
+        - type: object
+          required: [firstName, lastName, street, countryCode, regionCode, postalCode, phone]
+          properties:
+            label: { type: string, maxLength: 30, description: A blank label is stored as "Address". }
+            isDefault: { type: boolean }
+    AddressPatch:
+      allOf:
+        - $ref: '#/components/schemas/AddressFields'
+        - type: object
+          properties:
+            label: { type: string, maxLength: 30 }
+            isDefault: { type: boolean }
+    SavedAddress:
+      type: object
+      required: [id, label, firstName, lastName, street, city, regionCode, regionName, countryCode, countryName, postalCode, phone, isDefault]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        label: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        street: { type: string }
+        city: { type: string }
+        regionCode: { type: string }
+        regionName: { type: [string, 'null'] }
+        countryCode: { type: string }
+        countryName: { type: string }
+        postalCode: { type: string }
+        phone: { type: string }
+        isDefault: { type: boolean }
+    AddressList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/SavedAddress' }
+      unevaluatedProperties: false
+    PlaceOrderRequest:
+      type: object
+      required: [shippingMethod, deliveryDate, paymentToken, acceptTerms]
+      properties:
+        shippingMethod: { $ref: '#/components/schemas/ShippingMethod' }
+        deliveryDate:
+          type: string
+          format: date
+          description: From tomorrow to 14 days ahead (UTC); Standard delivery cannot be on a weekend.
+        addressId: { type: integer, description: One of the user's saved addresses. Send this or `address`. }
+        address:
+          allOf:
+            - $ref: '#/components/schemas/AddressFields'
+            - type: object
+              required: [firstName, lastName, street, countryCode, regionCode, postalCode, phone]
+          description: A new address, stored on the order only. Send this or `addressId`.
+        paymentToken:
+          type: string
+          enum: [tok_ok_4242, tok_declined_0002]
+          description: What the payment frame posts. `tok_declined_0002` gives a 402.
+        acceptTerms: { type: boolean, const: true }
+    OrderItem:
+      type: object
+      required: [productId, variantId, name, variantLabel, unitPriceCents, quantity, lineTotalCents]
+      additionalProperties: false
+      properties:
+        productId: { type: integer }
+        variantId: { type: [integer, 'null'] }
+        name: { type: string }
+        variantLabel: { type: [string, 'null'] }
+        unitPriceCents: { type: integer }
+        quantity: { type: integer }
+        lineTotalCents: { type: integer }
+    OrderAddress:
+      type: object
+      required: [firstName, lastName, street, city, regionCode, regionName, countryCode, countryName, postalCode, phone]
+      additionalProperties: false
+      properties:
+        firstName: { type: string }
+        lastName: { type: string }
+        street: { type: string }
+        city: { type: string }
+        regionCode: { type: string }
+        regionName: { type: string }
+        countryCode: { type: string }
+        countryName: { type: string }
+        postalCode: { type: string }
+        phone: { type: string }
+    Order:
+      type: object
+      required: [id, number, status, createdAt, deliveryDate, couponCode, shippingMethod, subtotalCents, discountCents, shippingCents, taxCents, totalCents, paymentLast4, address, items]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        number: { type: string, pattern: '^SL-\d{8}-\d{4}$', examples: [SL-20260930-0003] }
+        status: { $ref: '#/components/schemas/OrderStatus' }
+        createdAt: { type: string, format: date-time }
+        deliveryDate: { type: string, format: date }
+        couponCode: { type: [string, 'null'] }
+        shippingMethod: { $ref: '#/components/schemas/ShippingMethod' }
+        subtotalCents: { type: integer }
+        discountCents: { type: integer }
+        shippingCents: { type: integer }
+        taxCents: { type: integer }
+        totalCents: { type: integer }
+        paymentLast4: { type: string }
+        address: { $ref: '#/components/schemas/OrderAddress' }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OrderItem' }
+    OrderSummary:
+      type: object
+      required: [id, number, status, createdAt, deliveryDate, itemCount, totalCents]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        number: { type: string }
+        status: { $ref: '#/components/schemas/OrderStatus' }
+        createdAt: { type: string, format: date-time }
+        deliveryDate: { type: string, format: date }
+        itemCount: { type: integer }
+        totalCents: { type: integer }
+    OrderSummaryList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/OrderSummary' }
+      unevaluatedProperties: false
+
+    AdminProduct:
+      type: object
+      required: [id, name, category, subcategory, description, priceCents, salePriceCents, stock, active, featured, hasVariants, imageCount, imagePath, createdAt]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        category: { type: string }
+        subcategory: { type: string }
+        description: { type: string }
+        priceCents: { type: integer }
+        salePriceCents: { type: [integer, 'null'] }
+        stock: { type: integer }
+        active: { type: boolean }
+        featured: { type: boolean }
+        hasVariants: { type: boolean }
+        imageCount: { type: integer }
+        imagePath: { type: [string, 'null'] }
+        createdAt: { type: string, format: date-time }
+    AdminProductFields:
+      type: object
+      properties:
+        name: { type: string, minLength: 2, maxLength: 150 }
+        category: { type: string, enum: [Electronics, Clothing, Home, Sports, Books, Toys], description: Matched ignoring case. }
+        subcategory: { type: string, description: One of the category's subcategories (see /api/categories). Default is the first alphabetically. }
+        description: { type: string, maxLength: 2000, description: A blank description is stored as "No description provided." }
+        priceCents: { type: integer, minimum: 1, maximum: 1000000 }
+        salePriceCents: { type: [integer, 'null'], minimum: 1, maximum: 1000000, description: Must be below `priceCents`. Null for no sale. }
+        stock: { type: integer, minimum: 0, maximum: 10000 }
+        active: { type: boolean, default: true }
+    AdminProductCreate:
+      allOf:
+        - $ref: '#/components/schemas/AdminProductFields'
+        - type: object
+          required: [name, category, priceCents, stock]
+    AdminProductPatch:
+      allOf:
+        - $ref: '#/components/schemas/AdminProductFields'
+        - type: object
+          properties:
+            removeImage: { type: boolean, description: Drop the uploaded image (the placeholder shows again). }
+    AdminProductForm:
+      type: object
+      description: The same fields as JSON, sent as form text, plus the image. On PATCH send only what changes.
+      properties:
+        name: { type: string }
+        category: { type: string }
+        subcategory: { type: string }
+        description: { type: string }
+        priceCents: { type: string, pattern: '^\d+$' }
+        salePriceCents: { type: string, description: Empty for no sale price. }
+        stock: { type: string, pattern: '^\d+$' }
+        active: { type: string, enum: ['true', 'false'] }
+        removeImage: { type: string, enum: ['true', 'false'] }
+        image:
+          type: string
+          format: binary
+          description: PNG or JPEG, at most 2 MB. Replaces the current image.
+      encoding:
+        image:
+          contentType: image/png, image/jpeg
+    AdminProductList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/AdminProduct' }
+      unevaluatedProperties: false
+    AdminOrder:
+      type: object
+      required: [id, number, status, createdAt, deliveryDate, itemCount, totalCents, customer]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        number: { type: string }
+        status: { $ref: '#/components/schemas/OrderStatus' }
+        createdAt: { type: string, format: date-time }
+        deliveryDate: { type: string, format: date }
+        itemCount: { type: integer }
+        totalCents: { type: integer }
+        customer:
+          type: object
+          required: [id, name, email]
+          additionalProperties: false
+          properties:
+            id: { type: integer }
+            name: { type: string }
+            email: { type: string }
+    AdminOrderList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/AdminOrder' }
+      unevaluatedProperties: false
+    AdminUser:
+      type: object
+      required: [id, name, email, role, locked, createdAt]
+      additionalProperties: false
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [customer, admin] }
+        locked: { type: boolean }
+        createdAt: { type: string, format: date-time }
+    AdminUserList:
+      allOf:
+        - $ref: '#/components/schemas/ListMeta'
+        - type: object
+          required: [data]
+          properties:
+            data:
+              type: array
+              items: { $ref: '#/components/schemas/AdminUser' }
+      unevaluatedProperties: false
+
+    TestState:
+      type: object
+      required: [scenario, counts, flags, latency]
+      additionalProperties: false
+      properties:
+        scenario: { type: string }
+        counts:
+          type: object
+          description: Row count per table.
+          additionalProperties: { type: integer }
+        flags:
+          type: array
+          items: { type: string }
+        latency:
+          type: object
+          required: [latencyMs, jitterMs, failureRate, paths, status, deterministic]
+          additionalProperties: false
+          properties:
+            latencyMs: { type: integer }
+            jitterMs: { type: integer }
+            failureRate: { type: number }
+            paths:
+              type: array
+              items: { type: string }
+            status: { type: integer }
+            deterministic: { type: boolean }

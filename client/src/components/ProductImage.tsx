@@ -8,6 +8,8 @@ interface ProductImageProps {
   /** Decorative images are hidden from assistive technology (the name is shown next to them). */
   decorative?: boolean;
   total?: number;
+  /** An image uploaded by an admin. When set it replaces the generated placeholder (the product then has one picture). */
+  imagePath?: string | null;
 }
 
 function initials(name: string): string {
@@ -21,10 +23,22 @@ function initials(name: string): string {
 }
 
 /**
- * A self-hosted placeholder drawn in SVG. The colour comes from the product ID and the
+ * A product picture: the image an admin uploaded, or otherwise a self-hosted placeholder drawn in SVG. The colour comes from the product ID and the
  * shape from the image number, so every product and every gallery picture looks different.
  */
-export function ProductImage({ productId, name, index = 0, decorative = false, total = 3 }: ProductImageProps) {
+export function ProductImage({ productId, name, index = 0, decorative = false, total = 3, imagePath = null }: ProductImageProps) {
+  if (imagePath) {
+    return (
+      <img
+        className={styles.image}
+        src={imagePath}
+        alt={decorative ? '' : name}
+        aria-hidden={decorative ? true : undefined}
+        loading="lazy"
+        data-image-index={1}
+      />
+    );
+  }
   const hue = (productId * 47 + index * 29) % 360;
   const bg = `hsl(${hue} 55% 90%)`;
   const shape = `hsl(${hue} 45% 62%)`;

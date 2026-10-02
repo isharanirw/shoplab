@@ -52,7 +52,7 @@ export function CartLineItem({ item, busy, onQuantity, onRemove }: CartLineItemP
   return (
     <li className={styles.line} data-testid={`cart-item-${item.productId}`} aria-labelledby={titleId}>
       <div className={styles.image}>
-        <ProductImage productId={item.productId} name={item.name} decorative />
+        <ProductImage productId={item.productId} name={item.name} imagePath={item.imagePath} decorative />
       </div>
       <div className={styles.info}>
         <h2 id={titleId} className={styles.name}>

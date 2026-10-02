@@ -222,7 +222,7 @@ export function WishlistPage() {
                     ⋮⋮
                   </span>
                   <Link to={`/products/${p.id}`} className={styles.thumb} tabIndex={-1} aria-hidden="true" draggable={false}>
-                    <ProductImage productId={p.id} name={p.name} decorative />
+                    <ProductImage productId={p.id} name={p.name} imagePath={p.imagePath} decorative />
                   </Link>
                   <div className={styles.info}>
                     <h2 className={styles.name}>

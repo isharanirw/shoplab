@@ -26,6 +26,8 @@ export interface ProductSummary {
   hasVariants: boolean;
   featured: boolean;
   imageCount: number;
+  /** URL path of an image uploaded by an admin, or null (the generated placeholder is used then). */
+  imagePath: string | null;
   rating: RatingSummary;
   createdAt: string;
 }
@@ -88,7 +90,7 @@ export const SUMMARY_FROM = `
 
 export const SUMMARY_COLUMNS = `
   p.id, p.name, p.category, p.subcategory, p.price_cents, p.sale_price_cents, p.stock, p.featured,
-  p.image_count, p.created_at,
+  p.image_count, p.image_path, p.created_at,
   COALESCE(r.review_count, 0) AS review_count,
   r.rating_tenths AS rating_tenths,
   EXISTS (SELECT 1 FROM product_variants v WHERE v.product_id = p.id) AS has_variants`;
@@ -103,6 +105,7 @@ export interface SummaryRow {
   stock: number;
   featured: number;
   image_count: number;
+  image_path: string | null;
   created_at: string;
   review_count: number;
   rating_tenths: number | null;
@@ -122,6 +125,7 @@ export function mapSummary(row: SummaryRow): ProductSummary {
     hasVariants: row.has_variants === 1,
     featured: row.featured === 1,
     imageCount: row.image_count,
+    imagePath: row.image_path,
     rating: {
       average: row.rating_tenths === null ? null : row.rating_tenths / 10,
       count: row.review_count,
