@@ -361,6 +361,7 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 - The default-address radio on `/account` and the lock switch on `/admin/users` show the chosen position at once while the request is in flight, and go back if it fails. All checkboxes, radios and switches in the app respond to a click (or an automation `check()` / `uncheck()`) in the same tick, in Chromium, Firefox and WebKit.
 - The router applies location changes without React transitions, so a filter checkbox on `/products` is checked as soon as it is clicked instead of a moment later.
 - A signed-in user's cart counts as "syncing" from the first render after login or page load, so the cart and checkout never show a half-loaded state that is thrown away a moment later (which could wipe fields typed in the first moments of a checkout).
+- A click or typing in the first moments after a page loads is kept: the search box, the price boxes, a cart quantity, the admin search boxes and the mobile menu button no longer reset themselves from the URL or the saved value when the page first appears.
 
 ### Performance and data checks (measured locally, flags and chaos off)
 - API: p95 under 3 ms across the main endpoints on a warm local service. Pages: the content is on screen in about 130 ms after a warm load. The client bundle is about 455 kB (141 kB gzip).

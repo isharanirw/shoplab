@@ -88,3 +88,4 @@ One line per notable technical decision.
 - Phase 7: after a client-side path change focus moves to `main` unless a child already took focus, matching what a full page load does for keyboard and screen reader users.
 - Phase 7: the focus ring colour is `--color-focus` (`#b45309`) because the earlier amber (`#f59e0b`) was only 2.1:1 against white.
 - Phase 7: cross-browser and performance checks were run once by hand from a scratch folder outside the repository (Playwright, Firefox and WebKit builds); no end-to-end tooling or tests were added to the repository.
+- Phase 7: state that mirrors the URL or a saved value (search box, price boxes, cart quantity, admin search, the mobile menu) is synced with `useUpdateEffect`, which skips the mount run, because a click or typing in the first moments after a page load was sometimes undone when the mount-time effect ran after it (seen in WebKit under load).
