@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useUpdateEffect } from '../hooks/useUpdateEffect';
 import { Link } from 'react-router-dom';
 import type { CartItem } from '../api/types';
 import { formatPrice } from '../lib/format';
@@ -23,7 +24,7 @@ export function CartLineItem({ item, busy, onQuantity, onRemove }: CartLineItemP
   const labelText = `Quantity for ${item.name}${item.variantLabel ? ` (${item.variantLabel})` : ''}`;
   const overStock = item.stock < item.quantity;
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     setText(String(item.quantity));
   }, [item.quantity]);
 

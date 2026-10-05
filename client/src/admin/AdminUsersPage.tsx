@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
@@ -7,6 +7,7 @@ import { useAuth } from '../auth/AuthContext';
 import { ErrorState, Spinner } from '../components/Feedback';
 import { Pagination } from '../components/Pagination';
 import { useFetch } from '../hooks/useFetch';
+import { useUpdateEffect } from '../hooks/useUpdateEffect';
 import { adminListApiPath, adminListSearch, parseAdminListState, USERS_LIST } from '../lib/adminList';
 import type { AdminListState } from '../lib/adminList';
 import { formatDate, pluralise } from '../lib/format';
@@ -34,7 +35,7 @@ export function AdminUsersPage() {
   const toast = useToast();
   const [notice, setNotice] = useState<string | null>(null);
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     setSearchText(state.q);
   }, [state.q]);
 

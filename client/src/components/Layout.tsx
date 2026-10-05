@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useUpdateEffect } from '../hooks/useUpdateEffect';
 import { useCart } from '../cart/CartContext';
 import { CategoriesProvider } from './CategoriesContext';
 import { CategoryNav } from './CategoryNav';
@@ -19,8 +20,8 @@ export function Layout() {
   const mainRef = useRef<HTMLElement>(null);
   const firstPath = useRef(true);
 
-  // Any navigation closes the mobile menu.
-  useEffect(() => {
+  // Any navigation closes the mobile menu (not on the first render, so an early click on the button is kept).
+  useUpdateEffect(() => {
     setMenuOpen(false);
   }, [location.pathname, location.search]);
 

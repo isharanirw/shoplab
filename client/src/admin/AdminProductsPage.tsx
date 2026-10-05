@@ -8,6 +8,7 @@ import { ErrorState, Spinner } from '../components/Feedback';
 import { Pagination } from '../components/Pagination';
 import { ProductImage } from '../components/ProductImage';
 import { useFetch } from '../hooks/useFetch';
+import { useUpdateEffect } from '../hooks/useUpdateEffect';
 import { adminListApiPath, adminListSearch, parseAdminListState, PRODUCTS_LIST } from '../lib/adminList';
 import type { AdminListState } from '../lib/adminList';
 import { formatPrice, pluralise } from '../lib/format';
@@ -41,7 +42,7 @@ export function AdminProductsPage() {
   }, []);
 
   // Keep the search box in step with the URL (back and forward, or Clear).
-  useEffect(() => {
+  useUpdateEffect(() => {
     setSearchText(state.q);
   }, [state.q]);
 
