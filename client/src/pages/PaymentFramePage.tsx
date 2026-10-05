@@ -65,7 +65,7 @@ export function PaymentFramePage() {
   }
 
   return (
-    <main className={styles.frame}>
+    <main className={styles.frame} aria-label="Card payment">
       <h1 className="visually-hidden">Card payment details</h1>
       <form onSubmit={handleSubmit} noValidate aria-label="Card details" data-testid="payment-form">
         <FormField

@@ -50,6 +50,11 @@
   color: var(--color-muted);
 }
 
+.card > a {
+  display: inline-block;
+  padding: 0.3rem 0;
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;

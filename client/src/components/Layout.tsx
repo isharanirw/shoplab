@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useCart } from '../cart/CartContext';
@@ -16,11 +16,26 @@ export function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
+  const firstPath = useRef(true);
 
   // Any navigation closes the mobile menu.
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname, location.search]);
+
+  // After a client-side page change, move focus to the page content so keyboard and screen reader users
+  // start at the top of the new page (a full page load already does this). A page that placed focus itself keeps it.
+  useEffect(() => {
+    if (firstPath.current) {
+      firstPath.current = false;
+      return;
+    }
+    const main = mainRef.current;
+    const active = document.activeElement;
+    if (!main || (active && active !== document.body && main.contains(active))) return;
+    main.focus({ preventScroll: true });
+  }, [location.pathname]);
 
   function handleLogout() {
     navigate('/', { replace: true });
@@ -109,7 +124,7 @@ export function Layout() {
             </nav>
           </div>
         </header>
-        <main id="main" className={styles.main} tabIndex={-1}>
+        <main id="main" ref={mainRef} className={styles.main} tabIndex={-1}>
           <ErrorBoundary key={`${location.pathname}${location.search}`}>
             <Outlet />
           </ErrorBoundary>
