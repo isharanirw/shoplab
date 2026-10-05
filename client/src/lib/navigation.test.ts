@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loginPathFor, safeNext } from './navigation';
+import { closeIfOpen, loginPathFor, safeNext } from './navigation';
 
 describe('safeNext', () => {
   it('keeps same-site paths, including query strings', () => {
@@ -24,5 +24,16 @@ describe('safeNext', () => {
 describe('loginPathFor', () => {
   it('encodes the target path', () => {
     expect(loginPathFor('/account/orders?page=2')).toBe('/login?next=%2Faccount%2Forders%3Fpage%3D2');
+  });
+});
+
+describe('closeIfOpen', () => {
+  it('closes the panel that belongs to the item', () => {
+    expect(closeIfOpen('Home', 'Home')).toBeNull();
+  });
+
+  it('leaves another item panel open', () => {
+    expect(closeIfOpen('Clothing', 'Electronics')).toBe('Clothing');
+    expect(closeIfOpen(null, 'Electronics')).toBeNull();
   });
 });

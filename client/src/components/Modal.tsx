@@ -12,7 +12,7 @@ interface ModalProps {
 }
 
 const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([data-focus-sentinel])';
 
 function focusableIn(root: HTMLElement): HTMLElement[] {
   return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((el) => el.getClientRects().length > 0);
@@ -21,7 +21,9 @@ function focusableIn(root: HTMLElement): HTMLElement[] {
 /**
  * An accessible modal dialog. It closes on Escape and on a click on the backdrop (the X button is
  * provided by the content through `onClose`), keeps Tab focus inside, makes the rest of the page
- * inert while open, and returns focus to whatever had it before opening.
+ * inert while open, and returns focus to whatever had it before opening. Two empty focus stops around the
+ * dialog catch a Tab that the browser moves past the first or last control (some browsers skip links when
+ * tabbing), so focus wraps around instead of leaving the dialog.
  */
 export function Modal({ labelledBy, onClose, children }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -79,6 +81,14 @@ export function Modal({ labelledBy, onClose, children }: ModalProps) {
     };
   }, []);
 
+  function wrapTo(which: 'first' | 'last') {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const items = focusableIn(dialog);
+    const target = which === 'first' ? items[0] : items[items.length - 1];
+    (target ?? dialog).focus();
+  }
+
   return createPortal(
     <div
       className={styles.backdrop}
@@ -93,9 +103,11 @@ export function Modal({ labelledBy, onClose, children }: ModalProps) {
         pressStartedOnBackdrop.current = false;
       }}
     >
+      <div className={styles.sentinel} tabIndex={0} data-focus-sentinel onFocus={() => wrapTo('last')} />
       <div ref={dialogRef} className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby={labelledBy} tabIndex={-1}>
         {children}
       </div>
+      <div className={styles.sentinel} tabIndex={0} data-focus-sentinel onFocus={() => wrapTo('first')} />
     </div>,
     document.body,
   );

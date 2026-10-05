@@ -25,3 +25,12 @@
 .dialog:focus {
   outline: none;
 }
+
+/* Empty focus stops before and after the dialog; they take no space and show nothing. */
+.sentinel {
+  position: fixed;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  outline: none;
+}

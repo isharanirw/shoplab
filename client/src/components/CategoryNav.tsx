@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { closeIfOpen } from '../lib/navigation';
 import { useCategories } from './CategoriesContext';
 import styles from './CategoryNav.module.css';
 
@@ -65,12 +66,12 @@ export function CategoryNav({ onNavigate }: CategoryNavProps) {
             key={category.name}
             className={classes}
             onMouseEnter={() => setOpenName(category.name)}
-            onMouseLeave={() => setOpenName(null)}
+            onMouseLeave={() => setOpenName((current) => closeIfOpen(current, category.name))}
             onBlur={(event) => {
-              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpenName(null);
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpenName((current) => closeIfOpen(current, category.name));
             }}
             onKeyDown={(event) => {
-              if (event.key === 'Escape') setOpenName(null);
+              if (event.key === 'Escape') setOpenName((current) => closeIfOpen(current, category.name));
             }}
           >
             <div className={styles.row}>
