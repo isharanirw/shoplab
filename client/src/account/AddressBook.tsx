@@ -23,6 +23,8 @@ export function AddressBook() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteRetryable, setDeleteRetryable] = useState(false);
   const [busy, setBusy] = useState(false);
+  /** The radio the user just chose, shown as selected straight away while the save is in flight. */
+  const [pendingDefault, setPendingDefault] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [problem, setProblem] = useState<Failure | null>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -49,12 +51,15 @@ export function AddressBook() {
     if (address.isDefault) return;
     setProblem(null);
     setMessage(null);
+    setPendingDefault(address.id);
     try {
       await api<SavedAddress>(`/api/addresses/${address.id}`, { method: 'PATCH', body: { isDefault: true } });
       await reload();
       setMessage(`${address.label} is now your default address.`);
     } catch (err) {
       setProblem(failureOf(err, 'Could not change the default address.', () => void makeDefault(address)));
+    } finally {
+      setPendingDefault(null);
     }
   }
 
@@ -140,7 +145,7 @@ export function AddressBook() {
                           type="radio"
                           id={`default-address-${a.id}`}
                           name="default-address"
-                          checked={a.isDefault}
+                          checked={pendingDefault !== null ? pendingDefault === a.id : a.isDefault}
                           onChange={() => void makeDefault(a)}
                           data-testid={`address-default-${a.id}`}
                         />

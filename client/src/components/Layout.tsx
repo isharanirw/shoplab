@@ -125,7 +125,8 @@ export function Layout() {
           </div>
         </header>
         <main id="main" ref={mainRef} className={styles.main} tabIndex={-1}>
-          <ErrorBoundary key={`${location.pathname}${location.search}`}>
+          {/* A new path remounts the page; a changed query string (filters, sort, page) keeps it mounted so focus and open panels stay put. */}
+          <ErrorBoundary key={location.pathname} resetKey={location.search}>
             <Outlet />
           </ErrorBoundary>
         </main>

@@ -28,6 +28,8 @@ export function AdminUsersPage() {
   const [searchText, setSearchText] = useState(state.q);
   const [updated, setUpdated] = useState<Record<number, AdminUser>>({});
   const [busyId, setBusyId] = useState<number | null>(null);
+  /** The switch position the admin just chose, shown straight away while the save is in flight. */
+  const [pendingLock, setPendingLock] = useState<Record<number, boolean>>({});
   const [rowError, setRowError] = useState<({ id: number } & Failure) | null>(null);
   const toast = useToast();
   const [notice, setNotice] = useState<string | null>(null);
@@ -50,6 +52,7 @@ export function AdminUsersPage() {
 
   async function setLocked(user: AdminUser, locked: boolean) {
     setBusyId(user.id);
+    setPendingLock((prev) => ({ ...prev, [user.id]: locked }));
     setRowError(null);
     setNotice(null);
     try {
@@ -62,6 +65,11 @@ export function AdminUsersPage() {
       toast.error('Could not update user');
     } finally {
       setBusyId(null);
+      setPendingLock((prev) => {
+        const rest = { ...prev };
+        delete rest[user.id];
+        return rest;
+      });
     }
   }
 
@@ -145,7 +153,8 @@ export function AdminUsersPage() {
                 </thead>
                 <tbody>
                   {data.data.map((original) => {
-                    const u = updated[original.id] ?? original;
+                    const saved = updated[original.id] ?? original;
+                    const u = original.id in pendingLock ? { ...saved, locked: pendingLock[original.id] ?? saved.locked } : saved;
                     const isMe = me?.id === u.id;
                     return (
                       <tr key={u.id} data-testid={`admin-user-row-${u.id}`}>
