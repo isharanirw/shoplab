@@ -1,6 +1,6 @@
 # ShopLab
 
-ShopLab is a deliberately realistic demo online store. It exists as a system under test: a place to practise UI, API and CI test automation against an application you fully control. It has a React front end, a REST API, resettable data and (in later phases) switchable defects and adjustable latency and failures.
+ShopLab is a deliberately realistic demo online store. It exists as a system under test: a place to practise UI, API and CI test automation against an application you fully control. It has a React front end, a REST API, resettable data, switchable flags and adjustable latency and failures.
 
 Live site: https://shoplab-ffm2.onrender.com
 
@@ -8,7 +8,9 @@ Live site: https://shoplab-ffm2.onrender.com
 
 ## Status
 
-Phases 1 to 6 are complete. Phase 5 added the admin panel (products, orders, users), the remaining API endpoints, `docs/openapi.yaml` and Swagger UI at `/api/docs`. Phases 1 to 4: foundation (scaffold, database and seed data, authentication, health check, reset endpoint, CI), the catalogue (listing, search, filters, detail page, quick view, wishlist basics), cart and checkout (cart, coupons, pricing, four-step checkout with a payment iframe, orders and confirmation) and account and engagement (address book, order history with cancel, reviews with image upload, wishlist drag and drop, contact form). Phase 6 added the testability layer: flags, chaos mode, the promo and analytics scripts, a cookie banner, toasts, a shipping note in the header, the About page and error pages. Later phases are polish.
+All build phases are complete. The shop has a catalogue (listing, search with autocomplete, filters, detail page, quick view), cart and four-step checkout with a payment iframe, orders with cancel, reviews with image upload, a drag and drop wishlist, a contact form, an admin panel (products, orders, users), a documented REST API and a testability layer (switchable flags, chaos mode, resettable data, self-hosted promo and analytics scripts). Phase 7 was polish: responsive and accessibility passes, cross-browser checks in Chromium, Firefox and WebKit, performance checks and documentation.
+
+API documentation: Swagger UI at [/api/docs](https://shoplab-ffm2.onrender.com/api/docs) (locally http://localhost:3000/api/docs) and the OpenAPI file in [docs/openapi.yaml](docs/openapi.yaml).
 
 ## Routes
 

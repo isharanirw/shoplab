@@ -342,3 +342,26 @@ Where the requirements are silent or ambiguous, ShopLab does the simplest determ
 - **Toasts**: short messages in the top right corner, success (green, `role="status"`) or error (red, `role="alert"`), each with a Dismiss button, gone by themselves after 4 seconds; at most 4 show at once (the oldest goes first). Success toasts: add to cart ("Added to cart"), wishlist ("Saved to wishlist", "Removed from wishlist", "Moved to cart"), coupon ("Coupon applied"), contact ("Message sent"), review ("Review posted") and admin saves ("Product saved", "Product deleted", "Order status updated", "User updated"). Error toasts appear when those actions fail. The page's own inline messages stay as before.
 - **Retry on failed actions**: every page that loads data shows a spinner or grey placeholders while waiting and an error with a Retry button when the request fails. Actions (add to cart, wishlist heart, cart changes, coupon, contact, review, address book, profile name, login, register, place order, admin saves, delete and cancel dialogs) show the error next to the control, with a Retry button when trying again could help (a network failure, a 5xx or a 429); an error such as "only 3 in stock" or "invalid coupon" has no Retry button because repeating it cannot change the answer.
 - **Pages**: `/about` is a static page; the footer links About, Terms and Contact. `/500` shows the 500 error page, and a page that crashes while rendering shows the same page (with a Try again button) inside the normal header and footer. Unknown routes still show the 404 page. The footer notice "Demo site. No real payments or personal data." is on every page that has the site footer.
+
+## Phase 7: polish
+
+### Layout and touch
+- Three layouts are used: under 768 px (phone: hamburger menu, single column, filters behind a Show filters button), 768 px and up (tablet and desktop: category bar with mega-menu, two-column pages). No page scrolls sideways at 375, 768 or 1280 px; wide tables (orders, admin) scroll inside their own container or hide low-value columns on narrow screens.
+- On narrow or touch screens, plain text links that stand alone (footer links, breadcrumbs, product names, table links) get a taller hit area, and checkboxes and radio buttons are drawn 24 px square, so every control is at least 24 px by 24 px (links inside a sentence keep the sentence's line height).
+
+### Keyboard and screen readers
+- After a client-side move to another page (not a query-string change) focus moves to the page content (`main`), so a keyboard or screen reader user starts at the top of the new page. A page that places focus itself (the checkout step heading, an editor) keeps it.
+- Changing a filter, the sort or the page of a list keeps the page mounted: the control you used stays focused and the mobile filter panel stays open.
+- The focus ring is a 3 px dark amber outline with a 2 px gap (contrast at least 3:1 on the page, card and footer backgrounds). The skip link, landmarks (`header`, `nav` with labels, `main`, `footer`, the cookie banner as a labelled section), exactly one `h1` per page and a page title on every route are in place.
+- Modals keep Tab inside the dialog. Two empty focus stops around the dialog catch a Tab that the browser sends past the first or last control (some browsers skip links when tabbing) and move focus to the other end. Escape and the dialog's own close button return focus to the control that opened it.
+- Toasts sit in a polite live region; errors use `role="alert"`. Loading spinners are `role="status"`.
+- In the mega-menu, moving the mouse or focus between categories only ever closes the panel that belongs to the item being left, so a click on a subcategory is never lost.
+
+### Controls that save immediately
+- The default-address radio on `/account` and the lock switch on `/admin/users` show the chosen position at once while the request is in flight, and go back if it fails. All checkboxes, radios and switches in the app respond to a click (or an automation `check()` / `uncheck()`) in the same tick, in Chromium, Firefox and WebKit.
+- The router applies location changes without React transitions, so a filter checkbox on `/products` is checked as soon as it is clicked instead of a moment later.
+- A signed-in user's cart counts as "syncing" from the first render after login or page load, so the cart and checkout never show a half-loaded state that is thrown away a moment later (which could wipe fields typed in the first moments of a checkout).
+
+### Performance and data checks (measured locally, flags and chaos off)
+- API: p95 under 3 ms across the main endpoints on a warm local service. Pages: the content is on screen in about 130 ms after a warm load. The client bundle is about 455 kB (141 kB gzip).
+- `POST /api/test/reset` takes under 50 ms (typically 4 to 10 ms) for every scenario. After a purchase, a review with an image, an admin edit, a product with an image, a status change, a lock, an extra user and a contact message, a reset restores a database dump and a set of API responses identical to a fresh start (checked three times), and the uploads folder is empty again.

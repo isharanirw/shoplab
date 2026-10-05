@@ -80,3 +80,11 @@ One line per notable technical decision.
 - Cookie choice is stored as a small versioned JSON value in `localStorage`; parsing and saving are pure functions over a storage-like object, tested with a fake store.
 - Toasts and Retry are shared pieces (`ToastProvider`, `ActionError`, `failureOf`): only network failures, 5xx and 429 get a Retry button, so a message such as "only 3 in stock" is never offered a pointless retry.
 - A render crash is caught by a React error boundary around the routed page (keeping header and footer) that shows the 500 page; `/500` shows the same page directly.
+- Phase 7: `BrowserRouter` runs with `useTransitions={false}` so a URL-controlled checkbox is updated in the same tick as the click; with transitions, React restored the old value first and an automation `check()` failed with "did not change its state".
+- Phase 7: the routed page is keyed by path only (`ErrorBoundary key={pathname}`); the query string is a `resetKey` that clears a crashed page, so filter, sort and page changes keep focus and the open mobile filter panel instead of remounting the whole listing.
+- Phase 7: controls that save to the server (default address radio, user lock switch) hold the chosen value in local state while the request runs, because an automation click checks the control straight after the click and a server round trip is too late.
+- Phase 7: "syncing" in the cart context is derived (`signed in and not yet synced`) rather than set from an effect, which removed a one-render gap where a checkout form could mount, unmount and mount again and lose what was typed.
+- Phase 7: the modal adds two empty `tabindex=0` focus stops around the dialog (no new dependency) because WebKit does not Tab onto links, which let the first and last control checks miss; the stops hand focus to the other end.
+- Phase 7: after a client-side path change focus moves to `main` unless a child already took focus, matching what a full page load does for keyboard and screen reader users.
+- Phase 7: the focus ring colour is `--color-focus` (`#b45309`) because the earlier amber (`#f59e0b`) was only 2.1:1 against white.
+- Phase 7: cross-browser and performance checks were run once by hand from a scratch folder outside the repository (Playwright, Firefox and WebKit builds); no end-to-end tooling or tests were added to the repository.
