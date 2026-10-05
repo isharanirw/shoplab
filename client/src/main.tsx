@@ -19,7 +19,7 @@ defineStarElement();
 void loadClientFlags().then(() => {
   createRoot(root).render(
     <StrictMode>
-      <BrowserRouter>
+      <BrowserRouter useTransitions={false}>
         <ToastProvider>
           <AuthProvider>
             <CartProvider>

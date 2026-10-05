@@ -11,3 +11,8 @@ export function safeNext(raw: string | null | undefined): string {
 export function loginPathFor(path: string): string {
   return `/login?next=${encodeURIComponent(path)}`;
 }
+
+/** The open mega-menu panel after one item asks to close: only that item's own panel closes. */
+export function closeIfOpen(openName: string | null, name: string): string | null {
+  return openName === name ? null : openName;
+}

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useUpdateEffect } from '../hooks/useUpdateEffect';
 import { useCart } from '../cart/CartContext';
 import { CategoriesProvider } from './CategoriesContext';
 import { CategoryNav } from './CategoryNav';
@@ -16,11 +17,26 @@ export function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
+  const firstPath = useRef(true);
 
-  // Any navigation closes the mobile menu.
-  useEffect(() => {
+  // Any navigation closes the mobile menu (not on the first render, so an early click on the button is kept).
+  useUpdateEffect(() => {
     setMenuOpen(false);
   }, [location.pathname, location.search]);
+
+  // After a client-side page change, move focus to the page content so keyboard and screen reader users
+  // start at the top of the new page (a full page load already does this). A page that placed focus itself keeps it.
+  useEffect(() => {
+    if (firstPath.current) {
+      firstPath.current = false;
+      return;
+    }
+    const main = mainRef.current;
+    const active = document.activeElement;
+    if (!main || (active && active !== document.body && main.contains(active))) return;
+    main.focus({ preventScroll: true });
+  }, [location.pathname]);
 
   function handleLogout() {
     navigate('/', { replace: true });
@@ -109,8 +125,9 @@ export function Layout() {
             </nav>
           </div>
         </header>
-        <main id="main" className={styles.main} tabIndex={-1}>
-          <ErrorBoundary key={`${location.pathname}${location.search}`}>
+        <main id="main" ref={mainRef} className={styles.main} tabIndex={-1}>
+          {/* A new path remounts the page; a changed query string (filters, sort, page) keeps it mounted so focus and open panels stay put. */}
+          <ErrorBoundary key={location.pathname} resetKey={location.search}>
             <Outlet />
           </ErrorBoundary>
         </main>

@@ -7,6 +7,7 @@
   --color-primary: #1d4ed8;
   --color-primary-hover: #1e40af;
   --color-primary-text: #ffffff;
+  --color-focus: #b45309;
   --color-danger: #b91c1c;
   --color-danger-bg: #fef2f2;
   --color-notice-bg: #111827;
@@ -54,7 +55,7 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 3px solid #f59e0b;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -125,4 +126,31 @@ img {
   border-radius: var(--radius);
   background: var(--color-surface);
   color: var(--color-text);
+}
+
+/* Plain text links get a taller hit area on narrow and touch screens (WCAG 2.5.8 target size). */
+@media (max-width: 47.99rem), (pointer: coarse) {
+  nav[aria-label='Breadcrumb'] a,
+  nav[aria-label='Footer'] a,
+  h2 a,
+  h3 a,
+  td a,
+  p > a:only-child,
+  div > a:only-child:not(.btn),
+  li > span > a:not(.btn),
+  li > a:not(.btn) {
+    display: inline-block;
+    max-width: 100%;
+    padding: 0.25rem 0.2rem;
+    margin: -0.25rem -0.2rem;
+  }
+}
+
+@media (max-width: 47.99rem), (pointer: coarse) {
+  input[type='checkbox'],
+  input[type='radio'] {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex: none;
+  }
 }

@@ -34,7 +34,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const [guestLines, setGuestLinesState] = useState<CartLine[]>(() => loadGuestCart());
   const [serverCount, setServerCount] = useState(0);
-  const [syncing, setSyncing] = useState(false);
+  /** The user whose server cart has been read (or merged into) since they signed in. */
+  const [syncedUserId, setSyncedUserId] = useState<number | null>(null);
   const [version, setVersion] = useState(0);
   const [mergeNotice, setMergeNotice] = useState<string[] | null>(null);
   const syncedFor = useRef<number | null>(null);
@@ -48,11 +49,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // When someone logs in, merge the guest cart into their server cart (or just read the server cart).
   const userId = user?.id ?? null;
+  // Derived during render, so a signed-in user is never seen as "not syncing" for a moment before the merge starts.
+  const syncing = userId !== null && syncedUserId !== userId;
   useEffect(() => {
     if (loading) return;
     if (userId === null) {
       syncedFor.current = null;
       setServerCount(0);
+      setSyncedUserId(null);
       return;
     }
     if (syncedFor.current === userId) return;
@@ -60,7 +64,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const lines = guestRef.current;
 
     async function sync() {
-      setSyncing(true);
       try {
         if (lines.length > 0) {
           const result = await api<{ cart: Cart; adjustments: MergeReportItem[] }>('/api/cart/merge', {
@@ -77,7 +80,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       } catch {
         // The cart page shows its own error with Retry; the badge stays at the last known value.
       } finally {
-        setSyncing(false);
+        setSyncedUserId(userId);
         setVersion((v) => v + 1);
       }
     }

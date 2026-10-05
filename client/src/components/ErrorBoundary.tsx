@@ -4,6 +4,8 @@ import { ServerErrorPage } from '../pages/ServerErrorPage';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
+  /** When this changes after a crash, the page is tried again (for example after following a link). */
+  resetKey?: string;
 }
 
 interface ErrorBoundaryState {
@@ -16,6 +18,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   static getDerivedStateFromError(): ErrorBoundaryState {
     return { failed: true };
+  }
+
+  componentDidUpdate(previous: ErrorBoundaryProps): void {
+    if (this.state.failed && previous.resetKey !== this.props.resetKey) this.setState({ failed: false });
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {

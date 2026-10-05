@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { ListResponse, ProductSummary } from '../api/types';
@@ -7,6 +7,7 @@ import { ErrorState, Spinner } from '../components/Feedback';
 import { Pagination } from '../components/Pagination';
 import { ProductGrid, ProductGridSkeleton } from '../components/ProductGrid';
 import { useFetch } from '../hooks/useFetch';
+import { useUpdateEffect } from '../hooks/useUpdateEffect';
 import { pluralise } from '../lib/format';
 import { totalPagesOf } from '../lib/pagination';
 import {
@@ -46,7 +47,7 @@ export function ProductsPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Keep the price boxes in step with the URL (back/forward, clear all, direct load).
-  useEffect(() => {
+  useUpdateEffect(() => {
     setMinPrice(filters.minPrice);
     setMaxPrice(filters.maxPrice);
     setPriceError(null);

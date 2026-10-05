@@ -3,6 +3,7 @@ import type { FormEvent, KeyboardEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { api, ApiRequestError } from '../api/client';
 import type { ListResponse, Suggestion } from '../api/types';
+import { useUpdateEffect } from '../hooks/useUpdateEffect';
 import styles from './SearchBox.module.css';
 
 export const SUGGEST_MIN_CHARS = 2;
@@ -35,7 +36,7 @@ export function SearchBox() {
   const [suggest, setSuggest] = useState<SuggestState>({ status: 'idle' });
 
   // On the listing page the box mirrors the q in the URL, so it survives reloads and back/forward.
-  useEffect(() => {
+  useUpdateEffect(() => {
     if (location.pathname === '/products') setValue(new URLSearchParams(location.search).get('q') ?? '');
   }, [location.pathname, location.search]);
 

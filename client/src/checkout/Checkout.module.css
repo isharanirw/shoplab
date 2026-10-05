@@ -81,7 +81,7 @@
 }
 
 .stepHeading:focus-visible {
-  outline: 3px solid #f59e0b;
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 
