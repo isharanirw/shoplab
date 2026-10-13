@@ -22,8 +22,10 @@ export interface ProductSummary {
   hasVariants: boolean;
   featured: boolean;
   imageCount: number;
-  /** URL path of an image uploaded by an admin; null means the generated placeholder is shown. */
+  /** URL path of an image uploaded by an admin; null means the illustrations are shown. */
   imagePath: string | null;
+  /** Every picture URL in gallery order (never empty). */
+  images: string[];
   rating: RatingSummary;
   createdAt: string;
 }
@@ -79,6 +81,7 @@ export interface CartItem {
   category: string;
   imageCount: number;
   imagePath: string | null;
+  images: string[];
   variantLabel: string | null;
   unitPriceCents: number;
   regularPriceCents: number;
@@ -163,6 +166,7 @@ export interface OrderItem {
   variantId: number | null;
   name: string;
   variantLabel: string | null;
+  images: string[];
   unitPriceCents: number;
   quantity: number;
   lineTotalCents: number;
@@ -228,6 +232,7 @@ export interface AdminProduct {
   hasVariants: boolean;
   imageCount: number;
   imagePath: string | null;
+  images: string[];
   createdAt: string;
 }
 

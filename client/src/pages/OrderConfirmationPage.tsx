@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import type { CartCoupon, Order } from '../api/types';
+import { ProductImage } from '../components/ProductImage';
 import { ErrorState, Spinner } from '../components/Feedback';
 import { Totals } from '../components/Totals';
 import { useFetch } from '../hooks/useFetch';
@@ -88,7 +89,10 @@ export function OrderConfirmationPage() {
           <ul className={styles.items} data-testid="order-items">
             {order.items.map((item) => (
               <li key={`${item.productId}:${item.variantId ?? 0}`} className={styles.item}>
-                <span>
+                <div className={styles.itemThumb}>
+                  <ProductImage item={item} decorative />
+                </div>
+                <span className={styles.itemText}>
                   {item.quantity} × {item.name}
                   {item.variantLabel ? ` (${item.variantLabel})` : ''}
                 </span>

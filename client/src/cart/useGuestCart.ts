@@ -83,6 +83,7 @@ export function useGuestCart(lines: CartLine[]): GuestCartView {
         category: product.category,
         imageCount: product.imageCount,
         imagePath: product.imagePath,
+        images: product.images,
         variantLabel: variant ? [variant.size, variant.colour].filter(Boolean).join(' / ') || null : null,
         unitPriceCents: unit,
         regularPriceCents: product.priceCents,

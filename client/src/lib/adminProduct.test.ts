@@ -123,6 +123,7 @@ describe('form helpers', () => {
       hasVariants: false,
       imageCount: 1,
       imagePath: null,
+      images: ['/images/categories/home.svg'],
       createdAt: '2026-01-01T00:00:00.000Z',
     };
     expect(formFromProduct(product)).toEqual({

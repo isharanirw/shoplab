@@ -1,69 +1,35 @@
+import { imageAlt, imageAt, resolveImages } from '../lib/productImages';
+import type { ImageSource } from '../lib/productImages';
 import styles from './ProductParts.module.css';
 
 interface ProductImageProps {
-  productId: number;
-  name: string;
-  /** Zero-based image number; each one draws a different shape so a gallery swap is visible. */
+  /** The product (or cart line, order line) to show: its name, `images`, `imagePath` and `category`. */
+  item: ImageSource & { name: string };
+  /** Zero-based picture number in the gallery. */
   index?: number;
-  /** Decorative images are hidden from assistive technology (the name is shown next to them). */
+  /** Decorative pictures are hidden from assistive technology (the name is written next to them). */
   decorative?: boolean;
-  total?: number;
-  /** An image uploaded by an admin. When set it replaces the generated placeholder (the product then has one picture). */
-  imagePath?: string | null;
-}
-
-function initials(name: string): string {
-  const letters = name
-    .split(/\s+/)
-    .filter((w) => /^[A-Za-z]/.test(w))
-    .slice(0, 2)
-    .map((w) => w.charAt(0).toUpperCase())
-    .join('');
-  return letters || '?';
+  /** Load straight away (the main picture or the first row) instead of lazily. */
+  priority?: boolean;
 }
 
 /**
- * A product picture: the image an admin uploaded, or otherwise a self-hosted placeholder drawn in SVG. The colour comes from the product ID and the
- * shape from the image number, so every product and every gallery picture looks different.
+ * One product picture: a self-hosted image (an uploaded one, a generated illustration, or a category illustration).
+ * Width, height and an aspect ratio are set so the page does not move while it loads.
  */
-export function ProductImage({ productId, name, index = 0, decorative = false, total = 3, imagePath = null }: ProductImageProps) {
-  if (imagePath) {
-    return (
-      <img
-        className={styles.image}
-        src={imagePath}
-        alt={decorative ? '' : name}
-        aria-hidden={decorative ? true : undefined}
-        loading="lazy"
-        data-image-index={1}
-      />
-    );
-  }
-  const hue = (productId * 47 + index * 29) % 360;
-  const bg = `hsl(${hue} 55% 90%)`;
-  const shape = `hsl(${hue} 45% 62%)`;
-  const ink = `hsl(${hue} 60% 20%)`;
-  const label = `${name}, image ${index + 1} of ${total}`;
+export function ProductImage({ item, index = 0, decorative = false, priority = false }: ProductImageProps) {
+  const urls = resolveImages(item);
+  const shown = urls[index] === undefined ? 0 : index;
   return (
-    <svg
+    <img
       className={styles.image}
-      viewBox="0 0 400 400"
-      role={decorative ? undefined : 'img'}
-      aria-label={decorative ? undefined : label}
-      aria-hidden={decorative ? true : undefined}
-      focusable="false"
-      data-image-index={index + 1}
-    >
-      <rect width="400" height="400" fill={bg} />
-      {index % 3 === 0 && <circle cx="200" cy="170" r="105" fill={shape} />}
-      {index % 3 === 1 && <rect x="95" y="65" width="210" height="210" rx="24" fill={shape} />}
-      {index % 3 === 2 && <polygon points="200,60 310,170 200,280 90,170" fill={shape} />}
-      <text x="200" y="195" textAnchor="middle" fontSize="72" fontWeight="700" fill={ink} fontFamily="system-ui, sans-serif">
-        {initials(name)}
-      </text>
-      <text x="200" y="350" textAnchor="middle" fontSize="28" fill={ink} fontFamily="system-ui, sans-serif">
-        Image {index + 1}
-      </text>
-    </svg>
+      src={imageAt(urls, shown)}
+      alt={decorative ? '' : imageAlt(item.name, shown, urls.length)}
+      width={400}
+      height={400}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
+      data-image-index={shown + 1}
+    />
   );
 }

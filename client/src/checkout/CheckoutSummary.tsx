@@ -1,4 +1,5 @@
 import type { CartCoupon, CartItem, CartTotals } from '../api/types';
+import { ProductImage } from '../components/ProductImage';
 import { Totals } from '../components/Totals';
 import { formatPrice } from '../lib/format';
 import styles from './Checkout.module.css';
@@ -23,6 +24,9 @@ export function CheckoutSummary({ items, totals, coupon, problems = {}, loading,
       <ul className={styles.summaryList}>
         {items.map((item) => (
           <li key={item.id} className={styles.summaryItem} data-testid={`summary-item-${item.productId}`}>
+            <span className={styles.summaryThumb}>
+              <ProductImage item={item} decorative />
+            </span>
             <span className={styles.summaryName}>
               {item.quantity} × {item.name}
               {item.variantLabel ? ` (${item.variantLabel})` : ''}

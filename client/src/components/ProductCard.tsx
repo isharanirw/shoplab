@@ -18,9 +18,11 @@ interface ProductCardProps {
   onQuickView: (product: ProductSummary) => void;
   /** The wishlist page has its own Remove button, so it hides the heart. */
   showWishlistButton?: boolean;
+  /** Load the picture straight away (the first row of a listing). */
+  priority?: boolean;
 }
 
-export function ProductCard({ product, onQuickView, showWishlistButton = true }: ProductCardProps) {
+export function ProductCard({ product, onQuickView, showWishlistButton = true, priority = false }: ProductCardProps) {
   const cart = useCart();
   const [notice, setNotice] = useState<string | null>(null);
   const [problem, setProblem] = useState<Failure | null>(null);
@@ -48,7 +50,7 @@ export function ProductCard({ product, onQuickView, showWishlistButton = true }:
   return (
     <article className={styles.card} data-testid={`product-card-${product.id}`} aria-labelledby={nameId}>
       <Link to={`/products/${product.id}`} className={styles.imageLink} tabIndex={-1} aria-hidden="true">
-        <ProductImage productId={product.id} name={product.name} imagePath={product.imagePath} decorative />
+        <ProductImage item={product} decorative priority={priority} />
       </Link>
       <div className={styles.body}>
         <h3 id={nameId} className={styles.name}>
