@@ -16,6 +16,7 @@
     "build": "npm run build -w client && npm run build -w server",
     "start": "node server/dist/index.js",
     "seed": "npm run seed -w server",
+    "generate:images": "npm run generate:images -w server",
     "lint": "eslint .",
     "typecheck": "npm run typecheck -w client && npm run typecheck -w server",
     "test": "npm run test -w client && npm run test -w server"

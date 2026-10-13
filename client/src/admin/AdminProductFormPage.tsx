@@ -260,11 +260,15 @@ function ProductForm({ product }: { product: AdminProduct | null }) {
         <fieldset className={styles.imageBox}>
           <legend className="visually-hidden">Product image</legend>
           <div className={styles.imagePreview} data-testid="product-image-preview">
-            {shownImage ? (
-              <ProductImage productId={product?.id ?? 0} name={values.name || 'New product'} imagePath={shownImage} />
-            ) : (
-              <ProductImage productId={product?.id ?? 0} name={values.name || 'New product'} decorative />
-            )}
+            <ProductImage
+              item={{
+                name: values.name || 'New product',
+                imagePath: shownImage,
+                images: editing && !product.imagePath ? product.images : undefined,
+                category: values.category,
+              }}
+              decorative={!shownImage}
+            />
           </div>
           <div className={styles.imageInfo}>
             <FormField
@@ -272,7 +276,7 @@ function ProductForm({ product }: { product: AdminProduct | null }) {
               type="file"
               label="Image (optional)"
               accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-              hint={shownImage ? undefined : 'PNG or JPG, up to 2 MB. Without one, a generated placeholder is shown.'}
+              hint={shownImage ? undefined : 'PNG or JPG, up to 2 MB. Without one, the product illustration is shown.'}
               error={errors.image}
               key={fileKey}
               onChange={onFileChange}

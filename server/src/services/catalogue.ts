@@ -1,5 +1,6 @@
 import type { Db } from '../db/connection';
 import type { CategoryInfo, ProductQuery, ReviewQuery } from '../lib/catalogueQuery';
+import { productImageUrls } from '../lib/productImages';
 import { f01, f11, f20 } from '../testability/variants';
 
 export interface ListResult<T> {
@@ -27,8 +28,10 @@ export interface ProductSummary {
   hasVariants: boolean;
   featured: boolean;
   imageCount: number;
-  /** URL path of an image uploaded by an admin, or null (the generated placeholder is used then). */
+  /** URL path of an image uploaded by an admin, or null (the product illustrations are used then). */
   imagePath: string | null;
+  /** Every picture URL in gallery order: the uploaded image, or the three illustrations, or one category illustration. */
+  images: string[];
   rating: RatingSummary;
   createdAt: string;
 }
@@ -127,6 +130,7 @@ export function mapSummary(row: SummaryRow): ProductSummary {
     featured: row.featured === 1,
     imageCount: row.image_count,
     imagePath: row.image_path,
+    images: productImageUrls({ id: row.id, category: row.category, imagePath: row.image_path }),
     rating: {
       average: row.rating_tenths === null ? null : row.rating_tenths / 10,
       count: row.review_count,

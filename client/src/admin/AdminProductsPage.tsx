@@ -204,7 +204,7 @@ export function AdminProductsPage() {
                       <td className={styles.hideNarrow}>{p.id}</td>
                       <td className={styles.hideNarrow}>
                         <div className={styles.thumb}>
-                          <ProductImage productId={p.id} name={p.name} imagePath={p.imagePath} decorative />
+                          <ProductImage item={p} decorative />
                         </div>
                       </td>
                       <th scope="row">{p.name}</th>

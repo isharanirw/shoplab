@@ -44,6 +44,7 @@
 
 .item {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
   padding: 0.4rem 0;
@@ -67,4 +68,15 @@
   .columns {
     grid-template-columns: 2fr 1fr;
   }
+}
+
+.itemThumb {
+  flex: none;
+  width: 3rem;
+}
+
+.itemText {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }

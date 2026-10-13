@@ -18,9 +18,9 @@ export function ProductGrid({ products, showWishlistButton = true, renderExtra }
   return (
     <>
       <ul className={styles.grid} data-testid="product-grid">
-        {products.map((p) => (
+        {products.map((p, index) => (
           <li key={p.id} className={styles.item}>
-            <ProductCard product={p} onQuickView={setQuickView} showWishlistButton={showWishlistButton} />
+            <ProductCard product={p} onQuickView={setQuickView} showWishlistButton={showWishlistButton} priority={index < 4} />
             {renderExtra?.(p)}
           </li>
         ))}

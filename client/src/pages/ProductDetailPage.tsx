@@ -9,6 +9,7 @@ import { ErrorState, Spinner } from '../components/Feedback';
 import { Pagination } from '../components/Pagination';
 import { Price } from '../components/Price';
 import { ProductImage } from '../components/ProductImage';
+import { resolveImages } from '../lib/productImages';
 import { PurchasePanel } from '../components/PurchasePanel';
 import { StarRating } from '../components/StarRating';
 import { useFetch } from '../hooks/useFetch';
@@ -72,8 +73,8 @@ function ProductView({ product: initialProduct }: { product: ProductDetail }) {
   const [imageIndex, setImageIndex] = useState(0);
   // A link ending in #reviews (from an order) opens the Reviews tab directly.
   const [tab, setTab] = useState<TabId>(location.hash === '#reviews' ? 'reviews' : 'description');
-  // An uploaded image replaces the generated gallery: the product then has exactly one picture.
-  const count = product.imagePath ? 1 : Math.max(product.imageCount, 1);
+  // An uploaded image replaces the illustrations: the product then has exactly one picture.
+  const count = resolveImages(product).length;
 
   useEffect(() => {
     if (location.hash === '#reviews') document.getElementById('tab-reviews')?.scrollIntoView({ block: 'start' });
@@ -112,7 +113,7 @@ function ProductView({ product: initialProduct }: { product: ProductDetail }) {
       <div className={styles.top}>
         <div className={styles.gallery}>
           <div className={styles.main} data-testid="gallery-main">
-            <ProductImage key={imageIndex} productId={product.id} name={product.name} index={imageIndex} total={count} imagePath={product.imagePath} />
+            <ProductImage key={imageIndex} item={product} index={imageIndex} priority />
           </div>
           <ul className={styles.thumbs} aria-label="Product images">
             {Array.from({ length: count }, (_, i) => (
@@ -125,7 +126,7 @@ function ProductView({ product: initialProduct }: { product: ProductDetail }) {
                   onClick={() => setImageIndex(i)}
                   data-testid={`gallery-thumb-${i + 1}`}
                 >
-                  <ProductImage productId={product.id} name={product.name} index={i} total={count} imagePath={product.imagePath} decorative />
+                  <ProductImage item={product} index={i} decorative priority />
                 </button>
               </li>
             ))}

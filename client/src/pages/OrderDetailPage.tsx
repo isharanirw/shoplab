@@ -4,6 +4,7 @@ import { api, ApiRequestError } from '../api/client';
 import type { CartCoupon, Order } from '../api/types';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { ErrorState, Spinner } from '../components/Feedback';
+import { ProductImage } from '../components/ProductImage';
 import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import { Totals } from '../components/Totals';
 import { useFetch } from '../hooks/useFetch';
@@ -170,7 +171,10 @@ function OrderDetail({ initial }: { initial: Order }) {
           <ul className={styles.items} data-testid="order-items">
             {order.items.map((item) => (
               <li key={`${item.productId}:${item.variantId ?? 0}`} className={styles.item}>
-                <span>
+                <div className={styles.itemThumb}>
+                  <ProductImage item={item} decorative />
+                </div>
+                <span className={styles.itemText}>
                   {item.quantity} ×{' '}
                   <Link to={`/products/${item.productId}`}>
                     {item.name}
