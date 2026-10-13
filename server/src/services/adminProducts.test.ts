@@ -84,6 +84,7 @@ describe('create and read', () => {
       hasVariants: false,
       imageCount: 1,
       imagePath: null,
+      images: ['/images/categories/home.svg'],
       createdAt: '2026-10-01T10:00:00.000Z',
     });
     expect(getAdminProduct(db, 61)).toEqual(p);

@@ -8,6 +8,7 @@ import { ORDER_SORT_SQL } from '../lib/orderQuery';
 import type { OrderListQuery } from '../lib/orderQuery';
 import { parsePaymentToken } from '../lib/payment';
 import { isShippingMethod } from '../lib/pricing';
+import { productImageUrls } from '../lib/productImages';
 import type { ShippingMethod } from '../lib/pricing';
 import { priceCart } from './cart';
 import { findAddress, listCountries } from './locations';
@@ -19,6 +20,8 @@ export interface OrderItemView {
   variantId: number | null;
   name: string;
   variantLabel: string | null;
+  /** Picture URLs of the product (a deleted product keeps its illustrations if it was seeded, else one general illustration). */
+  images: string[];
   unitPriceCents: number;
   quantity: number;
   lineTotalCents: number;
@@ -80,6 +83,8 @@ interface ItemRow {
   variant_label: string | null;
   unit_price_cents: number;
   quantity: number;
+  category: string | null;
+  image_path: string | null;
 }
 
 function enrichAddress(db: Db, stored: Partial<AddressInput>): OrderAddressView {
@@ -102,7 +107,7 @@ function enrichAddress(db: Db, stored: Partial<AddressInput>): OrderAddressView 
 
 function toOrderView(db: Db, row: OrderRow): OrderView {
   const items = db
-    .prepare('SELECT product_id, variant_id, name, variant_label, unit_price_cents, quantity FROM order_items WHERE order_id = ? ORDER BY id')
+    .prepare('SELECT oi.product_id, oi.variant_id, oi.name, oi.variant_label, oi.unit_price_cents, oi.quantity, p.category, p.image_path FROM order_items oi LEFT JOIN products p ON p.id = oi.product_id WHERE oi.order_id = ? ORDER BY oi.id')
     .all(row.id) as ItemRow[];
   return {
     id: row.id,
@@ -124,6 +129,7 @@ function toOrderView(db: Db, row: OrderRow): OrderView {
       variantId: i.variant_id,
       name: i.name,
       variantLabel: i.variant_label,
+      images: productImageUrls({ id: i.product_id, category: i.category ?? '', imagePath: i.image_path }),
       unitPriceCents: i.unit_price_cents,
       quantity: i.quantity,
       lineTotalCents: i.unit_price_cents * i.quantity,

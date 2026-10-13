@@ -3,6 +3,7 @@ import type { AdminProductQuery } from '../lib/adminQuery';
 import { ApiError } from '../lib/errors';
 import { checkImage } from '../lib/imageUpload';
 import type { ImageType } from '../lib/imageUpload';
+import { productImageUrls } from '../lib/productImages';
 import { parseProductCreate, parseProductPatch } from '../lib/productRules';
 import type { ListResult } from './catalogue';
 import { deleteProductImage, deleteReviewImage, saveProductImage } from './uploads';
@@ -21,6 +22,7 @@ export interface AdminProduct {
   hasVariants: boolean;
   imageCount: number;
   imagePath: string | null;
+  images: string[];
   createdAt: string;
 }
 
@@ -60,6 +62,7 @@ function toProduct(row: Row): AdminProduct {
     hasVariants: row.has_variants === 1,
     imageCount: row.image_count,
     imagePath: row.image_path,
+    images: productImageUrls({ id: row.id, category: row.category, imagePath: row.image_path }),
     createdAt: row.created_at,
   };
 }

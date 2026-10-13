@@ -1482,7 +1482,7 @@ components:
     ProductSummaryFields:
       type: object
       description: The fields of a product in lists. Used on its own as ProductSummary and extended by ProductDetail and WishlistItem.
-      required: [id, name, category, subcategory, priceCents, salePriceCents, stock, inStock, hasVariants, featured, imageCount, imagePath, rating, createdAt]
+      required: [id, name, category, subcategory, priceCents, salePriceCents, stock, inStock, hasVariants, featured, imageCount, imagePath, images, rating, createdAt]
       properties:
         id: { type: integer }
         name: { type: string }
@@ -1497,7 +1497,14 @@ components:
         imageCount: { type: integer }
         imagePath:
           type: [string, 'null']
-          description: URL path of an image uploaded by an admin; null means the generated placeholder is used.
+          description: URL path of an image uploaded by an admin; null means the product illustrations are used.
+        images:
+          type: array
+          minItems: 1
+          items: { type: string }
+          description: >-
+            Picture URLs in gallery order (self-hosted, relative to the site). The uploaded image when imagePath is set; otherwise the three
+            illustrations of a seeded product; otherwise one illustration in the product category colours.
         rating: { $ref: '#/components/schemas/Rating' }
         createdAt: { type: string, format: date-time }
     Variant:
@@ -1699,7 +1706,7 @@ components:
       enum: [standard, express]
     CartItem:
       type: object
-      required: [id, productId, variantId, name, category, imageCount, imagePath, variantLabel, unitPriceCents, regularPriceCents, onSale, quantity, lineTotalCents, stock, maxQuantity, inStock]
+      required: [id, productId, variantId, name, category, imageCount, imagePath, images, variantLabel, unitPriceCents, regularPriceCents, onSale, quantity, lineTotalCents, stock, maxQuantity, inStock]
       additionalProperties: false
       properties:
         id: { type: integer }
@@ -1709,6 +1716,13 @@ components:
         category: { type: string }
         imageCount: { type: integer }
         imagePath: { type: [string, 'null'] }
+        images:
+          type: array
+          minItems: 1
+          items: { type: string }
+          description: >-
+            Picture URLs in gallery order (self-hosted, relative to the site). The uploaded image when imagePath is set; otherwise the three
+            illustrations of a seeded product; otherwise one illustration in the product category colours.
         variantLabel: { type: [string, 'null'] }
         unitPriceCents: { type: integer }
         regularPriceCents: { type: integer }
@@ -1876,13 +1890,20 @@ components:
         acceptTerms: { type: boolean, const: true }
     OrderItem:
       type: object
-      required: [productId, variantId, name, variantLabel, unitPriceCents, quantity, lineTotalCents]
+      required: [productId, variantId, name, variantLabel, images, unitPriceCents, quantity, lineTotalCents]
       additionalProperties: false
       properties:
         productId: { type: integer }
         variantId: { type: [integer, 'null'] }
         name: { type: string }
         variantLabel: { type: [string, 'null'] }
+        images:
+          type: array
+          minItems: 1
+          items: { type: string }
+          description: >-
+            Picture URLs in gallery order (self-hosted, relative to the site). The uploaded image when imagePath is set; otherwise the three
+            illustrations of a seeded product; otherwise one illustration in the product category colours.
         unitPriceCents: { type: integer }
         quantity: { type: integer }
         lineTotalCents: { type: integer }
@@ -1948,7 +1969,7 @@ components:
 
     AdminProduct:
       type: object
-      required: [id, name, category, subcategory, description, priceCents, salePriceCents, stock, active, featured, hasVariants, imageCount, imagePath, createdAt]
+      required: [id, name, category, subcategory, description, priceCents, salePriceCents, stock, active, featured, hasVariants, imageCount, imagePath, images, createdAt]
       additionalProperties: false
       properties:
         id: { type: integer }
@@ -1964,6 +1985,13 @@ components:
         hasVariants: { type: boolean }
         imageCount: { type: integer }
         imagePath: { type: [string, 'null'] }
+        images:
+          type: array
+          minItems: 1
+          items: { type: string }
+          description: >-
+            Picture URLs in gallery order (self-hosted, relative to the site). The uploaded image when imagePath is set; otherwise the three
+            illustrations of a seeded product; otherwise one illustration in the product category colours.
         createdAt: { type: string, format: date-time }
     AdminProductFields:
       type: object

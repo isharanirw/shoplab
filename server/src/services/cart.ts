@@ -3,6 +3,7 @@ import { ApiError } from '../lib/errors';
 import { lineLimit, mergeCartLines, parseQuantity, quantityProblem } from '../lib/cartRules';
 import type { MergeAdjustment, MergeLine } from '../lib/cartRules';
 import { checkCoupon, computeTotals } from '../lib/pricing';
+import { productImageUrls } from '../lib/productImages';
 import type { CouponOutcome, CouponRule, ShippingMethod, Totals } from '../lib/pricing';
 
 export interface CartItemView {
@@ -13,6 +14,7 @@ export interface CartItemView {
   category: string;
   imageCount: number;
   imagePath: string | null;
+  images: string[];
   variantLabel: string | null;
   unitPriceCents: number;
   regularPriceCents: number;
@@ -101,6 +103,7 @@ export function loadCartLines(db: Db, userId: number): CartItemView[] {
       category: row.category,
       imageCount: row.image_count,
       imagePath: row.image_path,
+      images: productImageUrls({ id: row.product_id, category: row.category, imagePath: row.image_path }),
       variantLabel: variantLabel(row.size, row.colour),
       unitPriceCents: unit,
       regularPriceCents: row.price_cents,
