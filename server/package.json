@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "seed": "tsx src/db/seedCli.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "generate:images": "tsx src/productImages/cli.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
