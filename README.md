@@ -122,6 +122,8 @@ Then open http://localhost:3000. For development with hot reload, run `npm run d
 
 Other scripts: `npm run seed`, `npm run lint`, `npm run typecheck`, `npm test`. Copy `.env.example` to `.env` to change the port, database path, uploads directory, test key or starting flags (`FLAGS`).
 
+Product pictures are self-hosted SVG illustrations (three per seeded product, in `client/public/images`, no external requests), drawn by a deterministic script: `npm run generate:images` rewrites them identically.
+
 Review images are saved in `uploads/` (git-ignored, served at `/uploads/reviews/...`); product images uploaded in the admin panel go to `uploads/products/...`. `POST /api/test/reset` deletes both kinds together with the reviews and products people added, so the data matches the seed again. On the free Render tier the disk is ephemeral anyway.
 
 ## Demo accounts
